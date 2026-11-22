@@ -236,6 +236,14 @@ Findings from recomputing all 84 trips:
   - Class S, 5 hours, billed 11.41, which is 0.91 above the full price and fits no quarter-hour
     grid.
 
+A second export covering 2026 contains a single trip (BASIS, class L, a Tuesday in May 2026,
+2 h 23 min, 13 km). It confirms the model outside AKTIV/COMFORT:
+
+- Km amount 5.46 = 13 × (0.39 + 0.03), matching the +0.03 surcharge valid from 2026-04-23.
+- Time amount 19.67 = 2.5 h at 7.15 (17.875 → 17.88) + 30 min at 50 % (1.7875 → 1.79), with both
+  parts rounded half-up separately. Summing before rounding would give 19.66.
+- The export format is unchanged in 2026.
+
 Open questions:
 
 - How the 50 % charge interacts with day/week caps and night hours.
