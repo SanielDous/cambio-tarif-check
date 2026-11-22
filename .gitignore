@@ -1,0 +1,7 @@
+# Personal trip exports and other private material must never be committed
+Fahrten_*.csv
+Fahrten_*.xlsx
+private/
+
+node_modules/
+dist/
