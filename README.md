@@ -44,8 +44,10 @@ Before the first end-to-end run, install the browser once:
 pnpm exec playwright install chromium
 ```
 
-The app is served under the base path `/cambio-tarif-check/` and uses hash routing
-(`/#/`, `/#/how-it-works`).
+The build uses relative asset paths and hash routing (`#/`, `#/how-it-works`), so `dist/` works
+from any path: the site root, a GitHub Pages project path or a fork under another name. The
+end-to-end tests serve the same build at the root and under a sub-path it was not built for
+(`e2e/preview.mjs`).
 
 ## Price data
 

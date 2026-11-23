@@ -1,4 +1,36 @@
 import { expect, test, type Page } from "@playwright/test";
+import { BASE_URL, ROOT_URL } from "./servers";
+
+for (const [where, url] of [
+  ["under a sub-path unknown to the build", BASE_URL],
+  ["at the site root", ROOT_URL],
+] as const) {
+  test(`loads every file ${where}, also the parts loaded on demand`, async ({ page }) => {
+    const requested: string[] = [];
+    const failed: string[] = [];
+    page.on("request", (request) => requested.push(request.url()));
+    page.on("requestfailed", (request) => failed.push(request.url()));
+    page.on("response", (response) => {
+      if (response.status() >= 400) failed.push(`${response.status()} ${response.url()}`);
+    });
+
+    await page.goto(url);
+    await expect(page.getByRole("heading", { level: 1, name: "cambio Tarif-Check" })).toBeVisible();
+    // The stylesheet applies: the drop zone input is visually hidden.
+    await expect(page.locator('input[type="file"]').first()).toHaveCSS("position", "absolute");
+    await page.locator('input[type="file"]').setInputFiles("tests/fixtures/trips-2025.csv");
+    await expect(page.getByTestId("headline")).toBeVisible();
+    await expect(page.locator(".recharts-surface")).toBeVisible();
+
+    await page.goto(`${url}#/how-it-works`);
+    await expect(page.getByTestId("price-tables")).toBeVisible();
+    await page.getByRole("link", { name: "Start", exact: true }).click();
+    await expect(page).toHaveURL(`${url}#/`);
+
+    expect(failed).toEqual([]);
+    expect(requested.filter((request) => !request.startsWith(url))).toEqual([]);
+  });
+}
 
 test("loads in German, switches to English and renders how-it-works", async ({ page }) => {
   await page.goto("./");
