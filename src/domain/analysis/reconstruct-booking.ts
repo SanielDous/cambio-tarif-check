@@ -50,9 +50,27 @@ export const MAX_OVERRUN_MINUTES = 120;
 const MAX_DERIVED_SURCHARGE = 10;
 
 /**
+ * The unused booked time [chargedUntil, bookedEnd) in integer cents: 50 % of the price of exactly
+ * those hours, priced like a booking of its own (night, weekend and holiday prices of those hours,
+ * caps anchored at `chargedUntil`) and rounded half-up as a line item of its own. An invoice shows
+ * this: after 8 days + 45 minutes at the full price, 3.25 unused hours cost 3.25 × 2.35 × 50 %.
+ */
+export function unusedTimeCost(
+  chargedUntil: LocalMinute,
+  bookedEnd: LocalMinute,
+  tariff: TariffId,
+  cls: PriceClass,
+  data: PriceData,
+  city: string | undefined,
+): number {
+  if (bookedEnd <= chargedUntil) return 0;
+  return roundHalfUp(0.5 * timeCost(chargedUntil, bookedEnd, tariff, cls, data, city));
+}
+
+/**
  * Time cost of a booking [start, bookedEnd) returned at `chargedUntil`, in integer cents:
- * `share` of the price up to `chargedUntil`, plus 50 % of the remaining booked time. Both parts
- * are capped as one booking from `start` and rounded half-up separately.
+ * `share` of the price up to `chargedUntil` (capped from `start`, rounded half-up), plus the unused
+ * booked time (`unusedTimeCost`).
  */
 export function bookingTimeCost(
   start: LocalMinute,
@@ -65,9 +83,9 @@ export function bookingTimeCost(
   city: string | undefined,
 ): number {
   const used = timeCost(start, chargedUntil, tariff, cls, data, city);
-  const unused =
-    bookedEnd > chargedUntil ? timeCost(start, bookedEnd, tariff, cls, data, city) - used : 0;
-  return roundHalfUp(share * used) + roundHalfUp(0.5 * unused);
+  return (
+    roundHalfUp(share * used) + unusedTimeCost(chargedUntil, bookedEnd, tariff, cls, data, city)
+  );
 }
 
 /**

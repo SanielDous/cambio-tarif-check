@@ -5,6 +5,8 @@ import type { ClassPrice, LocalMinute, PriceClass, PriceData, TariffId } from ".
 const HOUR = 60;
 const DAY = 24 * HOUR;
 const WEEK = 7 * DAY;
+/** A final partial 24-hour block shorter than this is free; see `timeCost`. */
+const FREE_REMAINDER = HOUR;
 
 /** Prices of a class in a tariff; throws if the tariff does not offer the class. */
 export function classPrice(tariff: TariffId, cls: PriceClass, data: PriceData): ClassPrice {
@@ -120,7 +122,14 @@ function uncapped(
   return sum;
 }
 
-/** Capped time cost in fractional cents for a booking [start, end), caps anchored at `start`. */
+/**
+ * Capped time cost in fractional cents for a booking [start, end), caps anchored at `start`.
+ *
+ * In a booking of at least 24 hours, a final partial 24-hour block shorter than an hour is free;
+ * from an hour on the whole partial block is charged. This holds however many days or weeks
+ * precede it, as invoiced (8 days + 45 minutes = week price + one day price), although cambio's
+ * price calculator charges such a remainder again from 7 days on.
+ */
 export function timeCost(
   start: LocalMinute,
   end: LocalMinute,
@@ -129,6 +138,8 @@ export function timeCost(
   data: PriceData,
   city: string | undefined,
 ): number {
+  const remainder = (end - start) % DAY;
+  const charged = end - start >= DAY && remainder < FREE_REMAINDER ? end - remainder : end;
   const price = classPrice(tariff, cls, data);
   const holidays = chargesHolidays(city, data);
   // Work in cents × 60 (integers) and divide once at the end to avoid float drift.
@@ -136,8 +147,8 @@ export function timeCost(
   const dayCap = price.dayCap === undefined ? fullDay : price.dayCap * HOUR;
   const weekCap = data.weekCapDays * fullDay;
   let total = 0;
-  for (let weekStart = start; weekStart < end; weekStart += WEEK) {
-    const weekEnd = Math.min(weekStart + WEEK, end);
+  for (let weekStart = start; weekStart < charged; weekStart += WEEK) {
+    const weekEnd = Math.min(weekStart + WEEK, charged);
     let week = 0;
     for (let dayStart = weekStart; dayStart < weekEnd && week < weekCap; dayStart += DAY) {
       const dayEnd = Math.min(dayStart + DAY, weekEnd);

@@ -1,0 +1,1547 @@
+[
+  {
+    "bookingStart": "15.12.2025 17:15",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "15.12.2025 17:15",
+        "end": "15.12.2025 19:30",
+        "gross": 472
+      },
+      {
+        "kind": "cancelled",
+        "start": "15.12.2025 19:30",
+        "end": "15.12.2025 19:45",
+        "gross": 26
+      }
+    ],
+    "km": 19,
+    "kmGross": 494
+  },
+  {
+    "bookingStart": "11.12.2025 09:15",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "11.12.2025 09:15",
+        "end": "11.12.2025 13:00",
+        "gross": 788
+      },
+      {
+        "kind": "late",
+        "start": "11.12.2025 13:00",
+        "end": "11.12.2025 13:15",
+        "gross": 52
+      }
+    ],
+    "km": 161,
+    "kmGross": 3820
+  },
+  {
+    "bookingStart": "10.12.2025 16:15",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "10.12.2025 16:15",
+        "end": "10.12.2025 17:45",
+        "gross": 315
+      },
+      {
+        "kind": "cancelled",
+        "start": "10.12.2025 17:45",
+        "end": "10.12.2025 18:30",
+        "gross": 79
+      }
+    ],
+    "km": 22,
+    "kmGross": 572
+  },
+  {
+    "bookingStart": "10.12.2025 08:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "10.12.2025 08:00",
+        "end": "10.12.2025 09:15",
+        "gross": 263
+      },
+      {
+        "kind": "cancelled",
+        "start": "10.12.2025 09:15",
+        "end": "10.12.2025 10:00",
+        "gross": 79
+      }
+    ],
+    "km": 22,
+    "kmGross": 572
+  },
+  {
+    "bookingStart": "08.12.2025 09:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "08.12.2025 09:00",
+        "end": "08.12.2025 16:30",
+        "gross": 1575
+      }
+    ],
+    "km": 85,
+    "kmGross": 2210
+  },
+  {
+    "bookingStart": "06.12.2025 09:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "06.12.2025 09:00",
+        "end": "06.12.2025 12:30",
+        "gross": 735
+      },
+      {
+        "kind": "cancelled",
+        "start": "06.12.2025 12:30",
+        "end": "06.12.2025 20:00",
+        "gross": 788
+      }
+    ],
+    "km": 32,
+    "kmGross": 832
+  },
+  {
+    "bookingStart": "29.11.2025 09:30",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "29.11.2025 09:30",
+        "end": "29.11.2025 13:15",
+        "gross": 694
+      },
+      {
+        "kind": "cancelled",
+        "start": "29.11.2025 13:15",
+        "end": "29.11.2025 13:30",
+        "gross": 23
+      }
+    ],
+    "km": 26,
+    "kmGross": 598
+  },
+  {
+    "bookingStart": "26.11.2025 15:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "26.11.2025 15:00",
+        "end": "26.11.2025 18:30",
+        "gross": 648
+      }
+    ],
+    "km": 22,
+    "kmGross": 506
+  },
+  {
+    "bookingStart": "22.11.2025 11:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "22.11.2025 11:00",
+        "end": "22.11.2025 17:30",
+        "gross": 1203
+      },
+      {
+        "kind": "cancelled",
+        "start": "22.11.2025 17:30",
+        "end": "22.11.2025 18:00",
+        "gross": 46
+      }
+    ],
+    "km": 63,
+    "kmGross": 1449
+  },
+  {
+    "bookingStart": "21.11.2025 16:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "21.11.2025 16:00",
+        "end": "22.11.2025 00:00",
+        "gross": 1480
+      }
+    ],
+    "km": 38,
+    "kmGross": 874
+  },
+  {
+    "bookingStart": "08.11.2025 08:30",
+    "tariff": "COMFORT",
+    "priceClass": "M",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "08.11.2025 08:30",
+        "end": "09.11.2025 18:45",
+        "gross": 5229
+      },
+      {
+        "kind": "cancelled",
+        "start": "09.11.2025 18:45",
+        "end": "09.11.2025 20:00",
+        "gross": 147
+      }
+    ],
+    "km": 660,
+    "kmGross": 11920
+  },
+  {
+    "bookingStart": "07.11.2025 17:15",
+    "tariff": "COMFORT",
+    "priceClass": "XL",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "07.11.2025 17:15",
+        "end": "07.11.2025 19:15",
+        "gross": 996
+      },
+      {
+        "kind": "cancelled",
+        "start": "07.11.2025 19:15",
+        "end": "07.11.2025 20:15",
+        "gross": 249
+      }
+    ],
+    "km": 29,
+    "kmGross": 1015
+  },
+  {
+    "bookingStart": "05.11.2025 17:30",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "05.11.2025 17:30",
+        "end": "05.11.2025 18:45",
+        "gross": 231
+      },
+      {
+        "kind": "cancelled",
+        "start": "05.11.2025 18:45",
+        "end": "05.11.2025 19:30",
+        "gross": 69
+      }
+    ],
+    "km": 4,
+    "kmGross": 92
+  },
+  {
+    "bookingStart": "02.11.2025 13:30",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "02.11.2025 13:30",
+        "end": "02.11.2025 19:30",
+        "gross": 1110
+      }
+    ],
+    "km": 17,
+    "kmGross": 391
+  },
+  {
+    "bookingStart": "01.11.2025 11:45",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "01.11.2025 11:45",
+        "end": "01.11.2025 17:30",
+        "gross": 1064
+      }
+    ],
+    "km": 47,
+    "kmGross": 1081
+  },
+  {
+    "bookingStart": "19.10.2025 13:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "19.10.2025 13:30",
+        "end": "19.10.2025 15:45",
+        "gross": 472
+      },
+      {
+        "kind": "cancelled",
+        "start": "19.10.2025 15:45",
+        "end": "19.10.2025 17:00",
+        "gross": 131
+      }
+    ],
+    "km": 17,
+    "kmGross": 442
+  },
+  {
+    "bookingStart": "17.10.2025 16:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "17.10.2025 16:30",
+        "end": "17.10.2025 20:45",
+        "gross": 893
+      },
+      {
+        "kind": "cancelled",
+        "start": "17.10.2025 20:45",
+        "end": "17.10.2025 21:30",
+        "gross": 79
+      }
+    ],
+    "km": 16,
+    "kmGross": 416
+  },
+  {
+    "bookingStart": "15.10.2025 19:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "15.10.2025 19:00",
+        "end": "15.10.2025 20:00",
+        "gross": 210
+      },
+      {
+        "kind": "cancelled",
+        "start": "15.10.2025 20:00",
+        "end": "15.10.2025 21:00",
+        "gross": 105
+      }
+    ],
+    "km": 12,
+    "kmGross": 312
+  },
+  {
+    "bookingStart": "11.10.2025 09:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "11.10.2025 09:00",
+        "end": "11.10.2025 18:15",
+        "gross": 1942
+      },
+      {
+        "kind": "cancelled",
+        "start": "11.10.2025 18:15",
+        "end": "11.10.2025 20:00",
+        "gross": 184
+      }
+    ],
+    "km": 35,
+    "kmGross": 910
+  },
+  {
+    "bookingStart": "09.10.2025 15:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "09.10.2025 15:30",
+        "end": "09.10.2025 19:30",
+        "gross": 840
+      }
+    ],
+    "km": 23,
+    "kmGross": 598
+  },
+  {
+    "bookingStart": "06.10.2025 17:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "06.10.2025 17:30",
+        "end": "06.10.2025 18:45",
+        "gross": 263
+      },
+      {
+        "kind": "cancelled",
+        "start": "06.10.2025 18:45",
+        "end": "06.10.2025 19:30",
+        "gross": 79
+      }
+    ],
+    "km": 5,
+    "kmGross": 130
+  },
+  {
+    "bookingStart": "04.10.2025 14:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "04.10.2025 14:00",
+        "end": "04.10.2025 23:15",
+        "gross": 1942
+      }
+    ],
+    "km": 31,
+    "kmGross": 806
+  },
+  {
+    "bookingStart": "29.09.2025 17:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "29.09.2025 17:30",
+        "end": "29.09.2025 20:00",
+        "gross": 525
+      }
+    ],
+    "km": 21,
+    "kmGross": 546
+  },
+  {
+    "bookingStart": "26.09.2025 16:15",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "26.09.2025 16:15",
+        "end": "26.09.2025 23:15",
+        "gross": 1470
+      }
+    ],
+    "km": 28,
+    "kmGross": 728
+  },
+  {
+    "bookingStart": "24.09.2025 19:45",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "24.09.2025 19:45",
+        "end": "24.09.2025 23:00",
+        "gross": 683
+      },
+      {
+        "kind": "cancelled",
+        "start": "24.09.2025 23:00",
+        "end": "24.09.2025 23:15",
+        "gross": 26
+      }
+    ],
+    "km": 17,
+    "kmGross": 442
+  },
+  {
+    "bookingStart": "06.09.2025 11:45",
+    "tariff": "AKTIV",
+    "priceClass": "M",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "06.09.2025 11:45",
+        "end": "06.09.2025 14:00",
+        "gross": 585
+      },
+      {
+        "kind": "cancelled",
+        "start": "06.09.2025 14:00",
+        "end": "06.09.2025 14:30",
+        "gross": 65
+      }
+    ],
+    "km": 29,
+    "kmGross": 783
+  },
+  {
+    "bookingStart": "20.08.2025 16:45",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "20.08.2025 16:45",
+        "end": "20.08.2025 18:30",
+        "gross": 367
+      },
+      {
+        "kind": "cancelled",
+        "start": "20.08.2025 18:30",
+        "end": "20.08.2025 19:15",
+        "gross": 79
+      }
+    ],
+    "km": 8,
+    "kmGross": 208
+  },
+  {
+    "bookingStart": "18.08.2025 09:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "18.08.2025 09:30",
+        "end": "18.08.2025 10:30",
+        "gross": 210
+      },
+      {
+        "kind": "cancelled",
+        "start": "18.08.2025 10:30",
+        "end": "18.08.2025 11:00",
+        "gross": 52
+      }
+    ],
+    "km": 23,
+    "kmGross": 598
+  },
+  {
+    "bookingStart": "16.08.2025 13:00",
+    "tariff": "AKTIV",
+    "priceClass": "L",
+    "timeItems": [
+      {
+        "kind": "cancelled",
+        "start": "16.08.2025 13:00",
+        "end": "16.08.2025 20:00",
+        "gross": 1785
+      }
+    ],
+    "km": 0,
+    "kmGross": 0
+  },
+  {
+    "bookingStart": "15.08.2025 09:00",
+    "tariff": "AKTIV",
+    "priceClass": "XL",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "15.08.2025 09:00",
+        "end": "15.08.2025 18:00",
+        "gross": 5508
+      }
+    ],
+    "km": 0,
+    "kmGross": 0
+  },
+  {
+    "bookingStart": "11.08.2025 16:30",
+    "tariff": "AKTIV",
+    "priceClass": "M",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "11.08.2025 16:30",
+        "end": "11.08.2025 23:00",
+        "gross": 1690
+      }
+    ],
+    "km": 28,
+    "kmGross": 756
+  },
+  {
+    "bookingStart": "09.08.2025 10:15",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "09.08.2025 10:15",
+        "end": "09.08.2025 14:15",
+        "gross": 840
+      }
+    ],
+    "km": 32,
+    "kmGross": 832
+  },
+  {
+    "bookingStart": "06.08.2025 15:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "06.08.2025 15:00",
+        "end": "06.08.2025 20:15",
+        "gross": 1103
+      }
+    ],
+    "km": 21,
+    "kmGross": 546
+  },
+  {
+    "bookingStart": "27.07.2025 10:30",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "27.07.2025 10:30",
+        "end": "27.07.2025 18:00",
+        "gross": 1388
+      }
+    ],
+    "km": 17,
+    "kmGross": 391
+  },
+  {
+    "bookingStart": "26.07.2025 17:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "26.07.2025 17:00",
+        "end": "26.07.2025 19:30",
+        "gross": 463
+      },
+      {
+        "kind": "cancelled",
+        "start": "26.07.2025 19:30",
+        "end": "26.07.2025 20:00",
+        "gross": 46
+      }
+    ],
+    "km": 15,
+    "kmGross": 345
+  },
+  {
+    "bookingStart": "23.07.2025 16:15",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "23.07.2025 16:15",
+        "end": "23.07.2025 19:00",
+        "gross": 509
+      },
+      {
+        "kind": "cancelled",
+        "start": "23.07.2025 19:00",
+        "end": "23.07.2025 19:15",
+        "gross": 23
+      }
+    ],
+    "km": 22,
+    "kmGross": 506
+  },
+  {
+    "bookingStart": "19.07.2025 08:30",
+    "tariff": "COMFORT",
+    "priceClass": "XL",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "19.07.2025 08:30",
+        "end": "19.07.2025 14:45",
+        "gross": 3113
+      },
+      {
+        "kind": "cancelled",
+        "start": "19.07.2025 14:45",
+        "end": "19.07.2025 21:30",
+        "gross": 1681
+      }
+    ],
+    "km": 22,
+    "kmGross": 770
+  },
+  {
+    "bookingStart": "13.07.2025 12:00",
+    "tariff": "COMFORT",
+    "priceClass": "M",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "13.07.2025 12:00",
+        "end": "13.07.2025 15:30",
+        "gross": 823
+      },
+      {
+        "kind": "cancelled",
+        "start": "13.07.2025 15:30",
+        "end": "13.07.2025 15:45",
+        "gross": 29
+      }
+    ],
+    "km": 12,
+    "kmGross": 288
+  },
+  {
+    "bookingStart": "12.07.2025 11:00",
+    "tariff": "COMFORT",
+    "priceClass": "M",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "12.07.2025 11:00",
+        "end": "12.07.2025 12:45",
+        "gross": 411
+      },
+      {
+        "kind": "cancelled",
+        "start": "12.07.2025 12:45",
+        "end": "12.07.2025 13:15",
+        "gross": 59
+      }
+    ],
+    "km": 23,
+    "kmGross": 552
+  },
+  {
+    "bookingStart": "11.07.2025 15:15",
+    "tariff": "COMFORT",
+    "priceClass": "M",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "11.07.2025 15:15",
+        "end": "11.07.2025 19:45",
+        "gross": 1058
+      }
+    ],
+    "km": 20,
+    "kmGross": 480
+  },
+  {
+    "bookingStart": "09.07.2025 16:30",
+    "tariff": "COMFORT",
+    "priceClass": "M",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "09.07.2025 16:30",
+        "end": "09.07.2025 22:00",
+        "gross": 1293
+      }
+    ],
+    "km": 12,
+    "kmGross": 288
+  },
+  {
+    "bookingStart": "07.07.2025 16:45",
+    "tariff": "COMFORT",
+    "priceClass": "L",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "07.07.2025 16:45",
+        "end": "07.07.2025 20:45",
+        "gross": 1660
+      }
+    ],
+    "km": 60,
+    "kmGross": 1920
+  },
+  {
+    "bookingStart": "04.07.2025 23:15",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "04.07.2025 23:15",
+        "end": "05.07.2025 00:15",
+        "gross": 151
+      },
+      {
+        "kind": "cancelled",
+        "start": "05.07.2025 00:15",
+        "end": "05.07.2025 01:15",
+        "gross": 25
+      }
+    ],
+    "km": 27,
+    "kmGross": 621
+  },
+  {
+    "bookingStart": "04.07.2025 14:45",
+    "tariff": "COMFORT",
+    "priceClass": "XL",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "04.07.2025 14:45",
+        "end": "04.07.2025 23:15",
+        "gross": 4233
+      },
+      {
+        "kind": "cancelled",
+        "start": "04.07.2025 23:15",
+        "end": "04.07.2025 23:30",
+        "gross": 62
+      }
+    ],
+    "km": 190,
+    "kmGross": 5480
+  },
+  {
+    "bookingStart": "03.07.2025 19:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "03.07.2025 19:00",
+        "end": "03.07.2025 20:30",
+        "gross": 278
+      }
+    ],
+    "km": 10,
+    "kmGross": 230
+  },
+  {
+    "bookingStart": "02.07.2025 16:15",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "02.07.2025 16:15",
+        "end": "02.07.2025 20:15",
+        "gross": 740
+      }
+    ],
+    "km": 12,
+    "kmGross": 276
+  },
+  {
+    "bookingStart": "30.06.2025 17:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "30.06.2025 17:30",
+        "end": "30.06.2025 19:45",
+        "gross": 472
+      }
+    ],
+    "km": 14,
+    "kmGross": 364
+  },
+  {
+    "bookingStart": "25.06.2025 16:15",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "25.06.2025 16:15",
+        "end": "25.06.2025 20:30",
+        "gross": 893
+      }
+    ],
+    "km": 12,
+    "kmGross": 312
+  },
+  {
+    "bookingStart": "23.06.2025 18:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "23.06.2025 18:00",
+        "end": "23.06.2025 20:45",
+        "gross": 578
+      }
+    ],
+    "km": 27,
+    "kmGross": 702
+  },
+  {
+    "bookingStart": "16.06.2025 18:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "16.06.2025 18:00",
+        "end": "16.06.2025 19:00",
+        "gross": 210
+      },
+      {
+        "kind": "cancelled",
+        "start": "16.06.2025 19:00",
+        "end": "16.06.2025 19:30",
+        "gross": 52
+      }
+    ],
+    "km": 4,
+    "kmGross": 104
+  },
+  {
+    "bookingStart": "15.06.2025 14:15",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "15.06.2025 14:15",
+        "end": "15.06.2025 21:30",
+        "gross": 1523
+      }
+    ],
+    "km": 23,
+    "kmGross": 598
+  },
+  {
+    "bookingStart": "25.05.2025 15:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "25.05.2025 15:00",
+        "end": "25.05.2025 20:45",
+        "gross": 1208
+      },
+      {
+        "kind": "cancelled",
+        "start": "25.05.2025 20:45",
+        "end": "25.05.2025 21:30",
+        "gross": 79
+      }
+    ],
+    "km": 45,
+    "kmGross": 1170
+  },
+  {
+    "bookingStart": "16.05.2025 15:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "16.05.2025 15:30",
+        "end": "16.05.2025 21:00",
+        "gross": 1155
+      }
+    ],
+    "km": 37,
+    "kmGross": 962
+  },
+  {
+    "bookingStart": "11.05.2025 16:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "11.05.2025 16:00",
+        "end": "11.05.2025 21:30",
+        "gross": 1155
+      }
+    ],
+    "km": 26,
+    "kmGross": 676
+  },
+  {
+    "bookingStart": "09.05.2025 15:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "09.05.2025 15:00",
+        "end": "09.05.2025 20:00",
+        "gross": 1050
+      },
+      {
+        "kind": "overrun",
+        "start": "09.05.2025 20:00",
+        "end": "09.05.2025 20:13",
+        "gross": 91
+      }
+    ],
+    "km": 22,
+    "kmGross": 572
+  },
+  {
+    "bookingStart": "05.05.2025 18:45",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "05.05.2025 18:45",
+        "end": "05.05.2025 20:15",
+        "gross": 315
+      }
+    ],
+    "km": 7,
+    "kmGross": 182
+  },
+  {
+    "bookingStart": "05.05.2025 07:45",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "05.05.2025 07:45",
+        "end": "05.05.2025 09:15",
+        "gross": 315
+      }
+    ],
+    "km": 16,
+    "kmGross": 416
+  },
+  {
+    "bookingStart": "27.04.2025 10:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "27.04.2025 10:30",
+        "end": "27.04.2025 15:00",
+        "gross": 945
+      }
+    ],
+    "km": 35,
+    "kmGross": 910
+  },
+  {
+    "bookingStart": "19.04.2025 11:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "19.04.2025 11:00",
+        "end": "19.04.2025 20:00",
+        "gross": 1890
+      }
+    ],
+    "km": 31,
+    "kmGross": 806
+  },
+  {
+    "bookingStart": "16.04.2025 18:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "16.04.2025 18:00",
+        "end": "16.04.2025 19:30",
+        "gross": 315
+      }
+    ],
+    "km": 5,
+    "kmGross": 130
+  },
+  {
+    "bookingStart": "04.04.2025 15:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "04.04.2025 15:30",
+        "end": "04.04.2025 17:30",
+        "gross": 420
+      }
+    ],
+    "km": 9,
+    "kmGross": 234
+  },
+  {
+    "bookingStart": "22.03.2025 18:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "22.03.2025 18:30",
+        "end": "22.03.2025 21:30",
+        "gross": 630
+      },
+      {
+        "kind": "cancelled",
+        "start": "22.03.2025 21:30",
+        "end": "22.03.2025 22:30",
+        "gross": 105
+      }
+    ],
+    "km": 34,
+    "kmGross": 884
+  },
+  {
+    "bookingStart": "21.03.2025 16:00",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "21.03.2025 16:00",
+        "end": "21.03.2025 18:45",
+        "gross": 578
+      },
+      {
+        "kind": "cancelled",
+        "start": "21.03.2025 18:45",
+        "end": "21.03.2025 19:00",
+        "gross": 26
+      }
+    ],
+    "km": 28,
+    "kmGross": 728
+  },
+  {
+    "bookingStart": "18.03.2025 17:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "18.03.2025 17:30",
+        "end": "18.03.2025 21:45",
+        "gross": 893
+      }
+    ],
+    "km": 31,
+    "kmGross": 806
+  },
+  {
+    "bookingStart": "12.03.2025 15:45",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "12.03.2025 15:45",
+        "end": "12.03.2025 19:45",
+        "gross": 840
+      }
+    ],
+    "km": 18,
+    "kmGross": 468
+  },
+  {
+    "bookingStart": "10.03.2025 17:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "10.03.2025 17:30",
+        "end": "10.03.2025 18:45",
+        "gross": 263
+      },
+      {
+        "kind": "cancelled",
+        "start": "10.03.2025 18:45",
+        "end": "10.03.2025 19:30",
+        "gross": 79
+      }
+    ],
+    "km": 4,
+    "kmGross": 104
+  },
+  {
+    "bookingStart": "09.03.2025 10:45",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "09.03.2025 10:45",
+        "end": "09.03.2025 14:30",
+        "gross": 788
+      },
+      {
+        "kind": "cancelled",
+        "start": "09.03.2025 14:30",
+        "end": "09.03.2025 15:00",
+        "gross": 52
+      }
+    ],
+    "km": 46,
+    "kmGross": 1196
+  },
+  {
+    "bookingStart": "08.03.2025 16:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "08.03.2025 16:30",
+        "end": "08.03.2025 19:15",
+        "gross": 578
+      },
+      {
+        "kind": "cancelled",
+        "start": "08.03.2025 19:15",
+        "end": "08.03.2025 20:00",
+        "gross": 79
+      }
+    ],
+    "km": 29,
+    "kmGross": 754
+  },
+  {
+    "bookingStart": "27.02.2025 17:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "27.02.2025 17:00",
+        "end": "27.02.2025 19:30",
+        "gross": 463
+      },
+      {
+        "kind": "cancelled",
+        "start": "27.02.2025 19:30",
+        "end": "27.02.2025 20:00",
+        "gross": 46
+      }
+    ],
+    "km": 13,
+    "kmGross": 299
+  },
+  {
+    "bookingStart": "23.02.2025 11:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "23.02.2025 11:00",
+        "end": "23.02.2025 17:00",
+        "gross": 1110
+      }
+    ],
+    "km": 42,
+    "kmGross": 966
+  },
+  {
+    "bookingStart": "22.02.2025 14:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "22.02.2025 14:00",
+        "end": "22.02.2025 16:00",
+        "gross": 370
+      },
+      {
+        "kind": "cancelled",
+        "start": "22.02.2025 16:00",
+        "end": "22.02.2025 16:30",
+        "gross": 46
+      }
+    ],
+    "km": 8,
+    "kmGross": 184
+  },
+  {
+    "bookingStart": "16.02.2025 13:15",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "16.02.2025 13:15",
+        "end": "16.02.2025 18:45",
+        "gross": 1018
+      },
+      {
+        "kind": "cancelled",
+        "start": "16.02.2025 18:45",
+        "end": "16.02.2025 19:15",
+        "gross": 46
+      }
+    ],
+    "km": 36,
+    "kmGross": 828
+  },
+  {
+    "bookingStart": "09.02.2025 15:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "09.02.2025 15:00",
+        "end": "09.02.2025 19:15",
+        "gross": 786
+      }
+    ],
+    "km": 16,
+    "kmGross": 368
+  },
+  {
+    "bookingStart": "08.02.2025 14:00",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "08.02.2025 14:00",
+        "end": "08.02.2025 17:00",
+        "gross": 555
+      },
+      {
+        "kind": "cancelled",
+        "start": "08.02.2025 17:00",
+        "end": "08.02.2025 17:30",
+        "gross": 46
+      }
+    ],
+    "km": 16,
+    "kmGross": 368
+  },
+  {
+    "bookingStart": "05.02.2025 16:30",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "05.02.2025 16:30",
+        "end": "05.02.2025 21:15",
+        "gross": 879
+      }
+    ],
+    "km": 16,
+    "kmGross": 368
+  },
+  {
+    "bookingStart": "24.01.2025 17:00",
+    "tariff": "COMFORT",
+    "priceClass": "M",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "24.01.2025 17:00",
+        "end": "01.02.2025 17:45",
+        "gross": 19740
+      },
+      {
+        "kind": "cancelled",
+        "start": "01.02.2025 17:45",
+        "end": "01.02.2025 21:00",
+        "gross": 382
+      }
+    ],
+    "km": 1495,
+    "kmGross": 26115
+  },
+  {
+    "bookingStart": "20.01.2025 16:45",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "20.01.2025 16:45",
+        "end": "20.01.2025 18:30",
+        "gross": 324
+      },
+      {
+        "kind": "cancelled",
+        "start": "20.01.2025 18:30",
+        "end": "20.01.2025 18:45",
+        "gross": 23
+      }
+    ],
+    "km": 11,
+    "kmGross": 253
+  },
+  {
+    "bookingStart": "19.01.2025 11:45",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "19.01.2025 11:45",
+        "end": "19.01.2025 15:30",
+        "gross": 694
+      },
+      {
+        "kind": "cancelled",
+        "start": "19.01.2025 15:30",
+        "end": "19.01.2025 15:45",
+        "gross": 23
+      }
+    ],
+    "km": 26,
+    "kmGross": 598
+  },
+  {
+    "bookingStart": "16.01.2025 17:30",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "16.01.2025 17:30",
+        "end": "16.01.2025 19:45",
+        "gross": 416
+      }
+    ],
+    "km": 11,
+    "kmGross": 253
+  },
+  {
+    "bookingStart": "15.01.2025 17:30",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "15.01.2025 17:30",
+        "end": "15.01.2025 21:00",
+        "gross": 648
+      }
+    ],
+    "km": 10,
+    "kmGross": 230
+  },
+  {
+    "bookingStart": "12.01.2025 12:15",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "12.01.2025 12:15",
+        "end": "12.01.2025 15:00",
+        "gross": 509
+      },
+      {
+        "kind": "cancelled",
+        "start": "12.01.2025 15:00",
+        "end": "12.01.2025 15:15",
+        "gross": 23
+      }
+    ],
+    "km": 14,
+    "kmGross": 322
+  },
+  {
+    "bookingStart": "11.01.2025 14:30",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "11.01.2025 14:30",
+        "end": "11.01.2025 17:15",
+        "gross": 509
+      },
+      {
+        "kind": "cancelled",
+        "start": "11.01.2025 17:15",
+        "end": "11.01.2025 18:30",
+        "gross": 116
+      }
+    ],
+    "km": 14,
+    "kmGross": 322
+  },
+  {
+    "bookingStart": "04.01.2025 09:45",
+    "tariff": "COMFORT",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "04.01.2025 09:45",
+        "end": "04.01.2025 14:45",
+        "gross": 925
+      }
+    ],
+    "km": 56,
+    "kmGross": 1288
+  },
+  {
+    "bookingStart": "31.12.2024 13:30",
+    "tariff": "AKTIV",
+    "priceClass": "S",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "31.12.2024 13:30",
+        "end": "31.12.2024 15:00",
+        "gross": 315
+      },
+      {
+        "kind": "cancelled",
+        "start": "31.12.2024 15:00",
+        "end": "31.12.2024 16:15",
+        "gross": 131
+      }
+    ],
+    "km": 16,
+    "kmGross": 416
+  },
+  {
+    "bookingStart": "12.05.2026 18:00",
+    "tariff": "BASIS",
+    "priceClass": "L",
+    "timeItems": [
+      {
+        "kind": "full",
+        "start": "12.05.2026 18:00",
+        "end": "12.05.2026 20:30",
+        "gross": 1788
+      },
+      {
+        "kind": "cancelled",
+        "start": "12.05.2026 20:30",
+        "end": "12.05.2026 21:00",
+        "gross": 179
+      }
+    ],
+    "km": 13,
+    "kmGross": 546
+  }
+]

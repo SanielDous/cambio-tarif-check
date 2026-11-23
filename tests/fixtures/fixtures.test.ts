@@ -212,6 +212,25 @@ describe("trip fixtures", () => {
   });
 });
 
+describe("invoice items", () => {
+  const entries = JSON.parse(readFileSync(fixture("invoice-items.json"), "utf8")) as Record<
+    string,
+    unknown
+  >[];
+
+  it("has one entry per fixture trip with only booking start, tariff, class, items and km", () => {
+    expect(entries).toHaveLength(85);
+    for (const entry of entries) {
+      expect(Object.keys(entry).sort()).toEqual(
+        ["bookingStart", "km", "kmGross", "priceClass", "tariff", "timeItems"].sort(),
+      );
+      for (const item of entry.timeItems as Record<string, unknown>[]) {
+        expect(Object.keys(item).sort()).toEqual(["end", "gross", "kind", "start"]);
+      }
+    }
+  });
+});
+
 const TARIFFS = ["AKTIV", "BASIS", "CAMPUS", "COMFORT"];
 
 describe("calculator fixtures", () => {
@@ -221,8 +240,8 @@ describe("calculator fixtures", () => {
   }
   const entries = JSON.parse(readFileSync(fixture("calculator-fixtures.json"), "utf8")) as Entry[];
 
-  it("has 166 entries with surchargeCents 3", () => {
-    expect(entries).toHaveLength(166);
+  it("has 197 entries with surchargeCents 3", () => {
+    expect(entries).toHaveLength(197);
     expect(new Set(entries.map((e) => e.surchargeCents))).toEqual(new Set([3]));
   });
 
