@@ -1,7 +1,8 @@
 # cambio Tarif-Check – design
 
-Status: **draft, awaiting approval**. Items marked _(assumption)_ are proposals that have not been
-confirmed yet; everything else was decided in the question issues (#2–#7).
+Status: **draft, awaiting approval**. All question issues (#2–#7) are answered and reflected here.
+Items marked _(assumption)_ are unverified readings of cambio's rules, items marked _(my call)_
+were decided by the author of this document.
 
 ## Intent
 
@@ -175,7 +176,10 @@ The export's "Buchungsende" is the actual return time; the booked end is missing
 the app searches the quarter-hour grid for the booked end whose cost in the **actual tariff**
 matches the billed time amount:
 
-- Exact match → trip is "verified". Several matches → the shortest booking is taken.
+- Exact match → trip is "verified". Several matches → the shortest booking is taken and the trip
+  is marked "estimated".
+- For estimated and not reproducible trips the user can enter the booked end by hand in the trip
+  list; the trip is then computed with that value in all tariffs.
 - Match within 1 cent → "verified (rounding)".
 - No match → the trip is "not reproducible": it is still included, using the booking as exported
   (no unused time), and flagged. Its deviation is shown.
@@ -189,7 +193,7 @@ matches the billed time amount:
   also makes the trip "not reproducible".
 
 Other tariffs are then computed with the **same booking behaviour** (same booked end, same early
-return) _(assumption)_.
+return). The tariff is the only thing that changes.
 
 ### 5. Monthly comparison
 
@@ -278,7 +282,7 @@ holds most of the tests; `features/` contains the UI per area; `routes/` the pag
 
 - **Calculator fixtures:** about 200 recorded responses of cambio's price calculator for future
   dates (classes, durations, night, weekend, holidays, day/week caps, km tiers) are stored in the
-  repository _(assumption: recording is acceptable)_, each with its recording date and the
+  repository (recorded once, spread over more than ten minutes), each with its recording date and the
   surcharge valid then. Km costs must match exactly, time costs within one cent (exactly, if the
   calculator's rounding rule can be pinned down). Tests run offline.
 - **Real trips:** the anonymised fixture is produced once from the owner's exports. Every trip is
