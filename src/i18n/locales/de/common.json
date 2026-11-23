@@ -166,6 +166,10 @@
       "too-large": "Die Datei ist größer als 5 MB und wird nicht eingelesen."
     },
     "skipped": "Übersprungen – die Spalten wurden nicht zugeordnet.",
+    "noTrips": {
+      "title": "Diese Datei enthält keine auswertbaren Fahrten.",
+      "headerOnly": "Sie enthält nur die Kopfzeile, aber keine Zeilen darunter."
+    },
     "mapping": {
       "title": "Spalten zuordnen",
       "description": "In „{{file}}“ konnten nicht alle Spalten erkannt werden. Wähle für jedes Feld die passende Spalte.",

@@ -233,6 +233,54 @@ describe("import", () => {
   });
 });
 
+describe("files without trips", () => {
+  const lines = fixtureText.split("\r\n");
+  const header = lines[0] ?? "";
+  /** The first two data lines of the fixture with both amounts removed. */
+  const unbilled = lines.slice(1, 3).map((line) => {
+    const cells = line.split(";");
+    cells[15] = "";
+    cells[16] = "";
+    return cells.join(";");
+  });
+
+  it("says that a file with only the header row has no trips", async () => {
+    const { store, user, input } = setup();
+    await user.upload(input(), csvFile(`${header}\r\n`, "header-only.csv"));
+
+    const message = await screen.findByTestId("file-no-trips");
+    expect(message).toHaveTextContent("header-only.csv");
+    expect(message).toHaveTextContent("Diese Datei enthält keine auswertbaren Fahrten.");
+    expect(message).toHaveTextContent("Sie enthält nur die Kopfzeile, aber keine Zeilen darunter.");
+    expect(store.get(tripsAtom)).toHaveLength(0);
+    expect(input()).toBeEnabled();
+  });
+
+  it("lists the reasons with row numbers when no row of a file could be used", async () => {
+    const { user, input } = setup();
+    await user.upload(input(), csvFile([header, ...unbilled, ""].join("\r\n"), "open.csv"));
+
+    const message = await screen.findByTestId("file-no-trips");
+    expect(message).toHaveTextContent("Diese Datei enthält keine auswertbaren Fahrten.");
+    expect(message).toHaveTextContent("Fahrt noch nicht abgerechnet (2 Zeilen)");
+    expect(message).toHaveTextContent("Zeile 2, 3");
+    expect(message).not.toHaveTextContent("Kopfzeile");
+  });
+
+  it("shows the message for a file without trips next to the summary as well", async () => {
+    const { user, input } = setup();
+    await user.upload(input(), csvFile());
+    await screen.findByTestId("trip-count");
+    await user.upload(input(), csvFile([header, ...unbilled, ""].join("\r\n"), "open.csv"));
+
+    const message = await screen.findByTestId("file-no-trips");
+    expect(message).toHaveTextContent("open.csv");
+    expect(within(message).getByText(/Zeile 2, 3/)).toBeInTheDocument();
+    // Listed once: in the file's own message, not again under the rejected rows of the summary.
+    expect(screen.getAllByText("Fahrt noch nicht abgerechnet")).toHaveLength(1);
+  });
+});
+
 describe("start page notice", () => {
   it("states that the tool is unofficial and links the price date to the explanation", () => {
     setup();

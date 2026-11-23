@@ -166,6 +166,10 @@
       "too-large": "The file is larger than 5 MB and was not read."
     },
     "skipped": "Skipped – the columns were not mapped.",
+    "noTrips": {
+      "title": "This file contains no trips that can be analysed.",
+      "headerOnly": "It contains only the header row and no rows below it."
+    },
     "mapping": {
       "title": "Map columns",
       "description": "Not all columns in “{{file}}” could be recognised. Choose the matching column for each field.",

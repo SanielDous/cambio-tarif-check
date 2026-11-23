@@ -20,6 +20,8 @@ export interface FileReport {
   fileName: string;
   /** Trips read from the file, before duplicates were removed. */
   tripCount: number;
+  /** Data rows below the header (blank rows not counted); 0 for a file with only a header. */
+  rowCount: number;
   problems: RowProblem[];
   error?: ImportError["code"];
   /** The user cancelled the column mapping; nothing was read. */
@@ -105,7 +107,7 @@ const addErrorAtom = atom(
     const report = get(importReportAtom);
     set(importReportAtom, {
       ...report,
-      files: [...report.files, { ...file, tripCount: 0, problems: [], error }],
+      files: [...report.files, { ...file, tripCount: 0, rowCount: 0, problems: [], error }],
     });
   },
 );
@@ -124,7 +126,13 @@ export const importFilesAtom = atom(null, async (get, set, files: File[]) => {
         const { trips, problems } = normalizeRows(table, detection.mapping, PRICE_DATA);
         set(addResultAtom, {
           trips,
-          report: { id, fileName: file.name, tripCount: trips.length, problems },
+          report: {
+            id,
+            fileName: file.name,
+            tripCount: trips.length,
+            rowCount: table.rows.length,
+            problems,
+          },
         });
       } else {
         set(pendingMappingsAtom, [...get(pendingMappingsAtom), { id, table, detection }]);
@@ -151,7 +159,16 @@ export const confirmMappingAtom = atom(null, (get, set, mapping: ColumnMapping) 
   const fileName = pending.table.fileName;
   try {
     const { trips, problems } = normalizeRows(pending.table, mapping, PRICE_DATA);
-    set(addResultAtom, { trips, report: { id, fileName, tripCount: trips.length, problems } });
+    set(addResultAtom, {
+      trips,
+      report: {
+        id,
+        fileName,
+        tripCount: trips.length,
+        rowCount: pending.table.rows.length,
+        problems,
+      },
+    });
   } catch {
     set(addErrorAtom, { id, fileName }, "unreadable");
   }
@@ -171,6 +188,7 @@ export const cancelMappingAtom = atom(null, (get, set) => {
         id: pending.id,
         fileName: pending.table.fileName,
         tripCount: 0,
+        rowCount: 0,
         problems: [],
         skipped: true,
       },
