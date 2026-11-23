@@ -3,6 +3,7 @@ import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
 import { ImportSummary } from "@/features/import/import-summary";
 import { ImportView } from "@/features/import/import-view";
+import { ResultView } from "@/features/result/result-view";
 import { tripsAtom } from "@/state/atoms";
 import { rootRoute } from "./__root";
 
@@ -17,13 +18,13 @@ function IndexPage() {
       </header>
       {hasTrips ? (
         <>
+          <ResultView />
           <ImportSummary />
-          <div data-testid="result-placeholder" className="text-muted-foreground">
-            {t("result.placeholder")}
-          </div>
         </>
       ) : (
-        <ImportView />
+        <div className="max-w-4xl">
+          <ImportView />
+        </div>
       )}
     </div>
   );
