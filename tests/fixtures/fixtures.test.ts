@@ -20,8 +20,11 @@ const PERSONAL_COLUMNS = [
 ];
 
 const ORIGINALS = {
-  csv: ["Fahrten_2024-12-31_2025-12-31.csv", "Fahrten_2025-12-31_2026-11-23.csv"],
-  xlsx: ["Fahrten_2024-12-31_2025-12-31.xlsx"],
+  csv: [
+    "private/exports/Fahrten_2024-12-31_2025-12-31.csv",
+    "private/exports/Fahrten_2025-12-31_2026-11-23.csv",
+  ],
+  xlsx: ["private/exports/Fahrten_2024-12-31_2025-12-31.xlsx"],
 };
 
 /** Splits a portal CSV export into records of fields (handles quoted fields). */
