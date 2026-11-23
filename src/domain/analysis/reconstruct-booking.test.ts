@@ -29,12 +29,23 @@ describe("bookingTimeCost", () => {
   it("charges the used part in full and the unused booked part at 50 %, each rounded", () => {
     // 2.5 h × 7.15 = 17.875 → 17.88; 0.5 h × 7.15 × 50 % = 1.7875 → 1.79.
     expect(
-      bookingTimeCost(tue2026(18), tue2026(20, 30), tue2026(21), 1, "BASIS", "L", PRICE_DATA),
+      bookingTimeCost(
+        tue2026(18),
+        tue2026(20, 30),
+        tue2026(21),
+        1,
+        "BASIS",
+        "L",
+        PRICE_DATA,
+        "Aachen",
+      ),
     ).toBe(1967);
   });
 
   it("charges 50 % of the used part for a share of 0.5", () => {
-    expect(bookingTimeCost(wed(13), wed(20), wed(20), 0.5, "AKTIV", "L", PRICE_DATA)).toBe(1785);
+    expect(
+      bookingTimeCost(wed(13), wed(20), wed(20), 0.5, "AKTIV", "L", PRICE_DATA, "Aachen"),
+    ).toBe(1785);
   });
 });
 
@@ -509,9 +520,9 @@ describe("late return (overrun)", () => {
     expect(r.overrunMinutes).toBe(25);
     expect(r.overrunInferred).toBe(false);
     expect(r.timeDeviation).toBe(0);
-    expect(bookingTimeCost(mon(20), mon(23, 45), mon(23, 45), 1, "BASIS", "L", PRICE_DATA)).toBe(
-      2681,
-    );
+    expect(
+      bookingTimeCost(mon(20), mon(23, 45), mon(23, 45), 1, "BASIS", "L", PRICE_DATA, "Aachen"),
+    ).toBe(2681);
   });
 
   it("accepts an overrun within 1 cent", () => {

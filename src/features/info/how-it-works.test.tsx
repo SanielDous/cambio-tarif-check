@@ -88,6 +88,21 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
     expect(document.body.textContent).not.toMatch(/\{\{|undefined|NaN/);
   });
 
+  it("renders the cities that charge holidays at the weekend price from the price data", async () => {
+    const tables = await setup();
+    const cities = new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(
+      PRICE_DATA.holidayCities,
+    );
+    expect(cities).toContain("Aachen");
+    expect(cities).toContain("Saarbrücken");
+    expect(cities).not.toContain("Hamburg");
+    expect(within(tables).getByTestId("holiday-cities")).toHaveTextContent(cities);
+    expect(screen.getByText(/^(Wochenende|Weekend)/)).toHaveTextContent(cities);
+    const limits = screen.getByRole("region", { name: i18n.t("howItWorks.limits.title") });
+    expect(limits).toHaveTextContent(i18n.t("howItWorks.limits.holidays"));
+    expect(i18n.t("howItWorks.limits.holidays")).toMatch(/Aachen/);
+  });
+
   it("uses real tables with header scopes, one h1 and ordered headings", async () => {
     const tables = await setup();
     expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);

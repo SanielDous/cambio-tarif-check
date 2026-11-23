@@ -62,10 +62,11 @@ export function bookingTimeCost(
   tariff: TariffId,
   cls: PriceClass,
   data: PriceData,
+  city: string | undefined,
 ): number {
-  const used = timeCost(start, chargedUntil, tariff, cls, data);
+  const used = timeCost(start, chargedUntil, tariff, cls, data, city);
   const unused =
-    bookedEnd > chargedUntil ? timeCost(start, bookedEnd, tariff, cls, data) - used : 0;
+    bookedEnd > chargedUntil ? timeCost(start, bookedEnd, tariff, cls, data, city) - used : 0;
   return roundHalfUp(share * used) + roundHalfUp(0.5 * unused);
 }
 
@@ -88,10 +89,11 @@ export function reconstructedTimeCost(
     tariff,
     cls,
     data,
+    trip.city,
   );
   if (r.overrunMinutes === 0) return booking;
   const returned = r.bookedEnd + r.overrunMinutes;
-  return booking + roundHalfUp(overrunCost(r.bookedEnd, returned, tariff, cls, data));
+  return booking + roundHalfUp(overrunCost(r.bookedEnd, returned, tariff, cls, data, trip.city));
 }
 
 interface Overrun {
@@ -114,8 +116,8 @@ interface Overrun {
 function findOverrun(trip: Trip, data: PriceData): Overrun | undefined {
   const { start, end, tariff, priceClass: cls } = trip;
   const deviation = (bookedEnd: LocalMinute, minutes: number) =>
-    roundHalfUp(timeCost(start, bookedEnd, tariff, cls, data)) +
-    roundHalfUp(overrunCost(bookedEnd, bookedEnd + minutes, tariff, cls, data)) -
+    roundHalfUp(timeCost(start, bookedEnd, tariff, cls, data, trip.city)) +
+    roundHalfUp(overrunCost(bookedEnd, bookedEnd + minutes, tariff, cls, data, trip.city)) -
     trip.billedTime;
 
   let near: Overrun | undefined;
@@ -176,7 +178,7 @@ function sameInAllTariffs(
   return (Object.keys(data.tariffs) as TariffId[]).every((tariff) => {
     if (!data.tariffs[tariff].prices[trip.priceClass]) return true;
     const cost = (end: LocalMinute) =>
-      bookingTimeCost(trip.start, chargedUntil, end, 1, tariff, trip.priceClass, data);
+      bookingTimeCost(trip.start, chargedUntil, end, 1, tariff, trip.priceClass, data, trip.city);
     const reference = cost(first);
     return rest.every((end) => cost(end) === reference);
   });
@@ -219,7 +221,7 @@ export function reconstructBooking(
   };
 
   if (trip.km === 0) {
-    const full = timeCost(start, chargedUntil, tariff, cls, data);
+    const full = timeCost(start, chargedUntil, tariff, cls, data, trip.city);
     if (Math.abs(roundHalfUp(full) - trip.billedTime) <= 1) return result("unused", chargedUntil);
     if (Math.abs(roundHalfUp(0.5 * full) - trip.billedTime) <= 1) {
       return result("cancelled", chargedUntil, 0.5);
@@ -238,7 +240,7 @@ export function reconstructBooking(
   let firstNearMatch: LocalMinute | undefined;
   for (let end = chargedUntil; end <= start + MAX_BOOKING_MINUTES; end += QUARTER) {
     const deviation =
-      bookingTimeCost(start, chargedUntil, end, 1, tariff, cls, data) - trip.billedTime;
+      bookingTimeCost(start, chargedUntil, end, 1, tariff, cls, data, trip.city) - trip.billedTime;
     // The cost never falls with a later booked end, so nothing later can match.
     if (deviation > 1) break;
     if (deviation === 0) exact.push(end);

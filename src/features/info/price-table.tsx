@@ -178,6 +178,13 @@ export function PriceTables({ data }: { data: PriceData }) {
             weekCapDays: data.weekCapDays,
           })}
         </p>
+        <p className="text-sm text-muted-foreground" data-testid="holiday-cities">
+          {t("howItWorks.prices.holidayCities", {
+            cities: new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(
+              data.holidayCities,
+            ),
+          })}
+        </p>
       </section>
 
       <section aria-labelledby="price-surcharge" className="space-y-3">

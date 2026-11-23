@@ -13,6 +13,27 @@ export function classPrice(tariff: TariffId, cls: PriceClass, data: PriceData): 
   return price;
 }
 
+const normalisedCities = new WeakMap<PriceData, Set<string>>();
+
+/** Trim, lower-case and strip diacritics, so spelling variants of a city name compare equal. */
+function normaliseCity(city: string): string {
+  return city.trim().normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+}
+
+/**
+ * Whether public holidays are charged at the weekend price in this city. An unknown city or none
+ * means no holiday pricing. Call it once per booking, not per minute.
+ */
+export function chargesHolidays(city: string | undefined, data: PriceData): boolean {
+  if (city === undefined) return false;
+  let set = normalisedCities.get(data);
+  if (!set) {
+    set = new Set(data.holidayCities.map(normaliseCity));
+    normalisedCities.set(data, set);
+  }
+  return set.has(normaliseCity(city));
+}
+
 function isWeekend(weekday: number, hour: number, data: PriceData): boolean {
   const { weekendStart: from, weekendEnd: to } = data;
   if (weekday === from.weekday) return hour >= from.hour;
@@ -22,12 +43,17 @@ function isWeekend(weekday: number, hour: number, data: PriceData): boolean {
 }
 
 /** Hour price for the full hour starting at the full hour `hourStart`. */
-function priceOfHour(hourStart: LocalMinute, price: ClassPrice, data: PriceData): number {
+function priceOfHour(
+  hourStart: LocalMinute,
+  price: ClassPrice,
+  data: PriceData,
+  holidays: boolean,
+): number {
   const day = dayNumber(hourStart);
   const hour = (hourStart - day * DAY) / HOUR;
   if (hour >= data.nightStartHour && hour < data.nightEndHour) return data.nightHourPrice;
   if (price.hourWeekend === price.hourWeekday) return price.hourWeekday;
-  return isWeekend(weekdayOfDay(day), hour, data) || isHolidayDay(day)
+  return isWeekend(weekdayOfDay(day), hour, data) || (holidays && isHolidayDay(day))
     ? price.hourWeekend
     : price.hourWeekday;
 }
@@ -38,8 +64,14 @@ export function hourPriceAt(
   tariff: TariffId,
   cls: PriceClass,
   data: PriceData,
+  city: string | undefined,
 ): number {
-  return priceOfHour(Math.floor(t / HOUR) * HOUR, classPrice(tariff, cls, data), data);
+  return priceOfHour(
+    Math.floor(t / HOUR) * HOUR,
+    classPrice(tariff, cls, data),
+    data,
+    chargesHolidays(city, data),
+  );
 }
 
 /**
@@ -53,10 +85,15 @@ export function overrunCost(
   tariff: TariffId,
   cls: PriceClass,
   data: PriceData,
+  city: string | undefined,
 ): number {
   // cents × 60, as in `uncapped`, divided once at the end.
+  const price = classPrice(tariff, cls, data);
+  const holidays = chargesHolidays(city, data);
   let sum = 0;
-  for (let t = bookedEnd; t < returned; t++) sum += 2 * hourPriceAt(t, tariff, cls, data);
+  for (let t = bookedEnd; t < returned; t++) {
+    sum += 2 * priceOfHour(Math.floor(t / HOUR) * HOUR, price, data, holidays);
+  }
   return sum / HOUR;
 }
 
@@ -70,13 +107,14 @@ function uncapped(
   limit: number,
   price: ClassPrice,
   data: PriceData,
+  holidays: boolean,
 ): number {
   let sum = 0;
   let t = from;
   while (t < to && sum < limit) {
     const hourStart = Math.floor(t / HOUR) * HOUR;
     const next = Math.min(hourStart + HOUR, to);
-    sum += (next - t) * priceOfHour(hourStart, price, data);
+    sum += (next - t) * priceOfHour(hourStart, price, data, holidays);
     t = next;
   }
   return sum;
@@ -89,8 +127,10 @@ export function timeCost(
   tariff: TariffId,
   cls: PriceClass,
   data: PriceData,
+  city: string | undefined,
 ): number {
   const price = classPrice(tariff, cls, data);
+  const holidays = chargesHolidays(city, data);
   // Work in cents × 60 (integers) and divide once at the end to avoid float drift.
   const fullDay = data.dayCapHours * price.hourWeekday * HOUR;
   const dayCap = price.dayCap === undefined ? fullDay : price.dayCap * HOUR;
@@ -101,7 +141,7 @@ export function timeCost(
     let week = 0;
     for (let dayStart = weekStart; dayStart < weekEnd && week < weekCap; dayStart += DAY) {
       const dayEnd = Math.min(dayStart + DAY, weekEnd);
-      week += Math.min(uncapped(dayStart, dayEnd, dayCap, price, data), dayCap);
+      week += Math.min(uncapped(dayStart, dayEnd, dayCap, price, data, holidays), dayCap);
     }
     total += Math.min(week, weekCap);
   }

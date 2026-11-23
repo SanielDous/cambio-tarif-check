@@ -36,7 +36,7 @@
       "intro": "Every trip is priced to the minute with the stored prices:",
       "time": "Time: each minute costs one sixtieth of the hourly price of the vehicle class in that tariff.",
       "night": "Night: from {{nightFrom}} to {{nightTo}} the hour costs {{nightPrice}} in every tariff.",
-      "weekend": "Weekend: from {{weekendFromDay}} {{weekendFromTime}} until {{weekendToDay}} {{weekendToTime}} and on public holidays the weekend price applies. It exists only in {{weekendTariffs}}; in the other tariffs the hourly price is always the same. The hours from {{nightFrom}} to {{nightTo}} cost the night price on weekends and public holidays too.",
+      "weekend": "Weekend: from {{weekendFromDay}} {{weekendFromTime}} until {{weekendToDay}} {{weekendToTime}} the weekend price applies. It exists only in {{weekendTariffs}}; in the other tariffs the hourly price is always the same. Public holidays count like weekends only in some regions, namely in {{holidayCities}}. In all other cities public holidays cost the normal price. The hours from {{nightFrom}} to {{nightTo}} cost the night price on weekends and public holidays too.",
       "caps": "Caps: each 24-hour block counted from the start of the booking costs at most the price of {{dayCapHours}} hours, each 7-day block at most the price of {{weekCapDays}} full days.",
       "km": "Kilometres: the first {{kmBoundary}} km cost the higher price, every further kilometre the cheaper one. A fuel surcharge per kilometre is added, and it changes over time."
     },
@@ -69,13 +69,14 @@
       "credit": "trip credits (“Fahrtguthaben”) that cambio offsets against trip costs – they do not depend on the tariff",
       "business": "business tariffs",
       "before": "trips before {{date}}",
-      "holidays": "Public holidays follow a fixed list that may differ from cambio’s calendar.",
+      "holidays": "Public holidays follow a fixed list that may differ from cambio’s calendar. The regional rule comes from cambio’s price calculator and is confirmed by an invoice only for Aachen.",
       "cap": "How the 50 % charge interacts with the day cap is an assumption."
     },
     "prices": {
       "title": "Price list",
       "asOf": "The prices are as of {{date}}.",
       "outdated": "Prices can change, and this page only knows the date given. Check the current prices with cambio before you switch.",
+      "holidayCities": "Public holidays at the weekend price in: {{cities}}",
       "vat": "All amounts are in euros and include VAT. Kilometre prices are without the fuel surcharge.",
       "tariffs": {
         "title": "Tariffs and fees",
