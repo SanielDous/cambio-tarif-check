@@ -56,8 +56,9 @@ are rendered from this data, and the tests will tell you what else is affected.
 
 ## Fixtures and tools
 
-`tests/fixtures/README.md` describes the anonymised trip exports and the recorded calculator
-responses used by the tests. `tools/anonymize-export.mjs` produces anonymised fixtures from a
+`tests/fixtures/README.md` describes the anonymised trip exports, the recorded calculator
+responses and the invoice line items of the fixture trips (`invoice-items.json`, no personal data)
+used by the tests. `tools/anonymize-export.mjs` produces anonymised fixtures from a
 personal export and `tools/record-calculator.py` records calculator responses; both are run manually
 and locally. Personal source data (portal exports, invoices) belongs in the git-ignored folder
 `private/` and must never be committed.

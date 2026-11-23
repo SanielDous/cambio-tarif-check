@@ -8,6 +8,7 @@ All files here are safe to commit. None of them contains personal data.
 | `trips-2026.csv`           | Anonymised portal CSV export covering 2025-12-31 to 2026-11-23 (1 trip).                                            |
 | `trips-2025.xlsx`          | Anonymised counterpart of the portal's XLSX export for the same period as `trips-2025.csv`, with cell types intact. |
 | `calculator-fixtures.json` | Recorded responses of the public price calculator (197 requests), used to verify the price calculation.             |
+| `invoice-items.json`       | The invoice line items of the 85 trips of `trips-2025.csv` and `trips-2026.csv`, used to verify the reconstruction. |
 
 ## Trip exports
 
@@ -67,6 +68,25 @@ cells stay byte-identical, so every cell type is preserved exactly. The only cel
 changes type of value are emptied comment cells, which become empty text cells (the same
 representation the original uses for empty values). The ZIP container is rewritten with a fixed
 timestamp so the output is deterministic.
+
+## Invoice items
+
+`invoice-items.json` holds, for each of the 85 fixture trips, the time and km line items exactly as
+invoiced. It contains no personal data: no names, vehicles, stations or invoice numbers, only the
+booking start (to match a trip by the export's `Buchungsbeginn`), tariff, class, items and km.
+It is an array of `{ bookingStart, tariff, priceClass, timeItems, km, kmGross }`, where
+`bookingStart` and the items' `start` and `end` are `DD.MM.YYYY HH:mm` and amounts are integer
+cents including VAT. `timeItems` is a list of `{ kind, start, end, gross }`:
+
+- `full` ("Normalfahrt Zeit"): from the booking start to the return rounded up to the quarter hour
+  (or to the booked end when returned late), at the full time price.
+- `cancelled` ("kurzfristig stornierte Zeit"): from there to the booked end, at 50 %. A booking
+  cancelled shortly before its start has only this item, over the whole booking.
+- `overrun` ("Überziehung"): from the booked end to the actual return minute, at double the price.
+- `late` ("Verspätung"): from the booked end to the next quarter hour, at the regular price (a
+  return a few minutes late).
+
+`src/domain/analysis/invoice-items.test.ts` compares them with the reconstruction from the export.
 
 ## Calculator fixtures
 
