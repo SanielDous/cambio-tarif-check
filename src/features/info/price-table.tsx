@@ -1,7 +1,15 @@
 import type { ReactNode } from "react";
+import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { parseIsoDate } from "@/domain/pricing/price-data";
-import { PRICE_CLASSES, TARIFF_IDS, type PriceData, type TariffId } from "@/domain/pricing/types";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { parseIsoDate, pricesAt } from "@/domain/pricing/price-data";
+import {
+  PRICE_CLASSES,
+  TARIFF_IDS,
+  type PriceData,
+  type PriceVersionView,
+  type TariffId,
+} from "@/domain/pricing/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -25,25 +33,36 @@ const td = "px-3 py-2 whitespace-nowrap";
 const tdNum = "px-3 py-2 text-right whitespace-nowrap tabular-nums";
 const table = "w-full border-collapse text-sm";
 const headRow = "border-b bg-muted/50 text-muted-foreground";
+const subtitle = "text-base font-semibold";
 
 /**
- * The complete price data as tables: fees per tariff, prices per tariff and class, fuel
- * surcharge periods. Everything is read from `data`; nothing is typed in here.
+ * The tables of one price version: fees per tariff, prices per tariff and class. `idPrefix` keeps
+ * the ids apart when several versions are shown; `Heading` is the level of their titles.
  */
-export function PriceTables({ data }: { data: PriceData }) {
+function VersionTables({
+  prices,
+  idPrefix,
+  Heading,
+}: {
+  prices: PriceVersionView;
+  idPrefix: string;
+  Heading: "h3" | "h4";
+}) {
   const { t, i18n } = useTranslation("common");
   const lang = i18n.language;
   const money = (cents: number) => formatCurrency(cents, lang);
-  const tariffs = TARIFF_IDS.filter((id) => data.tariffs[id]);
+  const tariffs = TARIFF_IDS.filter((id) => prices.tariffs[id]);
   const name = (id: TariffId) => t(`tariffs.${id}`);
+  const tariffsId = `${idPrefix}-tariffs`;
+  const classesId = `${idPrefix}-classes`;
 
   return (
-    <div className="space-y-8" data-testid="price-tables">
-      <section aria-labelledby="price-tariffs" className="space-y-3">
-        <h3 id="price-tariffs" className="text-base font-semibold">
+    <>
+      <section aria-labelledby={tariffsId} className="space-y-3">
+        <Heading id={tariffsId} className={subtitle}>
           {t("howItWorks.prices.tariffs.title")}
-        </h3>
-        <Scroller labelledBy="price-tariffs">
+        </Heading>
+        <Scroller labelledBy={tariffsId}>
           <table className={table}>
             <caption className="sr-only">{t("howItWorks.prices.tariffs.title")}</caption>
             <thead>
@@ -64,7 +83,7 @@ export function PriceTables({ data }: { data: PriceData }) {
             </thead>
             <tbody>
               {tariffs.map((id) => {
-                const tariff = data.tariffs[id];
+                const tariff = prices.tariffs[id];
                 return (
                   <tr key={id} className="border-b last:border-b-0" data-tariff={id}>
                     <th scope="row" className={th}>
@@ -88,15 +107,15 @@ export function PriceTables({ data }: { data: PriceData }) {
           </table>
         </Scroller>
         <p className="text-sm text-muted-foreground">
-          {t("howItWorks.prices.switching", { fee: money(data.switchingFee) })}
+          {t("howItWorks.prices.switching", { fee: money(prices.switchingFee) })}
         </p>
       </section>
 
-      <section aria-labelledby="price-classes" className="space-y-3">
-        <h3 id="price-classes" className="text-base font-semibold">
+      <section aria-labelledby={classesId} className="space-y-3">
+        <Heading id={classesId} className={subtitle}>
           {t("howItWorks.prices.classes.title")}
-        </h3>
-        <Scroller labelledBy="price-classes">
+        </Heading>
+        <Scroller labelledBy={classesId}>
           <table className={table}>
             <caption className="sr-only">{t("howItWorks.prices.classes.title")}</caption>
             <thead>
@@ -120,21 +139,21 @@ export function PriceTables({ data }: { data: PriceData }) {
                   {t("howItWorks.prices.classes.weekCap")}
                 </th>
                 <th scope="col" className={thNum}>
-                  {t("howItWorks.prices.classes.kmTier1", { boundary: data.kmTierBoundary })}
+                  {t("howItWorks.prices.classes.kmTier1", { boundary: prices.kmTierBoundary })}
                 </th>
                 <th scope="col" className={thNum}>
-                  {t("howItWorks.prices.classes.kmTier2", { next: data.kmTierBoundary + 1 })}
+                  {t("howItWorks.prices.classes.kmTier2", { next: prices.kmTierBoundary + 1 })}
                 </th>
               </tr>
             </thead>
             {tariffs.map((id) => {
-              const classes = PRICE_CLASSES.filter((c) => data.tariffs[id].prices[c]);
+              const classes = PRICE_CLASSES.filter((c) => prices.tariffs[id].prices[c]);
               return (
                 <tbody key={id} className="border-b last:border-b-0" data-tariff={id}>
                   {classes.map((c, index) => {
-                    const price = data.tariffs[id].prices[c];
+                    const price = prices.tariffs[id].prices[c];
                     if (!price) return null;
-                    const fullDay = data.dayCapHours * price.hourWeekday;
+                    const fullDay = prices.dayCapHours * price.hourWeekday;
                     return (
                       <tr key={c} className={cn(index > 0 && "border-t border-dashed")}>
                         {index === 0 && (
@@ -161,7 +180,7 @@ export function PriceTables({ data }: { data: PriceData }) {
                             : money(price.hourWeekend)}
                         </td>
                         <td className={tdNum}>{money(price.dayCap ?? fullDay)}</td>
-                        <td className={tdNum}>{money(data.weekCapDays * fullDay)}</td>
+                        <td className={tdNum}>{money(prices.weekCapDays * fullDay)}</td>
                         <td className={tdNum}>{money(price.kmTier1)}</td>
                         <td className={tdNum}>{money(price.kmTier2)}</td>
                       </tr>
@@ -174,21 +193,70 @@ export function PriceTables({ data }: { data: PriceData }) {
         </Scroller>
         <p className="text-sm text-muted-foreground">
           {t("howItWorks.prices.classes.note", {
-            dayCapHours: data.dayCapHours,
-            weekCapDays: data.weekCapDays,
+            dayCapHours: prices.dayCapHours,
+            weekCapDays: prices.weekCapDays,
           })}
         </p>
         <p className="text-sm text-muted-foreground" data-testid="holiday-cities">
           {t("howItWorks.prices.holidayCities", {
             cities: new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(
-              data.holidayCities,
+              prices.holidayCities,
             ),
           })}
         </p>
       </section>
+    </>
+  );
+}
+
+/** One price version of several, collapsible under its first day; the latest starts open. */
+function VersionSection({ prices, open }: { prices: PriceVersionView; open: boolean }) {
+  const { t, i18n } = useTranslation("common");
+  return (
+    <Collapsible defaultOpen={open} className="group space-y-4" data-version={prices.from}>
+      <h3 className={subtitle}>
+        <CollapsibleTrigger className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">
+          <ChevronRight
+            className="size-4 transition-transform group-data-[state=open]:rotate-90 motion-reduce:transition-none"
+            aria-hidden="true"
+          />
+          {t("howItWorks.prices.validFrom", {
+            date: formatDate(parseIsoDate(prices.from), i18n.language),
+          })}
+        </CollapsibleTrigger>
+      </h3>
+      <CollapsibleContent className="space-y-8">
+        <VersionTables prices={prices} idPrefix={`price-${prices.from}`} Heading="h4" />
+      </CollapsibleContent>
+    </Collapsible>
+  );
+}
+
+/**
+ * The complete price data as tables: fees per tariff, prices per tariff and class, fuel
+ * surcharge periods. Everything is read from `data`; nothing is typed in here. Several price
+ * versions are listed newest first, each under its first day.
+ */
+export function PriceTables({ data }: { data: PriceData }) {
+  const { t, i18n } = useTranslation("common");
+  const lang = i18n.language;
+  const versions = data.versions
+    .map((version) => pricesAt(data, parseIsoDate(version.from)))
+    .reverse();
+  const [latest] = versions;
+
+  return (
+    <div className="space-y-8" data-testid="price-tables">
+      {versions.length === 1 && latest ? (
+        <VersionTables prices={latest} idPrefix="price" Heading="h3" />
+      ) : (
+        versions.map((prices, index) => (
+          <VersionSection key={prices.from} prices={prices} open={index === 0} />
+        ))
+      )}
 
       <section aria-labelledby="price-surcharge" className="space-y-3">
-        <h3 id="price-surcharge" className="text-base font-semibold">
+        <h3 id="price-surcharge" className={subtitle}>
           {t("howItWorks.prices.surcharge.title")}
         </h3>
         <Scroller labelledBy="price-surcharge">

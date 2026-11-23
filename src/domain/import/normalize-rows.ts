@@ -1,5 +1,5 @@
 import { monthKey, parseLocal } from "@/domain/pricing/local-time";
-import { parseIsoDate } from "@/domain/pricing/price-data";
+import { parseIsoDate, pricesAt } from "@/domain/pricing/price-data";
 import {
   PRICE_CLASSES,
   TARIFF_IDS,
@@ -133,7 +133,8 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
   const tariffText = text(cell("tariff")).toUpperCase();
   const tariff = TARIFF_IDS.find((t) => t === tariffText);
   if (tariff === undefined) throw new RowError("unknown-tariff", tariffText);
-  if (!data.tariffs[tariff].prices[priceClass]) {
+  // The price list valid at the return prices the trip.
+  if (!pricesAt(data, end).tariffs[tariff].prices[priceClass]) {
     throw new RowError("unknown-class", `${tariff} offers no class ${priceClass}`);
   }
 

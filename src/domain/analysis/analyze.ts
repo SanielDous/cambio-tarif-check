@@ -1,6 +1,6 @@
 import type { Trip } from "@/domain/import/fields";
 import { dateParts, monthKey } from "@/domain/pricing/local-time";
-import { parseIsoDate } from "@/domain/pricing/price-data";
+import { parseIsoDate, pricesAt, pricesOfMonth } from "@/domain/pricing/price-data";
 import {
   TARIFF_IDS,
   type LocalMinute,
@@ -162,16 +162,20 @@ export function analyze(
   });
 
   const results: TripResult[] = inPeriod.map((trip) => {
-    const reconstruction = reconstructBooking(trip, data, settings.manualBookedEnds[trip.id]);
+    // The price list valid at the return prices the whole trip, in every tariff.
+    const prices = pricesAt(data, trip.end);
+    const reconstruction = reconstructBooking(trip, prices, settings.manualBookedEnds[trip.id]);
     const costs: TripResult["costs"] = {};
     for (const t of TARIFF_IDS) {
-      const c = tripCostInTariff(trip, reconstruction, t, data);
+      const c = tripCostInTariff(trip, reconstruction, t, prices);
       if (c) costs[t] = c;
     }
     return { trip, reconstruction, month: monthKey(trip.end), costs };
   });
 
-  const tariffs = comparedTariffs(inPeriod, settings, data).filter((t) =>
+  // Which tariffs to compare, their order and the break-even fees: the prices of the last month.
+  const rangePrices = pricesOfMonth(data, to);
+  const tariffs = comparedTariffs(inPeriod, settings, rangePrices).filter((t) =>
     results.every((r) => r.costs[t] !== undefined),
   );
   if (tariffs.length === 0) return null;
@@ -201,7 +205,7 @@ export function analyze(
 
   const path = optimalPath(
     months.map((m) => tariffs.map((t) => m.costs[t] ?? 0)),
-    data.switchingFee,
+    months.map((m) => pricesOfMonth(data, m.month).switchingFee),
   );
   const pathTariffs = path.path.map((i) => tariffs[i] as TariffId);
   const switches = pathTariffs.filter((t, i) => i > 0 && t !== pathTariffs[i - 1]).length;
@@ -221,7 +225,7 @@ export function analyze(
   const fees: Partial<Record<TariffId, number>> = {};
   for (const t of tariffs) {
     tripsCost[t] = results.reduce((s, r) => s + (r.costs[t]?.time ?? 0) + (r.costs[t]?.km ?? 0), 0);
-    fees[t] = monthlyFee(t, settings.additionalDrivers, data);
+    fees[t] = monthlyFee(t, settings.additionalDrivers, rangePrices);
   }
 
   const monthly = months.map((m) => {

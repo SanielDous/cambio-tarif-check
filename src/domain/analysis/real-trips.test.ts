@@ -6,7 +6,7 @@ import { detectColumns } from "@/domain/import/detect-columns";
 import { normalizeRows } from "@/domain/import/normalize-rows";
 import { readTable } from "@/domain/import/read-table";
 import { dateParts } from "@/domain/pricing/local-time";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
+import { PRICE_DATA, pricesAt } from "@/domain/pricing/price-data";
 import {
   reconstructBooking,
   type Reconstruction,
@@ -30,7 +30,7 @@ async function readTrips(name: string): Promise<Trip[]> {
 const trips = [...(await readTrips("trips-2025.csv")), ...(await readTrips("trips-2026.csv"))];
 const results: { trip: Trip; r: Reconstruction }[] = trips.map((trip) => ({
   trip,
-  r: reconstructBooking(trip, PRICE_DATA),
+  r: reconstructBooking(trip, pricesAt(PRICE_DATA, trip.end)),
 }));
 
 const fmt = (t: number) => {

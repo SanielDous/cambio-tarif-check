@@ -1,6 +1,6 @@
 import { ArrowLeftRight, Check, CircleDashed, Hourglass, UserRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
+import { latestPrices, PRICE_DATA } from "@/domain/pricing/price-data";
 import { formatCurrency } from "@/lib/format";
 
 /**
@@ -15,7 +15,7 @@ export function MatrixLegend({
   partial?: boolean;
 }) {
   const { t, i18n } = useTranslation("common");
-  const fee = PRICE_DATA.switchingFee;
+  const fee = latestPrices(PRICE_DATA).switchingFee;
   return (
     <ul
       aria-label={t("result.matrix.legend.title")}

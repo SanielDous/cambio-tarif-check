@@ -107,7 +107,8 @@
         "cents_one": "{{count, number}} cent",
         "cents_other": "{{count, number}} cents"
       },
-      "switching": "A tariff change costs {{fee}}."
+      "switching": "A tariff change costs {{fee}}.",
+      "validFrom": "Valid from {{date}}"
     },
     "disclaimer": {
       "title": "Not an official offer",

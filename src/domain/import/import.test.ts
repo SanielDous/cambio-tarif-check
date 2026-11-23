@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { reconstructBooking } from "@/domain/analysis/reconstruct-booking";
 import { dateParts, parseLocal } from "@/domain/pricing/local-time";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
+import { latestPrices, PRICE_DATA } from "@/domain/pricing/price-data";
 import { dedupeTrips } from "./dedupe";
 import { detectColumns } from "./detect-columns";
 import { bookingKey, ImportError, type RawTable, type RowProblem, type Trip } from "./fields";
@@ -343,7 +343,9 @@ describe("normalizeRows", () => {
       expect(problems).toEqual([]);
       expect(trips[0]).toMatchObject({ km: 19, billedTime: 0, billedKm: 0 });
       // Listed, and flagged by the reconstruction, since no price explains it.
-      expect(reconstructBooking(trips[0] as Trip, PRICE_DATA).kind).toBe("not-reproducible");
+      expect(reconstructBooking(trips[0] as Trip, latestPrices(PRICE_DATA)).kind).toBe(
+        "not-reproducible",
+      );
     });
 
     it("reports zero amounts with km as not billed under an unknown or missing status", () => {

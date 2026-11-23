@@ -107,7 +107,8 @@
         "cents_one": "{{count, number}} Cent",
         "cents_other": "{{count, number}} Cent"
       },
-      "switching": "Ein Tarifwechsel kostet {{fee}}."
+      "switching": "Ein Tarifwechsel kostet {{fee}}.",
+      "validFrom": "Gültig ab {{date}}"
     },
     "disclaimer": {
       "title": "Kein offizielles Angebot",
