@@ -70,7 +70,7 @@
       "business": "business tariffs",
       "before": "trips before {{date}}",
       "holidays": "Public holidays follow a fixed list that may differ from cambio’s calendar. The regional rule comes from cambio’s price calculator and is confirmed by an invoice only for Aachen.",
-      "cap": "How the 50 % charge interacts with the day cap is an assumption."
+      "cap": "The unused booked time is charged at half the price of exactly those hours, as a span of its own from the return with its own day cap; this is how the invoices show it. That it counts in full at 50 % even when used and unused time together would exceed the day cap is an assumption."
     },
     "prices": {
       "title": "Price list",

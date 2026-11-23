@@ -70,7 +70,7 @@
       "business": "Geschäftskunden-Tarife",
       "before": "Fahrten vor dem {{date}}",
       "holidays": "Feiertage folgen einer festen Liste, die vom Kalender von cambio abweichen kann. Die regionale Regel stammt aus dem Preisrechner von cambio und ist nur für Aachen durch eine Rechnung bestätigt.",
-      "cap": "Wie die 50 %-Berechnung mit dem Tagesdeckel zusammenspielt, ist eine Annahme."
+      "cap": "Die ungenutzte gebuchte Zeit kostet die Hälfte des Preises genau dieser Stunden, als eigener Zeitraum ab der Rückgabe mit eigenem Tagesdeckel; so steht es auf den Rechnungen. Dass sie auch dann voll mit 50 % zählt, wenn genutzte und ungenutzte Zeit zusammen über dem Tagesdeckel lägen, ist eine Annahme."
     },
     "prices": {
       "title": "Preisstand",
