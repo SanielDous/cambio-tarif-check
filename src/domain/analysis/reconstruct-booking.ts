@@ -112,7 +112,9 @@ export function reconstructBooking(
     bookedEnd: LocalMinute,
     share: 1 | 0.5 = 1,
   ): Reconstruction => ({
-    kind,
+    // A km amount that no surcharge explains makes the whole trip unreproducible; the booked end
+    // found from the time amount is kept as the best estimate. A manual booked end still wins.
+    kind: km.kmDeviation !== 0 && kind !== "manual" ? "not-reproducible" : kind,
     chargedUntil,
     bookedEnd,
     share,
