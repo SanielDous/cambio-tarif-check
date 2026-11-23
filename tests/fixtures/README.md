@@ -7,7 +7,7 @@ All files here are safe to commit. None of them contains personal data.
 | `trips-2025.csv`           | Anonymised portal CSV export covering 2024-12-31 to 2025-12-31 (84 trips).                                          |
 | `trips-2026.csv`           | Anonymised portal CSV export covering 2025-12-31 to 2026-11-23 (1 trip).                                            |
 | `trips-2025.xlsx`          | Anonymised counterpart of the portal's XLSX export for the same period as `trips-2025.csv`, with cell types intact. |
-| `calculator-fixtures.json` | Recorded responses of the public price calculator (166 requests), used to verify the price calculation.             |
+| `calculator-fixtures.json` | Recorded responses of the public price calculator (197 requests), used to verify the price calculation.             |
 
 ## Trip exports
 
@@ -80,6 +80,9 @@ where `start` and `end` are `DD.MM.YYYY HH:mm`, amounts in `costs` are euros as 
 - **The km prices include a surcharge of 3 ct per km** (`surchargeCents: 3`), which the calculator
   adds on top of the tariff's km price.
 - The requests use dates in 2027 and 2028 because the calculator only prices future dates.
+- The last 31 entries (group `short-remainder`, recorded later the same day) probe a remainder of
+  less than an hour after full days. From 7 days on the calculator charges such a remainder, while
+  an invoice did not; `calculator-fixtures.test.ts` therefore skips those 7 entries.
 
 To record again (manually and sparingly; one request pair every 6 seconds, resumable):
 

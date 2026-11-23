@@ -221,8 +221,8 @@ describe("calculator fixtures", () => {
   }
   const entries = JSON.parse(readFileSync(fixture("calculator-fixtures.json"), "utf8")) as Entry[];
 
-  it("has 166 entries with surchargeCents 3", () => {
-    expect(entries).toHaveLength(166);
+  it("has 197 entries with surchargeCents 3", () => {
+    expect(entries).toHaveLength(197);
     expect(new Set(entries.map((e) => e.surchargeCents))).toEqual(new Set([3]));
   });
 

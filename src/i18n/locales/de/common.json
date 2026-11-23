@@ -37,7 +37,7 @@
       "time": "Zeit: Jede Minute kostet ein Sechzigstel des Stundenpreises der Wagenklasse im jeweiligen Tarif.",
       "night": "Nacht: Von {{nightFrom}} bis {{nightTo}} Uhr kostet die Stunde in jedem Tarif {{nightPrice}}.",
       "weekend": "Wochenende: Von {{weekendFromDay}} {{weekendFromTime}} Uhr bis {{weekendToDay}} {{weekendToTime}} Uhr gilt der Wochenendpreis. Den gibt es nur in {{weekendTariffs}}; in den anderen Tarifen ist der Stundenpreis immer gleich. Feiertage zählen nur in einigen Regionen wie Wochenenden, nämlich in {{holidayCities}}. In allen anderen Städten kosten Feiertage den normalen Preis. Die Stunden von {{nightFrom}} bis {{nightTo}} Uhr kosten auch am Wochenende und an Feiertagen den Nachtpreis.",
-      "caps": "Deckel: Jeder 24-Stunden-Block ab Buchungsbeginn kostet höchstens den Preis für {{dayCapHours}} Stunden, jeder 7-Tage-Block höchstens den Preis für {{weekCapDays}} volle Tage.",
+      "caps": "Deckel: Jeder 24-Stunden-Block ab Buchungsbeginn kostet höchstens den Preis für {{dayCapHours}} Stunden, jeder 7-Tage-Block höchstens den Preis für {{weekCapDays}} volle Tage. Bleibt nach vollen Tagen ein Rest von weniger als einer Stunde, kostet er nichts.",
       "km": "Kilometer: Die ersten {{kmBoundary}} km kosten den höheren Preis, jeder weitere Kilometer den günstigeren. Dazu kommt ein Kraftstoffzuschlag je Kilometer, der sich im Lauf der Zeit ändert."
     },
     "earlyReturn": {
