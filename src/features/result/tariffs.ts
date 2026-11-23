@@ -1,9 +1,6 @@
 import type { ReconstructionKind } from "@/domain/analysis/reconstruct-booking";
 import type { TariffId } from "@/domain/pricing/types";
 
-/** All tariffs in the order of their monthly fee. */
-export const ALL_TARIFFS: TariffId[] = ["CAMPUS", "BASIS", "START", "AKTIV", "COMFORT"];
-
 /** The CSS variable holding a tariff's identity colour (see `src/styles/index.css`). */
 export const tariffColorVar = (tariff: TariffId) => `--tariff-${tariff.toLowerCase()}`;
 

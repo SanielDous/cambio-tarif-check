@@ -56,9 +56,9 @@ export const importReportAtom = atom<ImportReport>(EMPTY_REPORT);
 export const settingsAtom = atom<Settings>(DEFAULT_SETTINGS);
 /** Files whose columns could not be detected; the mapping dialog works off the first one. */
 export const pendingMappingsAtom = atom<PendingMapping[]>([]);
-/** Number of files currently being read. */
 /** Bumped by a reset; results of reads started before it are dropped. */
 const generationAtom = atom(0);
+/** Number of files currently being read. */
 export const importBusyAtom = atom(0);
 /** Number of additional drivers set automatically on the first import, 0 if none. */
 export const autoDriversAtom = atom(0);

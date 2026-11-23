@@ -1,9 +1,6 @@
 import type { Trip } from "@/domain/import/fields";
-import type { PriceData, TariffId } from "@/domain/pricing/types";
+import { TARIFF_IDS, type PriceData, type TariffId } from "@/domain/pricing/types";
 import type { MonthRow, Settings, TripResult } from "./analyze";
-
-/** Tie order for tariffs with equal monthly fee. */
-const TIE_ORDER: TariffId[] = ["CAMPUS", "BASIS", "START", "AKTIV", "COMFORT"];
 
 const normCity = (city: string) => city.trim().toLowerCase();
 
@@ -32,7 +29,7 @@ export function comparedTariffs(trips: Trip[], settings: Settings, data: PriceDa
   return result.sort(
     (a, b) =>
       data.tariffs[a].monthlyFee - data.tariffs[b].monthlyFee ||
-      TIE_ORDER.indexOf(a) - TIE_ORDER.indexOf(b),
+      TARIFF_IDS.indexOf(a) - TARIFF_IDS.indexOf(b),
   );
 }
 

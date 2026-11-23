@@ -1,5 +1,10 @@
-export type TariffId = "CAMPUS" | "BASIS" | "START" | "AKTIV" | "COMFORT";
-export type PriceClass = "XS" | "S" | "M" | "L" | "XL";
+/** All tariffs, ordered by monthly fee; tariffs with equal fee keep this order. */
+export const TARIFF_IDS = ["CAMPUS", "BASIS", "START", "AKTIV", "COMFORT"] as const;
+export type TariffId = (typeof TARIFF_IDS)[number];
+
+/** All price classes, from the smallest to the largest vehicle. */
+export const PRICE_CLASSES = ["XS", "S", "M", "L", "XL"] as const;
+export type PriceClass = (typeof PRICE_CLASSES)[number];
 
 /** Minutes since 1970-01-01 00:00 local wall-clock time (naive, no time zone). */
 export type LocalMinute = number;

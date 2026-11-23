@@ -1,9 +1,6 @@
 import { dateParts, toLocalMinute } from "@/domain/pricing/local-time";
 import type { LocalMinute } from "@/domain/pricing/types";
 
-/** The longest booking the reconstruction searches: 30 days after the start. */
-export const MAX_BOOKING_MINUTES = 30 * 24 * 60;
-
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /** "YYYY-MM-DD" of the day containing t, the value format of a date input. */

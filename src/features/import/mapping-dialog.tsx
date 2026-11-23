@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { NativeSelect } from "@/components/ui/native-select";
+import { cellText } from "@/domain/import/cells";
 import {
   FIELD_IDS,
   REQUIRED_FIELDS,
@@ -28,16 +29,6 @@ import {
 
 const OPTIONAL_FIELDS = FIELD_IDS.filter((id) => !REQUIRED_FIELDS.includes(id));
 const PREVIEW_ROWS = 5;
-
-function cellText(cell: unknown): string {
-  if (cell === null || cell === undefined) return "";
-  if (cell instanceof Date) {
-    return Number.isNaN(cell.getTime()) ? "" : cell.toISOString().slice(0, 16).replace("T", " ");
-  }
-  return typeof cell === "string" || typeof cell === "number" || typeof cell === "boolean"
-    ? String(cell)
-    : "";
-}
 
 /** Fields that share a column with another field. */
 function duplicatedFields(mapping: ColumnMapping): FieldId[] {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { toLocalMinute } from "./local-time";
 import { PRICE_DATA, surchargeAt } from "./price-data";
-import type { PriceClass, TariffId } from "./types";
+import { PRICE_CLASSES, TARIFF_IDS, type PriceClass, type TariffId } from "./types";
 
 /** Day and week prices in cents, literally from the research price table. */
 const DAY_WEEK: Record<TariffId, Record<PriceClass, [day: number, week: number]>> = {
@@ -125,5 +125,21 @@ describe("surchargeAt", () => {
   it("switches at midnight of the start date", () => {
     expect(surchargeAt(PRICE_DATA, toLocalMinute(2026, 9, 16, 23, 59))).toBe(4);
     expect(surchargeAt(PRICE_DATA, toLocalMinute(2026, 9, 17, 0, 0))).toBe(5);
+  });
+});
+
+describe("tariff and class lists", () => {
+  it("list every tariff of the price data once, ordered by monthly fee", () => {
+    expect([...TARIFF_IDS].sort()).toEqual(Object.keys(PRICE_DATA.tariffs).sort());
+    const fees = TARIFF_IDS.map((id) => PRICE_DATA.tariffs[id].monthlyFee);
+    expect(fees).toEqual([...fees].sort((a, b) => a - b));
+  });
+
+  it("list every price class a tariff offers", () => {
+    for (const id of TARIFF_IDS) {
+      for (const cls of Object.keys(PRICE_DATA.tariffs[id].prices)) {
+        expect(PRICE_CLASSES).toContain(cls);
+      }
+    }
   });
 });

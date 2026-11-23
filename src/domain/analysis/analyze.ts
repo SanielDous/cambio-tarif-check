@@ -1,7 +1,12 @@
 import type { Trip } from "@/domain/import/fields";
 import { monthKey } from "@/domain/pricing/local-time";
 import { parseIsoDate } from "@/domain/pricing/price-data";
-import type { LocalMinute, PriceData, TariffId } from "@/domain/pricing/types";
+import {
+  TARIFF_IDS,
+  type LocalMinute,
+  type PriceData,
+  type TariffId,
+} from "@/domain/pricing/types";
 import { breakEven, type BreakEven } from "./break-even";
 import { buildMonths, comparedTariffs, monthlyFee } from "./months";
 import {
@@ -78,9 +83,6 @@ const KINDS: ReconstructionKind[] = [
   "not-reproducible",
 ];
 
-/** All tariffs, to price every trip once. */
-const ALL_TARIFFS: TariffId[] = ["CAMPUS", "BASIS", "START", "AKTIV", "COMFORT"];
-
 /**
  * Everything the result page shows. Null if no trip (within the period) exists, or if no
  * compared tariff can price all trips.
@@ -97,7 +99,7 @@ export function analyze(trips: Trip[], settings: Settings, data: PriceData): Ana
   const results: TripResult[] = inPeriod.map((trip) => {
     const reconstruction = reconstructBooking(trip, data, settings.manualBookedEnds[trip.id]);
     const costs: TripResult["costs"] = {};
-    for (const t of ALL_TARIFFS) {
+    for (const t of TARIFF_IDS) {
       const c = tripCostInTariff(trip, reconstruction, t, data);
       if (c) costs[t] = c;
     }

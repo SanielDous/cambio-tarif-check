@@ -31,8 +31,8 @@ export interface Reconstruction {
 
 const QUARTER = 15;
 const DAY = 24 * 60;
-/** Maximum booking length. */
-const MAX_BOOKING = 30 * DAY;
+/** The longest booking: 30 days after the start. The booked-end search ends here. */
+export const MAX_BOOKING_MINUTES = 30 * DAY;
 /** Surcharges tried when the table surcharge does not reproduce the billed km amount. */
 const MAX_DERIVED_SURCHARGE = 10;
 
@@ -139,7 +139,7 @@ export function reconstructBooking(
 
   const exact: LocalMinute[] = [];
   let firstNearMatch: LocalMinute | undefined;
-  for (let end = chargedUntil; end <= start + MAX_BOOKING; end += QUARTER) {
+  for (let end = chargedUntil; end <= start + MAX_BOOKING_MINUTES; end += QUARTER) {
     const deviation =
       bookingTimeCost(start, chargedUntil, end, 1, tariff, cls, data) - trip.billedTime;
     // The cost never falls with a later booked end, so nothing later can match.

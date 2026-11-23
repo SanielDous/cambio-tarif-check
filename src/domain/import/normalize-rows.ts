@@ -1,9 +1,13 @@
-import { parseLocal, toLocalMinute } from "@/domain/pricing/local-time";
-import type { LocalMinute, PriceClass, PriceData, TariffId } from "@/domain/pricing/types";
+import { parseLocal } from "@/domain/pricing/local-time";
+import { parseIsoDate } from "@/domain/pricing/price-data";
+import {
+  PRICE_CLASSES,
+  TARIFF_IDS,
+  type LocalMinute,
+  type PriceData,
+} from "@/domain/pricing/types";
+import { cellText, isBlankCell } from "./cells";
 import type { ColumnMapping, FieldId, RawTable, RowProblem, Trip } from "./fields";
-
-const PRICE_CLASSES: PriceClass[] = ["XS", "S", "M", "L", "XL"];
-const TARIFFS: TariffId[] = ["CAMPUS", "BASIS", "START", "AKTIV", "COMFORT"];
 
 class RowError extends Error {
   readonly reason: RowProblem["reason"];
@@ -15,9 +19,6 @@ class RowError extends Error {
     this.detail = detail;
   }
 }
-
-const isEmpty = (cell: unknown): boolean =>
-  cell === null || cell === undefined || (typeof cell === "string" && cell.trim() === "");
 
 /** Strings are "DD.MM.YYYY HH:MM[:SS]"; Date cells carry the wall clock in their UTC fields. */
 function toTime(cell: unknown, field: FieldId): LocalMinute {
@@ -78,7 +79,7 @@ function hash(text: string): string {
   return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
 }
 
-const text = (cell: unknown): string => (isEmpty(cell) ? "" : String(cell).trim());
+const text = (cell: unknown): string => cellText(cell).trim();
 
 function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
   const cell = (field: FieldId): unknown => {
@@ -86,16 +87,18 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
     return index === undefined ? undefined : row[index];
   };
 
-  if (isEmpty(cell("billedTime")) && isEmpty(cell("billedKm"))) throw new RowError("not-billed");
+  if (isBlankCell(cell("billedTime")) && isBlankCell(cell("billedKm")))
+    throw new RowError("not-billed");
 
   const start = toTime(cell("start"), "start");
   const end = toTime(cell("end"), "end");
   const km = toNumber(cell("km"), "km");
-  const billedTime = isEmpty(cell("billedTime")) ? 0 : toCents(cell("billedTime"), "billedTime");
-  const billedKm = isEmpty(cell("billedKm")) ? 0 : toCents(cell("billedKm"), "billedKm");
+  const billedTime = isBlankCell(cell("billedTime"))
+    ? 0
+    : toCents(cell("billedTime"), "billedTime");
+  const billedKm = isBlankCell(cell("billedKm")) ? 0 : toCents(cell("billedKm"), "billedKm");
   if (end < start) throw new RowError("end-before-start");
-  const [y, m, d] = data.validFrom.split("-").map(Number) as [number, number, number];
-  if (end < toLocalMinute(y, m, d)) throw new RowError("before-price-data", data.validFrom);
+  if (end < parseIsoDate(data.validFrom)) throw new RowError("before-price-data", data.validFrom);
 
   const vehicleClass = text(cell("vehicleClass"));
   const token = vehicleClass.split(/\s+/)[0]?.toUpperCase() ?? "";
@@ -103,7 +106,7 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
   if (priceClass === undefined) throw new RowError("unknown-class", vehicleClass);
 
   const tariffText = text(cell("tariff")).toUpperCase();
-  const tariff = TARIFFS.find((t) => t === tariffText);
+  const tariff = TARIFF_IDS.find((t) => t === tariffText);
   if (tariff === undefined) throw new RowError("unknown-tariff", tariffText);
   if (!data.tariffs[tariff].prices[priceClass]) {
     throw new RowError("unknown-class", `${tariff} offers no class ${priceClass}`);
@@ -137,7 +140,7 @@ export function normalizeRows(
   const trips: Trip[] = [];
   const problems: RowProblem[] = [];
   table.rows.forEach((row, index) => {
-    if (row.every(isEmpty)) return;
+    if (row.every(isBlankCell)) return;
     try {
       trips.push(toTrip(row, mapping, data));
     } catch (error) {
