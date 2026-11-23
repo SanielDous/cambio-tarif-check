@@ -1,0 +1,5525 @@
+[
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 06:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:24:11",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 0.69,
+        "km": 0,
+        "total": 0.69
+      },
+      "BASIS": {
+        "time": 0.82,
+        "km": 0,
+        "total": 0.82
+      },
+      "AKTIV": {
+        "time": 0.52,
+        "km": 0,
+        "total": 0.52
+      },
+      "COMFORT": {
+        "time": 0.46,
+        "km": 0,
+        "total": 0.46
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 06:30",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:24:20",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 1.38,
+        "km": 0,
+        "total": 1.38
+      },
+      "BASIS": {
+        "time": 1.65,
+        "km": 0,
+        "total": 1.65
+      },
+      "AKTIV": {
+        "time": 1.05,
+        "km": 0,
+        "total": 1.05
+      },
+      "COMFORT": {
+        "time": 0.93,
+        "km": 0,
+        "total": 0.93
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 06:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:24:29",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.06,
+        "km": 0,
+        "total": 2.06
+      },
+      "BASIS": {
+        "time": 2.47,
+        "km": 0,
+        "total": 2.47
+      },
+      "AKTIV": {
+        "time": 1.57,
+        "km": 0,
+        "total": 1.57
+      },
+      "COMFORT": {
+        "time": 1.39,
+        "km": 0,
+        "total": 1.39
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 07:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:24:38",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.75,
+        "km": 0,
+        "total": 2.75
+      },
+      "BASIS": {
+        "time": 3.3,
+        "km": 0,
+        "total": 3.3
+      },
+      "AKTIV": {
+        "time": 2.1,
+        "km": 0,
+        "total": 2.1
+      },
+      "COMFORT": {
+        "time": 1.85,
+        "km": 0,
+        "total": 1.85
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 07:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:24:48",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 3.44,
+        "km": 0,
+        "total": 3.44
+      },
+      "BASIS": {
+        "time": 4.13,
+        "km": 0,
+        "total": 4.13
+      },
+      "AKTIV": {
+        "time": 2.63,
+        "km": 0,
+        "total": 2.63
+      },
+      "COMFORT": {
+        "time": 2.31,
+        "km": 0,
+        "total": 2.31
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 07:30",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:24:57",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 4.13,
+        "km": 0,
+        "total": 4.13
+      },
+      "BASIS": {
+        "time": 4.95,
+        "km": 0,
+        "total": 4.95
+      },
+      "AKTIV": {
+        "time": 3.15,
+        "km": 0,
+        "total": 3.15
+      },
+      "COMFORT": {
+        "time": 2.78,
+        "km": 0,
+        "total": 2.78
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 07:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:25:06",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 4.81,
+        "km": 0,
+        "total": 4.81
+      },
+      "BASIS": {
+        "time": 5.77,
+        "km": 0,
+        "total": 5.77
+      },
+      "AKTIV": {
+        "time": 3.67,
+        "km": 0,
+        "total": 3.67
+      },
+      "COMFORT": {
+        "time": 3.24,
+        "km": 0,
+        "total": 3.24
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 08:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:25:16",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 08:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:25:25",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.19,
+        "km": 0,
+        "total": 6.19
+      },
+      "BASIS": {
+        "time": 7.42,
+        "km": 0,
+        "total": 7.42
+      },
+      "AKTIV": {
+        "time": 4.72,
+        "km": 0,
+        "total": 4.72
+      },
+      "COMFORT": {
+        "time": 4.16,
+        "km": 0,
+        "total": 4.16
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 08:30",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:25:34",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.88,
+        "km": 0,
+        "total": 6.88
+      },
+      "BASIS": {
+        "time": 8.25,
+        "km": 0,
+        "total": 8.25
+      },
+      "AKTIV": {
+        "time": 5.25,
+        "km": 0,
+        "total": 5.25
+      },
+      "COMFORT": {
+        "time": 4.63,
+        "km": 0,
+        "total": 4.63
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 08:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:25:44",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 7.56,
+        "km": 0,
+        "total": 7.56
+      },
+      "BASIS": {
+        "time": 9.07,
+        "km": 0,
+        "total": 9.07
+      },
+      "AKTIV": {
+        "time": 5.78,
+        "km": 0,
+        "total": 5.78
+      },
+      "COMFORT": {
+        "time": 5.09,
+        "km": 0,
+        "total": 5.09
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 09:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:25:53",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 0,
+        "total": 8.25
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 0,
+        "total": 9.9
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 0,
+        "total": 6.3
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 0,
+        "total": 5.55
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:26:02",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 11,
+        "km": 0,
+        "total": 11
+      },
+      "BASIS": {
+        "time": 13.2,
+        "km": 0,
+        "total": 13.2
+      },
+      "AKTIV": {
+        "time": 8.4,
+        "km": 0,
+        "total": 8.4
+      },
+      "COMFORT": {
+        "time": 7.4,
+        "km": 0,
+        "total": 7.4
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 11:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:26:11",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 13.75,
+        "km": 0,
+        "total": 13.75
+      },
+      "BASIS": {
+        "time": 16.5,
+        "km": 0,
+        "total": 16.5
+      },
+      "AKTIV": {
+        "time": 10.5,
+        "km": 0,
+        "total": 10.5
+      },
+      "COMFORT": {
+        "time": 9.25,
+        "km": 0,
+        "total": 9.25
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 13:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:26:20",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 19.25,
+        "km": 0,
+        "total": 19.25
+      },
+      "BASIS": {
+        "time": 23.1,
+        "km": 0,
+        "total": 23.1
+      },
+      "AKTIV": {
+        "time": 14.7,
+        "km": 0,
+        "total": 14.7
+      },
+      "COMFORT": {
+        "time": 12.95,
+        "km": 0,
+        "total": 12.95
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 15:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:26:29",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 24.75,
+        "km": 0,
+        "total": 24.75
+      },
+      "BASIS": {
+        "time": 29.7,
+        "km": 0,
+        "total": 29.7
+      },
+      "AKTIV": {
+        "time": 18.9,
+        "km": 0,
+        "total": 18.9
+      },
+      "COMFORT": {
+        "time": 16.65,
+        "km": 0,
+        "total": 16.65
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 17:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:26:38",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 30.25,
+        "km": 0,
+        "total": 30.25
+      },
+      "BASIS": {
+        "time": 36.3,
+        "km": 0,
+        "total": 36.3
+      },
+      "AKTIV": {
+        "time": 23.1,
+        "km": 0,
+        "total": 23.1
+      },
+      "COMFORT": {
+        "time": 20.35,
+        "km": 0,
+        "total": 20.35
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 18:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:26:48",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 25.2,
+        "km": 0,
+        "total": 25.2
+      },
+      "COMFORT": {
+        "time": 22.2,
+        "km": 0,
+        "total": 22.2
+      }
+    }
+  },
+  {
+    "group": "duration",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "02.03.2027 19:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:26:57",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 25.2,
+        "km": 0,
+        "total": 25.2
+      },
+      "COMFORT": {
+        "time": 22.2,
+        "km": 0,
+        "total": 22.2
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 00:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:27:06",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 25.2,
+        "km": 0,
+        "total": 25.2
+      },
+      "COMFORT": {
+        "time": 22.2,
+        "km": 0,
+        "total": 22.2
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 05:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:27:15",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 25.2,
+        "km": 0,
+        "total": 25.2
+      },
+      "COMFORT": {
+        "time": 22.2,
+        "km": 0,
+        "total": 22.2
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 06:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:27:24",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 25.2,
+        "km": 0,
+        "total": 25.2
+      },
+      "COMFORT": {
+        "time": 22.2,
+        "km": 0,
+        "total": 22.2
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 07:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:27:34",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 35.75,
+        "km": 0,
+        "total": 35.75
+      },
+      "BASIS": {
+        "time": 42.9,
+        "km": 0,
+        "total": 42.9
+      },
+      "AKTIV": {
+        "time": 27.3,
+        "km": 0,
+        "total": 27.3
+      },
+      "COMFORT": {
+        "time": 24.05,
+        "km": 0,
+        "total": 24.05
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 08:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:27:43",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 38.5,
+        "km": 0,
+        "total": 38.5
+      },
+      "BASIS": {
+        "time": 46.2,
+        "km": 0,
+        "total": 46.2
+      },
+      "AKTIV": {
+        "time": 29.4,
+        "km": 0,
+        "total": 29.4
+      },
+      "COMFORT": {
+        "time": 25.9,
+        "km": 0,
+        "total": 25.9
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:27:52",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 49.5,
+        "km": 0,
+        "total": 49.5
+      },
+      "BASIS": {
+        "time": 59.4,
+        "km": 0,
+        "total": 59.4
+      },
+      "AKTIV": {
+        "time": 37.8,
+        "km": 0,
+        "total": 37.8
+      },
+      "COMFORT": {
+        "time": 33.3,
+        "km": 0,
+        "total": 33.3
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 16:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:28:01",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 60.5,
+        "km": 0,
+        "total": 60.5
+      },
+      "BASIS": {
+        "time": 72.6,
+        "km": 0,
+        "total": 72.6
+      },
+      "AKTIV": {
+        "time": 46.2,
+        "km": 0,
+        "total": 46.2
+      },
+      "COMFORT": {
+        "time": 40.7,
+        "km": 0,
+        "total": 40.7
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 18:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:28:11",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 66,
+        "km": 0,
+        "total": 66
+      },
+      "BASIS": {
+        "time": 79.2,
+        "km": 0,
+        "total": 79.2
+      },
+      "AKTIV": {
+        "time": 50.4,
+        "km": 0,
+        "total": 50.4
+      },
+      "COMFORT": {
+        "time": 44.4,
+        "km": 0,
+        "total": 44.4
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 19:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:28:20",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 66,
+        "km": 0,
+        "total": 66
+      },
+      "BASIS": {
+        "time": 79.2,
+        "km": 0,
+        "total": 79.2
+      },
+      "AKTIV": {
+        "time": 50.4,
+        "km": 0,
+        "total": 50.4
+      },
+      "COMFORT": {
+        "time": 44.4,
+        "km": 0,
+        "total": 44.4
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "04.03.2027 05:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:28:29",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 66,
+        "km": 0,
+        "total": 66
+      },
+      "BASIS": {
+        "time": 79.2,
+        "km": 0,
+        "total": 79.2
+      },
+      "AKTIV": {
+        "time": 50.4,
+        "km": 0,
+        "total": 50.4
+      },
+      "COMFORT": {
+        "time": 44.4,
+        "km": 0,
+        "total": 44.4
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "04.03.2027 06:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:28:38",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 66,
+        "km": 0,
+        "total": 66
+      },
+      "BASIS": {
+        "time": 79.2,
+        "km": 0,
+        "total": 79.2
+      },
+      "AKTIV": {
+        "time": 50.4,
+        "km": 0,
+        "total": 50.4
+      },
+      "COMFORT": {
+        "time": 44.4,
+        "km": 0,
+        "total": 44.4
+      }
+    }
+  },
+  {
+    "group": "day-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "04.03.2027 07:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:28:47",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 68.75,
+        "km": 0,
+        "total": 68.75
+      },
+      "BASIS": {
+        "time": 82.5,
+        "km": 0,
+        "total": 82.5
+      },
+      "AKTIV": {
+        "time": 52.5,
+        "km": 0,
+        "total": 52.5
+      },
+      "COMFORT": {
+        "time": 46.25,
+        "km": 0,
+        "total": 46.25
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "05.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:28:56",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 99,
+        "km": 0,
+        "total": 99
+      },
+      "BASIS": {
+        "time": 118.8,
+        "km": 0,
+        "total": 118.8
+      },
+      "AKTIV": {
+        "time": 75.6,
+        "km": 0,
+        "total": 75.6
+      },
+      "COMFORT": {
+        "time": 66.6,
+        "km": 0,
+        "total": 66.6
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "07.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:29:06",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 165,
+        "km": 0,
+        "total": 165
+      },
+      "BASIS": {
+        "time": 198,
+        "km": 0,
+        "total": 198
+      },
+      "AKTIV": {
+        "time": 126,
+        "km": 0,
+        "total": 126
+      },
+      "COMFORT": {
+        "time": 111,
+        "km": 0,
+        "total": 111
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "07.03.2027 20:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:29:15",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 196.5,
+        "km": 0,
+        "total": 196.5
+      },
+      "BASIS": {
+        "time": 237.6,
+        "km": 0,
+        "total": 237.6
+      },
+      "AKTIV": {
+        "time": 147,
+        "km": 0,
+        "total": 147
+      },
+      "COMFORT": {
+        "time": 129.5,
+        "km": 0,
+        "total": 129.5
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "08.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:29:25",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 198,
+        "km": 0,
+        "total": 198
+      },
+      "BASIS": {
+        "time": 237.6,
+        "km": 0,
+        "total": 237.6
+      },
+      "AKTIV": {
+        "time": 151.2,
+        "km": 0,
+        "total": 151.2
+      },
+      "COMFORT": {
+        "time": 133.2,
+        "km": 0,
+        "total": 133.2
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "09.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:29:34",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 198,
+        "km": 0,
+        "total": 198
+      },
+      "BASIS": {
+        "time": 237.6,
+        "km": 0,
+        "total": 237.6
+      },
+      "AKTIV": {
+        "time": 151.2,
+        "km": 0,
+        "total": 151.2
+      },
+      "COMFORT": {
+        "time": 133.2,
+        "km": 0,
+        "total": 133.2
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "10.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:29:43",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 231,
+        "km": 0,
+        "total": 231
+      },
+      "BASIS": {
+        "time": 277.2,
+        "km": 0,
+        "total": 277.2
+      },
+      "AKTIV": {
+        "time": 176.4,
+        "km": 0,
+        "total": 176.4
+      },
+      "COMFORT": {
+        "time": 155.4,
+        "km": 0,
+        "total": 155.4
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "12.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:29:52",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 297,
+        "km": 0,
+        "total": 297
+      },
+      "BASIS": {
+        "time": 356.4,
+        "km": 0,
+        "total": 356.4
+      },
+      "AKTIV": {
+        "time": 226.8,
+        "km": 0,
+        "total": 226.8
+      },
+      "COMFORT": {
+        "time": 199.8,
+        "km": 0,
+        "total": 199.8
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "15.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:30:02",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 396,
+        "km": 0,
+        "total": 396
+      },
+      "BASIS": {
+        "time": 475.2,
+        "km": 0,
+        "total": 475.2
+      },
+      "AKTIV": {
+        "time": 302.4,
+        "km": 0,
+        "total": 302.4
+      },
+      "COMFORT": {
+        "time": 266.4,
+        "km": 0,
+        "total": 266.4
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "16.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:30:11",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 396,
+        "km": 0,
+        "total": 396
+      },
+      "BASIS": {
+        "time": 475.2,
+        "km": 0,
+        "total": 475.2
+      },
+      "AKTIV": {
+        "time": 302.4,
+        "km": 0,
+        "total": 302.4
+      },
+      "COMFORT": {
+        "time": 266.4,
+        "km": 0,
+        "total": 266.4
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "17.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:30:22",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 429,
+        "km": 0,
+        "total": 429
+      },
+      "BASIS": {
+        "time": 514.8,
+        "km": 0,
+        "total": 514.8
+      },
+      "AKTIV": {
+        "time": 327.6,
+        "km": 0,
+        "total": 327.6
+      },
+      "COMFORT": {
+        "time": 288.6,
+        "km": 0,
+        "total": 288.6
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "31.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:30:33",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 825,
+        "km": 0,
+        "total": 825
+      },
+      "BASIS": {
+        "time": 990,
+        "km": 0,
+        "total": 990
+      },
+      "AKTIV": {
+        "time": 630,
+        "km": 0,
+        "total": 630
+      },
+      "COMFORT": {
+        "time": 555,
+        "km": 0,
+        "total": 555
+      }
+    }
+  },
+  {
+    "group": "week-cap",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "01.04.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:30:42",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 858,
+        "km": 0,
+        "total": 858
+      },
+      "BASIS": {
+        "time": 1029.6,
+        "km": 0,
+        "total": 1029.6
+      },
+      "AKTIV": {
+        "time": 655.2,
+        "km": 0,
+        "total": 655.2
+      },
+      "COMFORT": {
+        "time": 577.2,
+        "km": 0,
+        "total": 577.2
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 20:00",
+    "end": "02.03.2027 21:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:30:52",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.75,
+        "km": 0,
+        "total": 2.75
+      },
+      "BASIS": {
+        "time": 3.3,
+        "km": 0,
+        "total": 3.3
+      },
+      "AKTIV": {
+        "time": 2.1,
+        "km": 0,
+        "total": 2.1
+      },
+      "COMFORT": {
+        "time": 1.85,
+        "km": 0,
+        "total": 1.85
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 20:00",
+    "end": "02.03.2027 22:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:31:02",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 20:00",
+    "end": "03.03.2027 00:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:31:11",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 11,
+        "km": 0,
+        "total": 11
+      },
+      "BASIS": {
+        "time": 13.2,
+        "km": 0,
+        "total": 13.2
+      },
+      "AKTIV": {
+        "time": 8.4,
+        "km": 0,
+        "total": 8.4
+      },
+      "COMFORT": {
+        "time": 7.4,
+        "km": 0,
+        "total": 7.4
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 20:00",
+    "end": "03.03.2027 06:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:31:20",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 14,
+        "km": 0,
+        "total": 14
+      },
+      "BASIS": {
+        "time": 16.2,
+        "km": 0,
+        "total": 16.2
+      },
+      "AKTIV": {
+        "time": 11.4,
+        "km": 0,
+        "total": 11.4
+      },
+      "COMFORT": {
+        "time": 10.4,
+        "km": 0,
+        "total": 10.4
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 22:00",
+    "end": "02.03.2027 23:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:31:30",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.75,
+        "km": 0,
+        "total": 2.75
+      },
+      "BASIS": {
+        "time": 3.3,
+        "km": 0,
+        "total": 3.3
+      },
+      "AKTIV": {
+        "time": 2.1,
+        "km": 0,
+        "total": 2.1
+      },
+      "COMFORT": {
+        "time": 1.85,
+        "km": 0,
+        "total": 1.85
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 22:00",
+    "end": "03.03.2027 00:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:31:41",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 22:00",
+    "end": "03.03.2027 02:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:31:50",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.5,
+        "km": 0,
+        "total": 6.5
+      },
+      "BASIS": {
+        "time": 7.6,
+        "km": 0,
+        "total": 7.6
+      },
+      "AKTIV": {
+        "time": 5.2,
+        "km": 0,
+        "total": 5.2
+      },
+      "COMFORT": {
+        "time": 4.7,
+        "km": 0,
+        "total": 4.7
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 22:00",
+    "end": "03.03.2027 08:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:31:59",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 14,
+        "km": 0,
+        "total": 14
+      },
+      "BASIS": {
+        "time": 16.2,
+        "km": 0,
+        "total": 16.2
+      },
+      "AKTIV": {
+        "time": 11.4,
+        "km": 0,
+        "total": 11.4
+      },
+      "COMFORT": {
+        "time": 10.4,
+        "km": 0,
+        "total": 10.4
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 23:00",
+    "end": "03.03.2027 00:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:32:08",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.75,
+        "km": 0,
+        "total": 2.75
+      },
+      "BASIS": {
+        "time": 3.3,
+        "km": 0,
+        "total": 3.3
+      },
+      "AKTIV": {
+        "time": 2.1,
+        "km": 0,
+        "total": 2.1
+      },
+      "COMFORT": {
+        "time": 1.85,
+        "km": 0,
+        "total": 1.85
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 23:00",
+    "end": "03.03.2027 01:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:32:18",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 3.25,
+        "km": 0,
+        "total": 3.25
+      },
+      "BASIS": {
+        "time": 3.8,
+        "km": 0,
+        "total": 3.8
+      },
+      "AKTIV": {
+        "time": 2.6,
+        "km": 0,
+        "total": 2.6
+      },
+      "COMFORT": {
+        "time": 2.35,
+        "km": 0,
+        "total": 2.35
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 23:00",
+    "end": "03.03.2027 03:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:32:29",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 4.25,
+        "km": 0,
+        "total": 4.25
+      },
+      "BASIS": {
+        "time": 4.8,
+        "km": 0,
+        "total": 4.8
+      },
+      "AKTIV": {
+        "time": 3.6,
+        "km": 0,
+        "total": 3.6
+      },
+      "COMFORT": {
+        "time": 3.35,
+        "km": 0,
+        "total": 3.35
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 23:00",
+    "end": "03.03.2027 09:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:32:40",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 14,
+        "km": 0,
+        "total": 14
+      },
+      "BASIS": {
+        "time": 16.2,
+        "km": 0,
+        "total": 16.2
+      },
+      "AKTIV": {
+        "time": 11.4,
+        "km": 0,
+        "total": 11.4
+      },
+      "COMFORT": {
+        "time": 10.4,
+        "km": 0,
+        "total": 10.4
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 23:30",
+    "end": "03.03.2027 00:30",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:32:49",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 1.63,
+        "km": 0,
+        "total": 1.63
+      },
+      "BASIS": {
+        "time": 1.9,
+        "km": 0,
+        "total": 1.9
+      },
+      "AKTIV": {
+        "time": 1.3,
+        "km": 0,
+        "total": 1.3
+      },
+      "COMFORT": {
+        "time": 1.17,
+        "km": 0,
+        "total": 1.17
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 23:30",
+    "end": "03.03.2027 01:30",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:32:59",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.13,
+        "km": 0,
+        "total": 2.13
+      },
+      "BASIS": {
+        "time": 2.4,
+        "km": 0,
+        "total": 2.4
+      },
+      "AKTIV": {
+        "time": 1.8,
+        "km": 0,
+        "total": 1.8
+      },
+      "COMFORT": {
+        "time": 1.67,
+        "km": 0,
+        "total": 1.67
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 23:30",
+    "end": "03.03.2027 03:30",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:33:11",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 3.13,
+        "km": 0,
+        "total": 3.13
+      },
+      "BASIS": {
+        "time": 3.4,
+        "km": 0,
+        "total": 3.4
+      },
+      "AKTIV": {
+        "time": 2.8,
+        "km": 0,
+        "total": 2.8
+      },
+      "COMFORT": {
+        "time": 2.67,
+        "km": 0,
+        "total": 2.67
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 23:30",
+    "end": "03.03.2027 09:30",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:33:21",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 14,
+        "km": 0,
+        "total": 14
+      },
+      "BASIS": {
+        "time": 16.2,
+        "km": 0,
+        "total": 16.2
+      },
+      "AKTIV": {
+        "time": 11.4,
+        "km": 0,
+        "total": 11.4
+      },
+      "COMFORT": {
+        "time": 10.4,
+        "km": 0,
+        "total": 10.4
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 00:00",
+    "end": "03.03.2027 01:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:33:31",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      },
+      "BASIS": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      },
+      "AKTIV": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      },
+      "COMFORT": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 00:00",
+    "end": "03.03.2027 03:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:33:42",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 1.5,
+        "km": 0,
+        "total": 1.5
+      },
+      "BASIS": {
+        "time": 1.5,
+        "km": 0,
+        "total": 1.5
+      },
+      "AKTIV": {
+        "time": 1.5,
+        "km": 0,
+        "total": 1.5
+      },
+      "COMFORT": {
+        "time": 1.5,
+        "km": 0,
+        "total": 1.5
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 03:00",
+    "end": "03.03.2027 04:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:33:54",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      },
+      "BASIS": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      },
+      "AKTIV": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      },
+      "COMFORT": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 03:00",
+    "end": "03.03.2027 06:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:34:03",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 1.5,
+        "km": 0,
+        "total": 1.5
+      },
+      "BASIS": {
+        "time": 1.5,
+        "km": 0,
+        "total": 1.5
+      },
+      "AKTIV": {
+        "time": 1.5,
+        "km": 0,
+        "total": 1.5
+      },
+      "COMFORT": {
+        "time": 1.5,
+        "km": 0,
+        "total": 1.5
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 05:00",
+    "end": "03.03.2027 06:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:34:13",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      },
+      "BASIS": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      },
+      "AKTIV": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      },
+      "COMFORT": {
+        "time": 0.5,
+        "km": 0,
+        "total": 0.5
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 05:00",
+    "end": "03.03.2027 08:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:34:24",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6,
+        "km": 0,
+        "total": 6
+      },
+      "BASIS": {
+        "time": 7.1,
+        "km": 0,
+        "total": 7.1
+      },
+      "AKTIV": {
+        "time": 4.7,
+        "km": 0,
+        "total": 4.7
+      },
+      "COMFORT": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 05:30",
+    "end": "03.03.2027 06:30",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:34:34",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 1.63,
+        "km": 0,
+        "total": 1.63
+      },
+      "BASIS": {
+        "time": 1.9,
+        "km": 0,
+        "total": 1.9
+      },
+      "AKTIV": {
+        "time": 1.3,
+        "km": 0,
+        "total": 1.3
+      },
+      "COMFORT": {
+        "time": 1.17,
+        "km": 0,
+        "total": 1.17
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 05:30",
+    "end": "03.03.2027 08:30",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:34:44",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 7.13,
+        "km": 0,
+        "total": 7.13
+      },
+      "BASIS": {
+        "time": 8.5,
+        "km": 0,
+        "total": 8.5
+      },
+      "AKTIV": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "COMFORT": {
+        "time": 4.88,
+        "km": 0,
+        "total": 4.88
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 05:45",
+    "end": "03.03.2027 06:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:34:53",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.19,
+        "km": 0,
+        "total": 2.19
+      },
+      "BASIS": {
+        "time": 2.6,
+        "km": 0,
+        "total": 2.6
+      },
+      "AKTIV": {
+        "time": 1.7,
+        "km": 0,
+        "total": 1.7
+      },
+      "COMFORT": {
+        "time": 1.51,
+        "km": 0,
+        "total": 1.51
+      }
+    }
+  },
+  {
+    "group": "night",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.03.2027 05:45",
+    "end": "03.03.2027 08:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:35:03",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 7.69,
+        "km": 0,
+        "total": 7.69
+      },
+      "BASIS": {
+        "time": 9.2,
+        "km": 0,
+        "total": 9.2
+      },
+      "AKTIV": {
+        "time": 5.9,
+        "km": 0,
+        "total": 5.9
+      },
+      "COMFORT": {
+        "time": 5.21,
+        "km": 0,
+        "total": 5.21
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.03.2027 10:00",
+    "end": "05.03.2027 11:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:35:12",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.75,
+        "km": 0,
+        "total": 2.75
+      },
+      "BASIS": {
+        "time": 3.3,
+        "km": 0,
+        "total": 3.3
+      },
+      "AKTIV": {
+        "time": 2.1,
+        "km": 0,
+        "total": 2.1
+      },
+      "COMFORT": {
+        "time": 1.85,
+        "km": 0,
+        "total": 1.85
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.03.2027 11:00",
+    "end": "05.03.2027 13:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:35:21",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.9,
+        "km": 0,
+        "total": 5.9
+      },
+      "BASIS": {
+        "time": 7.45,
+        "km": 0,
+        "total": 7.45
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.03.2027 11:45",
+    "end": "05.03.2027 12:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:35:31",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 1.48,
+        "km": 0,
+        "total": 1.48
+      },
+      "BASIS": {
+        "time": 1.86,
+        "km": 0,
+        "total": 1.86
+      },
+      "AKTIV": {
+        "time": 1.05,
+        "km": 0,
+        "total": 1.05
+      },
+      "COMFORT": {
+        "time": 0.93,
+        "km": 0,
+        "total": 0.93
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.03.2027 12:00",
+    "end": "05.03.2027 13:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:35:40",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 3.15,
+        "km": 0,
+        "total": 3.15
+      },
+      "BASIS": {
+        "time": 4.15,
+        "km": 0,
+        "total": 4.15
+      },
+      "AKTIV": {
+        "time": 2.1,
+        "km": 0,
+        "total": 2.1
+      },
+      "COMFORT": {
+        "time": 1.85,
+        "km": 0,
+        "total": 1.85
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.03.2027 18:00",
+    "end": "06.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:35:49",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 24,
+        "km": 0,
+        "total": 24
+      },
+      "COMFORT": {
+        "time": 21.5,
+        "km": 0,
+        "total": 21.5
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.03.2027 06:00",
+    "end": "06.03.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:35:59",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 51.9,
+        "km": 0,
+        "total": 51.9
+      },
+      "BASIS": {
+        "time": 64.5,
+        "km": 0,
+        "total": 64.5
+      },
+      "AKTIV": {
+        "time": 37.8,
+        "km": 0,
+        "total": 37.8
+      },
+      "COMFORT": {
+        "time": 33.3,
+        "km": 0,
+        "total": 33.3
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "04.03.2027 20:00",
+    "end": "05.03.2027 14:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:36:08",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 25.2,
+        "km": 0,
+        "total": 25.2
+      },
+      "COMFORT": {
+        "time": 22.2,
+        "km": 0,
+        "total": 22.2
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.03.2027 06:00",
+    "end": "06.03.2027 16:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:36:17",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 31.5,
+        "km": 0,
+        "total": 31.5
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 21,
+        "km": 0,
+        "total": 21
+      },
+      "COMFORT": {
+        "time": 18.5,
+        "km": 0,
+        "total": 18.5
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.03.2027 06:00",
+    "end": "06.03.2027 18:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:36:26",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 25.2,
+        "km": 0,
+        "total": 25.2
+      },
+      "COMFORT": {
+        "time": 22.2,
+        "km": 0,
+        "total": 22.2
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.03.2027 10:00",
+    "end": "07.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:36:35",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 25.2,
+        "km": 0,
+        "total": 25.2
+      },
+      "COMFORT": {
+        "time": 22.2,
+        "km": 0,
+        "total": 22.2
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.03.2027 10:00",
+    "end": "06.03.2027 14:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:36:44",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 12.6,
+        "km": 0,
+        "total": 12.6
+      },
+      "BASIS": {
+        "time": 16.6,
+        "km": 0,
+        "total": 16.6
+      },
+      "AKTIV": {
+        "time": 8.4,
+        "km": 0,
+        "total": 8.4
+      },
+      "COMFORT": {
+        "time": 7.4,
+        "km": 0,
+        "total": 7.4
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "07.03.2027 20:00",
+    "end": "08.03.2027 08:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:36:53",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 21.1,
+        "km": 0,
+        "total": 21.1
+      },
+      "BASIS": {
+        "time": 26.2,
+        "km": 0,
+        "total": 26.2
+      },
+      "AKTIV": {
+        "time": 15.6,
+        "km": 0,
+        "total": 15.6
+      },
+      "COMFORT": {
+        "time": 14.1,
+        "km": 0,
+        "total": 14.1
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "08.03.2027 05:00",
+    "end": "08.03.2027 07:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:37:03",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 3.25,
+        "km": 0,
+        "total": 3.25
+      },
+      "BASIS": {
+        "time": 3.8,
+        "km": 0,
+        "total": 3.8
+      },
+      "AKTIV": {
+        "time": 2.6,
+        "km": 0,
+        "total": 2.6
+      },
+      "COMFORT": {
+        "time": 2.35,
+        "km": 0,
+        "total": 2.35
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "08.03.2027 06:00",
+    "end": "08.03.2027 07:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:37:12",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.75,
+        "km": 0,
+        "total": 2.75
+      },
+      "BASIS": {
+        "time": 3.3,
+        "km": 0,
+        "total": 3.3
+      },
+      "AKTIV": {
+        "time": 2.1,
+        "km": 0,
+        "total": 2.1
+      },
+      "COMFORT": {
+        "time": 1.85,
+        "km": 0,
+        "total": 1.85
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "08.03.2027 05:45",
+    "end": "08.03.2027 06:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:37:21",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 0.81,
+        "km": 0,
+        "total": 0.81
+      },
+      "BASIS": {
+        "time": 0.95,
+        "km": 0,
+        "total": 0.95
+      },
+      "AKTIV": {
+        "time": 0.65,
+        "km": 0,
+        "total": 0.65
+      },
+      "COMFORT": {
+        "time": 0.59,
+        "km": 0,
+        "total": 0.59
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.03.2027 10:00",
+    "end": "09.03.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:37:30",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 132,
+        "km": 0,
+        "total": 132
+      },
+      "BASIS": {
+        "time": 158.4,
+        "km": 0,
+        "total": 158.4
+      },
+      "AKTIV": {
+        "time": 100.8,
+        "km": 0,
+        "total": 100.8
+      },
+      "COMFORT": {
+        "time": 88.8,
+        "km": 0,
+        "total": 88.8
+      }
+    }
+  },
+  {
+    "group": "weekend",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.03.2027 08:00",
+    "end": "15.03.2027 08:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:37:39",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 264,
+        "km": 0,
+        "total": 264
+      },
+      "BASIS": {
+        "time": 316.8,
+        "km": 0,
+        "total": 316.8
+      },
+      "AKTIV": {
+        "time": 201.6,
+        "km": 0,
+        "total": 201.6
+      },
+      "COMFORT": {
+        "time": 177.6,
+        "km": 0,
+        "total": 177.6
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "01.01.2027 10:00",
+    "end": "01.01.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:37:48",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.3,
+        "km": 0,
+        "total": 6.3
+      },
+      "BASIS": {
+        "time": 8.3,
+        "km": 0,
+        "total": 8.3
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "26.03.2027 10:00",
+    "end": "26.03.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:37:57",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.3,
+        "km": 0,
+        "total": 6.3
+      },
+      "BASIS": {
+        "time": 8.3,
+        "km": 0,
+        "total": 8.3
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "29.03.2027 10:00",
+    "end": "29.03.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:38:07",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.3,
+        "km": 0,
+        "total": 6.3
+      },
+      "BASIS": {
+        "time": 8.3,
+        "km": 0,
+        "total": 8.3
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.05.2027 10:00",
+    "end": "06.05.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:38:16",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.3,
+        "km": 0,
+        "total": 6.3
+      },
+      "BASIS": {
+        "time": 8.3,
+        "km": 0,
+        "total": 8.3
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "17.05.2027 10:00",
+    "end": "17.05.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:38:26",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.3,
+        "km": 0,
+        "total": 6.3
+      },
+      "BASIS": {
+        "time": 8.3,
+        "km": 0,
+        "total": 8.3
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "01.05.2028 10:00",
+    "end": "01.05.2028 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:38:35",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "03.10.2028 10:00",
+    "end": "03.10.2028 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:38:44",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "25.12.2028 10:00",
+    "end": "25.12.2028 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:38:53",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "26.12.2028 10:00",
+    "end": "26.12.2028 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:39:03",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.01.2027 10:00",
+    "end": "06.01.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:39:12",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "27.05.2027 10:00",
+    "end": "27.05.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:39:21",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "01.11.2027 10:00",
+    "end": "01.11.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:39:30",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.3,
+        "km": 0,
+        "total": 6.3
+      },
+      "BASIS": {
+        "time": 8.3,
+        "km": 0,
+        "total": 8.3
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "24.12.2027 10:00",
+    "end": "24.12.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:39:39",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "31.12.2027 10:00",
+    "end": "31.12.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:39:48",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "31.10.2028 10:00",
+    "end": "31.10.2028 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:39:57",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.05.2027 18:00",
+    "end": "05.05.2027 22:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:40:06",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 11,
+        "km": 0,
+        "total": 11
+      },
+      "BASIS": {
+        "time": 13.2,
+        "km": 0,
+        "total": 13.2
+      },
+      "AKTIV": {
+        "time": 8.4,
+        "km": 0,
+        "total": 8.4
+      },
+      "COMFORT": {
+        "time": 7.4,
+        "km": 0,
+        "total": 7.4
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.05.2027 22:00",
+    "end": "06.05.2027 02:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:40:15",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.5,
+        "km": 0,
+        "total": 6.5
+      },
+      "BASIS": {
+        "time": 7.6,
+        "km": 0,
+        "total": 7.6
+      },
+      "AKTIV": {
+        "time": 5.2,
+        "km": 0,
+        "total": 5.2
+      },
+      "COMFORT": {
+        "time": 4.7,
+        "km": 0,
+        "total": 4.7
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.05.2027 00:00",
+    "end": "06.05.2027 08:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:40:24",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 9.3,
+        "km": 0,
+        "total": 9.3
+      },
+      "BASIS": {
+        "time": 11.3,
+        "km": 0,
+        "total": 11.3
+      },
+      "AKTIV": {
+        "time": 7.2,
+        "km": 0,
+        "total": 7.2
+      },
+      "COMFORT": {
+        "time": 6.7,
+        "km": 0,
+        "total": 6.7
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.05.2027 05:00",
+    "end": "06.05.2027 07:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:40:33",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 3.65,
+        "km": 0,
+        "total": 3.65
+      },
+      "BASIS": {
+        "time": 4.65,
+        "km": 0,
+        "total": 4.65
+      },
+      "AKTIV": {
+        "time": 2.6,
+        "km": 0,
+        "total": 2.6
+      },
+      "COMFORT": {
+        "time": 2.35,
+        "km": 0,
+        "total": 2.35
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.05.2027 22:00",
+    "end": "07.05.2027 02:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:40:42",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 7.3,
+        "km": 0,
+        "total": 7.3
+      },
+      "BASIS": {
+        "time": 9.3,
+        "km": 0,
+        "total": 9.3
+      },
+      "AKTIV": {
+        "time": 5.2,
+        "km": 0,
+        "total": 5.2
+      },
+      "COMFORT": {
+        "time": 4.7,
+        "km": 0,
+        "total": 4.7
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "07.05.2027 00:00",
+    "end": "07.05.2027 08:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:40:51",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.5,
+        "km": 0,
+        "total": 8.5
+      },
+      "BASIS": {
+        "time": 9.6,
+        "km": 0,
+        "total": 9.6
+      },
+      "AKTIV": {
+        "time": 7.2,
+        "km": 0,
+        "total": 7.2
+      },
+      "COMFORT": {
+        "time": 6.7,
+        "km": 0,
+        "total": 6.7
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "07.05.2027 05:00",
+    "end": "07.05.2027 08:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:41:01",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6,
+        "km": 0,
+        "total": 6
+      },
+      "BASIS": {
+        "time": 7.1,
+        "km": 0,
+        "total": 7.1
+      },
+      "AKTIV": {
+        "time": 4.7,
+        "km": 0,
+        "total": 4.7
+      },
+      "COMFORT": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "07.05.2027 08:00",
+    "end": "07.05.2027 10:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:41:10",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "BASIS": {
+        "time": 6.6,
+        "km": 0,
+        "total": 6.6
+      },
+      "AKTIV": {
+        "time": 4.2,
+        "km": 0,
+        "total": 4.2
+      },
+      "COMFORT": {
+        "time": 3.7,
+        "km": 0,
+        "total": 3.7
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "06.05.2027 06:00",
+    "end": "06.05.2027 18:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:41:19",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33,
+        "km": 0,
+        "total": 33
+      },
+      "BASIS": {
+        "time": 39.6,
+        "km": 0,
+        "total": 39.6
+      },
+      "AKTIV": {
+        "time": 25.2,
+        "km": 0,
+        "total": 25.2
+      },
+      "COMFORT": {
+        "time": 22.2,
+        "km": 0,
+        "total": 22.2
+      }
+    }
+  },
+  {
+    "group": "holiday-edge",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "05.05.2027 12:00",
+    "end": "07.05.2027 12:00",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:41:28",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 66,
+        "km": 0,
+        "total": 66
+      },
+      "BASIS": {
+        "time": 79.2,
+        "km": 0,
+        "total": 79.2
+      },
+      "AKTIV": {
+        "time": 50.4,
+        "km": 0,
+        "total": 50.4
+      },
+      "COMFORT": {
+        "time": 44.4,
+        "km": 0,
+        "total": 44.4
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 1,
+    "recordedAt": "2026-11-23T05:41:37",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 0.29,
+        "total": 8.54
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 0.31,
+        "total": 10.21
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 0.28,
+        "total": 6.58
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 0.25,
+        "total": 5.8
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 50,
+    "recordedAt": "2026-11-23T05:41:46",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 14.5,
+        "total": 22.75
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 15.5,
+        "total": 25.4
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 14,
+        "total": 20.3
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 12.5,
+        "total": 18.05
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 99,
+    "recordedAt": "2026-11-23T05:41:55",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 28.71,
+        "total": 36.96
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 30.69,
+        "total": 40.59
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 27.72,
+        "total": 34.02
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 24.75,
+        "total": 30.3
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 100,
+    "recordedAt": "2026-11-23T05:42:04",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 29,
+        "total": 37.25
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 31,
+        "total": 40.9
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 28,
+        "total": 34.3
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 25,
+        "total": 30.55
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 101,
+    "recordedAt": "2026-11-23T05:42:13",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 29.23,
+        "total": 37.48
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 31.24,
+        "total": 41.14
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 28.22,
+        "total": 34.52
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 25.19,
+        "total": 30.74
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 150,
+    "recordedAt": "2026-11-23T05:42:22",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 40.5,
+        "total": 48.75
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 43,
+        "total": 52.9
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 39,
+        "total": 45.3
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 34.5,
+        "total": 40.05
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 250,
+    "recordedAt": "2026-11-23T05:42:31",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 63.5,
+        "total": 71.75
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 67,
+        "total": 76.9
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 61,
+        "total": 67.3
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 53.5,
+        "total": 59.05
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 500,
+    "recordedAt": "2026-11-23T05:42:40",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 121,
+        "total": 129.25
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 127,
+        "total": 136.9
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 116,
+        "total": 122.3
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 101,
+        "total": 106.55
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 1000,
+    "recordedAt": "2026-11-23T05:42:49",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 236,
+        "total": 244.25
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 247,
+        "total": 256.9
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 226,
+        "total": 232.3
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 196,
+        "total": 201.55
+      }
+    }
+  },
+  {
+    "group": "km",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 1500,
+    "recordedAt": "2026-11-23T05:42:59",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 351,
+        "total": 359.25
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 367,
+        "total": 376.9
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 336,
+        "total": 342.3
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 291,
+        "total": 296.55
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-455",
+    "priceClass": "M",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 10:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:43:08",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 0.96,
+        "km": 0,
+        "total": 0.96
+      },
+      "BASIS": {
+        "time": 1.08,
+        "km": 0,
+        "total": 1.08
+      },
+      "AKTIV": {
+        "time": 0.65,
+        "km": 0,
+        "total": 0.65
+      },
+      "COMFORT": {
+        "time": 0.59,
+        "km": 0,
+        "total": 0.59
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-455",
+    "priceClass": "M",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 10:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:43:17",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.89,
+        "km": 0,
+        "total": 2.89
+      },
+      "BASIS": {
+        "time": 3.23,
+        "km": 0,
+        "total": 3.23
+      },
+      "AKTIV": {
+        "time": 1.95,
+        "km": 0,
+        "total": 1.95
+      },
+      "COMFORT": {
+        "time": 1.76,
+        "km": 0,
+        "total": 1.76
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-455",
+    "priceClass": "M",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 11:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:43:26",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 4.81,
+        "km": 0,
+        "total": 4.81
+      },
+      "BASIS": {
+        "time": 5.38,
+        "km": 0,
+        "total": 5.38
+      },
+      "AKTIV": {
+        "time": 3.25,
+        "km": 0,
+        "total": 3.25
+      },
+      "COMFORT": {
+        "time": 2.94,
+        "km": 0,
+        "total": 2.94
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-455",
+    "priceClass": "M",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 11:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:43:36",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.74,
+        "km": 0,
+        "total": 6.74
+      },
+      "BASIS": {
+        "time": 7.53,
+        "km": 0,
+        "total": 7.53
+      },
+      "AKTIV": {
+        "time": 4.55,
+        "km": 0,
+        "total": 4.55
+      },
+      "COMFORT": {
+        "time": 4.11,
+        "km": 0,
+        "total": 4.11
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-455",
+    "priceClass": "M",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 50,
+    "recordedAt": "2026-11-23T05:43:45",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 11.55,
+        "km": 15,
+        "total": 26.55
+      },
+      "BASIS": {
+        "time": 12.9,
+        "km": 16,
+        "total": 28.9
+      },
+      "AKTIV": {
+        "time": 7.8,
+        "km": 14.5,
+        "total": 22.3
+      },
+      "COMFORT": {
+        "time": 7.05,
+        "km": 13,
+        "total": 20.05
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-455",
+    "priceClass": "M",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 08:00",
+    "km": 150,
+    "recordedAt": "2026-11-23T05:43:54",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 53.9,
+        "km": 41.5,
+        "total": 95.4
+      },
+      "BASIS": {
+        "time": 60.2,
+        "km": 44,
+        "total": 104.2
+      },
+      "AKTIV": {
+        "time": 36.4,
+        "km": 40,
+        "total": 76.4
+      },
+      "COMFORT": {
+        "time": 32.9,
+        "km": 35.5,
+        "total": 68.4
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-455",
+    "priceClass": "M",
+    "start": "06.03.2027 10:00",
+    "end": "06.03.2027 14:00",
+    "km": 20,
+    "recordedAt": "2026-11-23T05:44:03",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 16.6,
+        "km": 6,
+        "total": 22.6
+      },
+      "BASIS": {
+        "time": 20.8,
+        "km": 6.4,
+        "total": 27.2
+      },
+      "AKTIV": {
+        "time": 10.4,
+        "km": 5.8,
+        "total": 16.2
+      },
+      "COMFORT": {
+        "time": 9.4,
+        "km": 5.2,
+        "total": 14.6
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-455",
+    "priceClass": "M",
+    "start": "02.03.2027 10:00",
+    "end": "10.03.2027 10:00",
+    "km": 600,
+    "recordedAt": "2026-11-23T05:44:13",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 323.4,
+        "km": 145,
+        "total": 468.4
+      },
+      "BASIS": {
+        "time": 361.2,
+        "km": 152,
+        "total": 513.2
+      },
+      "AKTIV": {
+        "time": 218.4,
+        "km": 139,
+        "total": 357.4
+      },
+      "COMFORT": {
+        "time": 197.4,
+        "km": 121,
+        "total": 318.4
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-455",
+    "priceClass": "M",
+    "start": "02.03.2027 22:00",
+    "end": "03.03.2027 08:00",
+    "km": 101,
+    "recordedAt": "2026-11-23T05:44:22",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 18.4,
+        "km": 30.23,
+        "total": 48.63
+      },
+      "BASIS": {
+        "time": 20.2,
+        "km": 32.24,
+        "total": 52.44
+      },
+      "AKTIV": {
+        "time": 13.4,
+        "km": 29.22,
+        "total": 42.62
+      },
+      "COMFORT": {
+        "time": 12.4,
+        "km": 26.19,
+        "total": 38.59
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-54",
+    "priceClass": "L",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 10:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:44:31",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 1.76,
+        "km": 0,
+        "total": 1.76
+      },
+      "BASIS": {
+        "time": 1.79,
+        "km": 0,
+        "total": 1.79
+      },
+      "AKTIV": {
+        "time": 1.27,
+        "km": 0,
+        "total": 1.27
+      },
+      "COMFORT": {
+        "time": 1.04,
+        "km": 0,
+        "total": 1.04
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-54",
+    "priceClass": "L",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 10:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:44:40",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.29,
+        "km": 0,
+        "total": 5.29
+      },
+      "BASIS": {
+        "time": 5.36,
+        "km": 0,
+        "total": 5.36
+      },
+      "AKTIV": {
+        "time": 3.82,
+        "km": 0,
+        "total": 3.82
+      },
+      "COMFORT": {
+        "time": 3.11,
+        "km": 0,
+        "total": 3.11
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-54",
+    "priceClass": "L",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 11:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:44:50",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.81,
+        "km": 0,
+        "total": 8.81
+      },
+      "BASIS": {
+        "time": 8.94,
+        "km": 0,
+        "total": 8.94
+      },
+      "AKTIV": {
+        "time": 6.38,
+        "km": 0,
+        "total": 6.38
+      },
+      "COMFORT": {
+        "time": 5.19,
+        "km": 0,
+        "total": 5.19
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-54",
+    "priceClass": "L",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 11:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:44:59",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 12.34,
+        "km": 0,
+        "total": 12.34
+      },
+      "BASIS": {
+        "time": 12.51,
+        "km": 0,
+        "total": 12.51
+      },
+      "AKTIV": {
+        "time": 8.92,
+        "km": 0,
+        "total": 8.92
+      },
+      "COMFORT": {
+        "time": 7.26,
+        "km": 0,
+        "total": 7.26
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-54",
+    "priceClass": "L",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 50,
+    "recordedAt": "2026-11-23T05:45:09",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 21.15,
+        "km": 20,
+        "total": 41.15
+      },
+      "BASIS": {
+        "time": 21.45,
+        "km": 21,
+        "total": 42.45
+      },
+      "AKTIV": {
+        "time": 15.3,
+        "km": 19.5,
+        "total": 34.8
+      },
+      "COMFORT": {
+        "time": 12.45,
+        "km": 17,
+        "total": 29.45
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-54",
+    "priceClass": "L",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 08:00",
+    "km": 150,
+    "recordedAt": "2026-11-23T05:45:18",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 98.7,
+        "km": 51,
+        "total": 149.7
+      },
+      "BASIS": {
+        "time": 99.8,
+        "km": 55,
+        "total": 154.8
+      },
+      "AKTIV": {
+        "time": 71.4,
+        "km": 51.5,
+        "total": 122.9
+      },
+      "COMFORT": {
+        "time": 58.1,
+        "km": 45.5,
+        "total": 103.6
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-54",
+    "priceClass": "L",
+    "start": "06.03.2027 10:00",
+    "end": "06.03.2027 14:00",
+    "km": 20,
+    "recordedAt": "2026-11-23T05:45:27",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 30.2,
+        "km": 8,
+        "total": 38.2
+      },
+      "BASIS": {
+        "time": 32.8,
+        "km": 8.4,
+        "total": 41.2
+      },
+      "AKTIV": {
+        "time": 20.4,
+        "km": 7.8,
+        "total": 28.2
+      },
+      "COMFORT": {
+        "time": 16.6,
+        "km": 6.8,
+        "total": 23.4
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-54",
+    "priceClass": "L",
+    "start": "02.03.2027 10:00",
+    "end": "10.03.2027 10:00",
+    "km": 600,
+    "recordedAt": "2026-11-23T05:45:36",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 592.2,
+        "km": 150,
+        "total": 742.2
+      },
+      "BASIS": {
+        "time": 600.3,
+        "km": 172,
+        "total": 772.3
+      },
+      "AKTIV": {
+        "time": 428.4,
+        "km": 164,
+        "total": 592.4
+      },
+      "COMFORT": {
+        "time": 348.6,
+        "km": 149,
+        "total": 497.6
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-54",
+    "priceClass": "L",
+    "start": "02.03.2027 22:00",
+    "end": "03.03.2027 08:00",
+    "km": 101,
+    "recordedAt": "2026-11-23T05:45:46",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 31.2,
+        "km": 40.22,
+        "total": 71.42
+      },
+      "BASIS": {
+        "time": 31.6,
+        "km": 42.26,
+        "total": 73.86
+      },
+      "AKTIV": {
+        "time": 23.4,
+        "km": 39.25,
+        "total": 62.65
+      },
+      "COMFORT": {
+        "time": 19.6,
+        "km": 34.23,
+        "total": 53.83
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-672",
+    "priceClass": "XL",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 10:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:45:55",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 2.12,
+        "km": 0,
+        "total": 2.12
+      },
+      "BASIS": {
+        "time": 2.14,
+        "km": 0,
+        "total": 2.14
+      },
+      "AKTIV": {
+        "time": 1.53,
+        "km": 0,
+        "total": 1.53
+      },
+      "COMFORT": {
+        "time": 1.25,
+        "km": 0,
+        "total": 1.25
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-672",
+    "priceClass": "XL",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 10:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:46:04",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 6.35,
+        "km": 0,
+        "total": 6.35
+      },
+      "BASIS": {
+        "time": 6.43,
+        "km": 0,
+        "total": 6.43
+      },
+      "AKTIV": {
+        "time": 4.59,
+        "km": 0,
+        "total": 4.59
+      },
+      "COMFORT": {
+        "time": 3.74,
+        "km": 0,
+        "total": 3.74
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-672",
+    "priceClass": "XL",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 11:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:46:13",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 10.57,
+        "km": 0,
+        "total": 10.57
+      },
+      "BASIS": {
+        "time": 10.73,
+        "km": 0,
+        "total": 10.73
+      },
+      "AKTIV": {
+        "time": 7.65,
+        "km": 0,
+        "total": 7.65
+      },
+      "COMFORT": {
+        "time": 6.22,
+        "km": 0,
+        "total": 6.22
+      }
+    }
+  },
+  {
+    "group": "rounding",
+    "city": 1,
+    "vehicleClass": "15-672",
+    "priceClass": "XL",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 11:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:46:23",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 14.81,
+        "km": 0,
+        "total": 14.81
+      },
+      "BASIS": {
+        "time": 15.01,
+        "km": 0,
+        "total": 15.01
+      },
+      "AKTIV": {
+        "time": 10.71,
+        "km": 0,
+        "total": 10.71
+      },
+      "COMFORT": {
+        "time": 8.72,
+        "km": 0,
+        "total": 8.72
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-672",
+    "priceClass": "XL",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 50,
+    "recordedAt": "2026-11-23T05:46:32",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 25.38,
+        "km": 21.5,
+        "total": 46.88
+      },
+      "BASIS": {
+        "time": 25.74,
+        "km": 22.5,
+        "total": 48.24
+      },
+      "AKTIV": {
+        "time": 18.36,
+        "km": 21,
+        "total": 39.36
+      },
+      "COMFORT": {
+        "time": 14.94,
+        "km": 18.5,
+        "total": 33.44
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-672",
+    "priceClass": "XL",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 08:00",
+    "km": 150,
+    "recordedAt": "2026-11-23T05:46:41",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 118.44,
+        "km": 54.5,
+        "total": 172.94
+      },
+      "BASIS": {
+        "time": 120.12,
+        "km": 58.5,
+        "total": 178.62
+      },
+      "AKTIV": {
+        "time": 85.68,
+        "km": 55,
+        "total": 140.68
+      },
+      "COMFORT": {
+        "time": 69.72,
+        "km": 49,
+        "total": 118.72
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-672",
+    "priceClass": "XL",
+    "start": "06.03.2027 10:00",
+    "end": "06.03.2027 14:00",
+    "km": 20,
+    "recordedAt": "2026-11-23T05:46:50",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 39.28,
+        "km": 8.6,
+        "total": 47.88
+      },
+      "BASIS": {
+        "time": 42.64,
+        "km": 9,
+        "total": 51.64
+      },
+      "AKTIV": {
+        "time": 24.48,
+        "km": 8.4,
+        "total": 32.88
+      },
+      "COMFORT": {
+        "time": 19.92,
+        "km": 7.4,
+        "total": 27.32
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-672",
+    "priceClass": "XL",
+    "start": "02.03.2027 10:00",
+    "end": "10.03.2027 10:00",
+    "km": 600,
+    "recordedAt": "2026-11-23T05:46:59",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 710.64,
+        "km": 158,
+        "total": 868.64
+      },
+      "BASIS": {
+        "time": 720.72,
+        "km": 180,
+        "total": 900.72
+      },
+      "AKTIV": {
+        "time": 514.08,
+        "km": 172,
+        "total": 686.08
+      },
+      "COMFORT": {
+        "time": 418.32,
+        "km": 157,
+        "total": 575.32
+      }
+    }
+  },
+  {
+    "group": "class",
+    "city": 1,
+    "vehicleClass": "15-672",
+    "priceClass": "XL",
+    "start": "02.03.2027 22:00",
+    "end": "03.03.2027 08:00",
+    "km": 101,
+    "recordedAt": "2026-11-23T05:47:09",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 36.84,
+        "km": 43.23,
+        "total": 80.07
+      },
+      "BASIS": {
+        "time": 37.32,
+        "km": 45.27,
+        "total": 82.59
+      },
+      "AKTIV": {
+        "time": 27.48,
+        "km": 42.26,
+        "total": 69.74
+      },
+      "COMFORT": {
+        "time": 22.92,
+        "km": 37.24,
+        "total": 60.16
+      }
+    }
+  },
+  {
+    "group": "odd-minutes",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 10:07",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:47:18",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 0.32,
+        "km": 0,
+        "total": 0.32
+      },
+      "BASIS": {
+        "time": 0.38,
+        "km": 0,
+        "total": 0.38
+      },
+      "AKTIV": {
+        "time": 0.25,
+        "km": 0,
+        "total": 0.25
+      },
+      "COMFORT": {
+        "time": 0.22,
+        "km": 0,
+        "total": 0.22
+      }
+    }
+  },
+  {
+    "group": "odd-minutes",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 11:23",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:47:27",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 3.8,
+        "km": 0,
+        "total": 3.8
+      },
+      "BASIS": {
+        "time": 4.57,
+        "km": 0,
+        "total": 4.57
+      },
+      "AKTIV": {
+        "time": 2.9,
+        "km": 0,
+        "total": 2.9
+      },
+      "COMFORT": {
+        "time": 2.56,
+        "km": 0,
+        "total": 2.56
+      }
+    }
+  },
+  {
+    "group": "odd-minutes",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:05",
+    "end": "02.03.2027 11:45",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:47:37",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 4.58,
+        "km": 0,
+        "total": 4.58
+      },
+      "BASIS": {
+        "time": 5.5,
+        "km": 0,
+        "total": 5.5
+      },
+      "AKTIV": {
+        "time": 3.5,
+        "km": 0,
+        "total": 3.5
+      },
+      "COMFORT": {
+        "time": 3.08,
+        "km": 0,
+        "total": 3.08
+      }
+    }
+  },
+  {
+    "group": "odd-minutes",
+    "city": 1,
+    "vehicleClass": "15-393",
+    "priceClass": "S",
+    "start": "02.03.2027 05:50",
+    "end": "02.03.2027 06:10",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:47:46",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 0.54,
+        "km": 0,
+        "total": 0.54
+      },
+      "BASIS": {
+        "time": 0.63,
+        "km": 0,
+        "total": 0.63
+      },
+      "AKTIV": {
+        "time": 0.43,
+        "km": 0,
+        "total": 0.43
+      },
+      "COMFORT": {
+        "time": 0.39,
+        "km": 0,
+        "total": 0.39
+      }
+    }
+  },
+  {
+    "group": "xs",
+    "city": 21,
+    "vehicleClass": "12-516",
+    "priceClass": "XS",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 50,
+    "recordedAt": "2026-11-23T05:47:55",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 7.2,
+        "km": 14.5,
+        "total": 21.7
+      },
+      "BASIS": {
+        "time": 7.5,
+        "km": 15.5,
+        "total": 23
+      },
+      "AKTIV": {
+        "time": 4.95,
+        "km": 13.5,
+        "total": 18.45
+      },
+      "COMFORT": {
+        "time": 4.5,
+        "km": 12,
+        "total": 16.5
+      }
+    }
+  },
+  {
+    "group": "xs",
+    "city": 21,
+    "vehicleClass": "12-516",
+    "priceClass": "XS",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 08:00",
+    "km": 150,
+    "recordedAt": "2026-11-23T05:48:05",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 33.6,
+        "km": 40.5,
+        "total": 74.1
+      },
+      "BASIS": {
+        "time": 35,
+        "km": 43,
+        "total": 78
+      },
+      "AKTIV": {
+        "time": 23.1,
+        "km": 38,
+        "total": 61.1
+      },
+      "COMFORT": {
+        "time": 21,
+        "km": 33.5,
+        "total": 54.5
+      }
+    }
+  },
+  {
+    "group": "xs",
+    "city": 21,
+    "vehicleClass": "12-516",
+    "priceClass": "XS",
+    "start": "06.03.2027 10:00",
+    "end": "06.03.2027 14:00",
+    "km": 20,
+    "recordedAt": "2026-11-23T05:48:14",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 11.8,
+        "km": 5.8,
+        "total": 17.6
+      },
+      "BASIS": {
+        "time": 13,
+        "km": 6.2,
+        "total": 19.2
+      },
+      "AKTIV": {
+        "time": 6.6,
+        "km": 5.4,
+        "total": 12
+      },
+      "COMFORT": {
+        "time": 6,
+        "km": 4.8,
+        "total": 10.8
+      }
+    }
+  },
+  {
+    "group": "xs",
+    "city": 21,
+    "vehicleClass": "12-516",
+    "priceClass": "XS",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 11:15",
+    "km": 0,
+    "recordedAt": "2026-11-23T05:48:23",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 3,
+        "km": 0,
+        "total": 3
+      },
+      "BASIS": {
+        "time": 3.13,
+        "km": 0,
+        "total": 3.13
+      },
+      "AKTIV": {
+        "time": 2.06,
+        "km": 0,
+        "total": 2.06
+      },
+      "COMFORT": {
+        "time": 1.88,
+        "km": 0,
+        "total": 1.88
+      }
+    }
+  },
+  {
+    "group": "xs",
+    "city": 21,
+    "vehicleClass": "12-516",
+    "priceClass": "XS",
+    "start": "02.03.2027 10:00",
+    "end": "10.03.2027 10:00",
+    "km": 600,
+    "recordedAt": "2026-11-23T05:48:33",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 201.6,
+        "km": 144,
+        "total": 345.6
+      },
+      "BASIS": {
+        "time": 210,
+        "km": 151,
+        "total": 361
+      },
+      "AKTIV": {
+        "time": 138.6,
+        "km": 137,
+        "total": 275.6
+      },
+      "COMFORT": {
+        "time": 126,
+        "km": 119,
+        "total": 245
+      }
+    }
+  },
+  {
+    "group": "start-tariff",
+    "city": 16,
+    "vehicleClass": "31-393",
+    "priceClass": "S",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 50,
+    "recordedAt": "2026-11-23T05:48:42",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 8.25,
+        "km": 14.5,
+        "total": 22.75
+      },
+      "BASIS": {
+        "time": 9.9,
+        "km": 15.5,
+        "total": 25.4
+      },
+      "START": {
+        "time": 7.05,
+        "km": 18,
+        "total": 25.05
+      },
+      "AKTIV": {
+        "time": 6.3,
+        "km": 14,
+        "total": 20.3
+      },
+      "COMFORT": {
+        "time": 5.55,
+        "km": 12.5,
+        "total": 18.05
+      }
+    }
+  },
+  {
+    "group": "start-tariff",
+    "city": 16,
+    "vehicleClass": "31-393",
+    "priceClass": "S",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 08:00",
+    "km": 150,
+    "recordedAt": "2026-11-23T05:48:51",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 38.5,
+        "km": 40.5,
+        "total": 79
+      },
+      "BASIS": {
+        "time": 46.2,
+        "km": 43,
+        "total": 89.2
+      },
+      "START": {
+        "time": 32.9,
+        "km": 48.5,
+        "total": 81.4
+      },
+      "AKTIV": {
+        "time": 29.4,
+        "km": 39,
+        "total": 68.4
+      },
+      "COMFORT": {
+        "time": 25.9,
+        "km": 34.5,
+        "total": 60.4
+      }
+    }
+  },
+  {
+    "group": "start-tariff",
+    "city": 16,
+    "vehicleClass": "31-393",
+    "priceClass": "S",
+    "start": "06.03.2027 10:00",
+    "end": "06.03.2027 11:15",
+    "km": 101,
+    "recordedAt": "2026-11-23T05:49:01",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 3.94,
+        "km": 29.23,
+        "total": 33.17
+      },
+      "BASIS": {
+        "time": 5.19,
+        "km": 31.24,
+        "total": 36.43
+      },
+      "START": {
+        "time": 2.94,
+        "km": 36.25,
+        "total": 39.19
+      },
+      "AKTIV": {
+        "time": 2.63,
+        "km": 28.22,
+        "total": 30.85
+      },
+      "COMFORT": {
+        "time": 2.31,
+        "km": 25.19,
+        "total": 27.5
+      }
+    }
+  },
+  {
+    "group": "start-tariff",
+    "city": 16,
+    "vehicleClass": "31-455",
+    "priceClass": "M",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 50,
+    "recordedAt": "2026-11-23T05:49:10",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 11.55,
+        "km": 15,
+        "total": 26.55
+      },
+      "BASIS": {
+        "time": 12.9,
+        "km": 16,
+        "total": 28.9
+      },
+      "START": {
+        "time": 10.35,
+        "km": 20,
+        "total": 30.35
+      },
+      "AKTIV": {
+        "time": 7.8,
+        "km": 14.5,
+        "total": 22.3
+      },
+      "COMFORT": {
+        "time": 7.05,
+        "km": 13,
+        "total": 20.05
+      }
+    }
+  },
+  {
+    "group": "start-tariff",
+    "city": 16,
+    "vehicleClass": "31-455",
+    "priceClass": "M",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 08:00",
+    "km": 150,
+    "recordedAt": "2026-11-23T05:49:20",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 53.9,
+        "km": 41.5,
+        "total": 95.4
+      },
+      "BASIS": {
+        "time": 60.2,
+        "km": 44,
+        "total": 104.2
+      },
+      "START": {
+        "time": 48.3,
+        "km": 52.5,
+        "total": 100.8
+      },
+      "AKTIV": {
+        "time": 36.4,
+        "km": 40,
+        "total": 76.4
+      },
+      "COMFORT": {
+        "time": 32.9,
+        "km": 35.5,
+        "total": 68.4
+      }
+    }
+  },
+  {
+    "group": "start-tariff",
+    "city": 16,
+    "vehicleClass": "31-455",
+    "priceClass": "M",
+    "start": "06.03.2027 10:00",
+    "end": "06.03.2027 11:15",
+    "km": 101,
+    "recordedAt": "2026-11-23T05:49:30",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 5.19,
+        "km": 30.23,
+        "total": 35.42
+      },
+      "BASIS": {
+        "time": 6.5,
+        "km": 32.24,
+        "total": 38.74
+      },
+      "START": {
+        "time": 4.31,
+        "km": 40.25,
+        "total": 44.56
+      },
+      "AKTIV": {
+        "time": 3.25,
+        "km": 29.22,
+        "total": 32.47
+      },
+      "COMFORT": {
+        "time": 2.94,
+        "km": 26.19,
+        "total": 29.13
+      }
+    }
+  },
+  {
+    "group": "start-tariff",
+    "city": 16,
+    "vehicleClass": "31-54",
+    "priceClass": "L",
+    "start": "02.03.2027 10:00",
+    "end": "02.03.2027 13:00",
+    "km": 50,
+    "recordedAt": "2026-11-23T05:49:39",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 21.15,
+        "km": 20,
+        "total": 41.15
+      },
+      "BASIS": {
+        "time": 21.45,
+        "km": 21,
+        "total": 42.45
+      },
+      "START": {
+        "time": 16.95,
+        "km": 22.5,
+        "total": 39.45
+      },
+      "AKTIV": {
+        "time": 15.3,
+        "km": 19.5,
+        "total": 34.8
+      },
+      "COMFORT": {
+        "time": 12.45,
+        "km": 17,
+        "total": 29.45
+      }
+    }
+  },
+  {
+    "group": "start-tariff",
+    "city": 16,
+    "vehicleClass": "31-54",
+    "priceClass": "L",
+    "start": "02.03.2027 06:00",
+    "end": "03.03.2027 08:00",
+    "km": 150,
+    "recordedAt": "2026-11-23T05:49:49",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 98.7,
+        "km": 51,
+        "total": 149.7
+      },
+      "BASIS": {
+        "time": 99.8,
+        "km": 55,
+        "total": 154.8
+      },
+      "START": {
+        "time": 79.1,
+        "km": 59.5,
+        "total": 138.6
+      },
+      "AKTIV": {
+        "time": 71.4,
+        "km": 51.5,
+        "total": 122.9
+      },
+      "COMFORT": {
+        "time": 58.1,
+        "km": 45.5,
+        "total": 103.6
+      }
+    }
+  },
+  {
+    "group": "start-tariff",
+    "city": 16,
+    "vehicleClass": "31-54",
+    "priceClass": "L",
+    "start": "06.03.2027 10:00",
+    "end": "06.03.2027 11:15",
+    "km": 101,
+    "recordedAt": "2026-11-23T05:49:58",
+    "surchargeCents": 3,
+    "costs": {
+      "CAMPUS": {
+        "time": 9.44,
+        "km": 40.22,
+        "total": 49.66
+      },
+      "BASIS": {
+        "time": 10.25,
+        "km": 42.26,
+        "total": 52.51
+      },
+      "START": {
+        "time": 7.06,
+        "km": 45.29,
+        "total": 52.35
+      },
+      "AKTIV": {
+        "time": 6.38,
+        "km": 39.25,
+        "total": 45.63
+      },
+      "COMFORT": {
+        "time": 5.19,
+        "km": 34.23,
+        "total": 39.42
+      }
+    }
+  }
+]
