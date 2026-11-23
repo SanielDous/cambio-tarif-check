@@ -47,6 +47,39 @@ describe("bookingTimeCost", () => {
       bookingTimeCost(wed(13), wed(20), wed(20), 0.5, "AKTIV", "L", PRICE_DATA, "Aachen"),
     ).toBe(1785);
   });
+
+  // Invoice, COMFORT M (28.20 per day, 2.35 per hour), Friday 2025-01-24 17:00 to Saturday
+  // 2025-02-01 17:45 at the full price (week + one day = 197.40, the 45 minutes free), then
+  // 17:45–21:00 at 50 %: 3.25 h × 2.35 × 50 % = 3.81875 → 3.82.
+  const long = {
+    start: toLocalMinute(2025, 1, 24, 17),
+    returned: toLocalMinute(2025, 2, 1, 17, 45),
+  };
+
+  it("prices the unused part as a span of its own, as invoiced for 8 days + 45 minutes", () => {
+    const booked = toLocalMinute(2025, 2, 1, 21);
+    expect(
+      bookingTimeCost(long.start, long.returned, booked, 1, "COMFORT", "M", PRICE_DATA, "Aachen"),
+    ).toBe(19740 + 382);
+  });
+
+  it("charges unused hours after the day cap was reached: 50 % of exactly those hours", () => {
+    // BASIS S Monday 06:00–19:00 reaches the day cap (12 h × 3.30 = 39.60); booked until 21:00,
+    // the unused 2 h cost 2 × 3.30 × 50 % = 3.30.
+    expect(bookingTimeCost(mon(6), mon(19), mon(21), 1, "BASIS", "S", PRICE_DATA, "Aachen")).toBe(
+      3960 + 330,
+    );
+  });
+
+  it("anchors the caps of the unused part at the return", () => {
+    // AKTIV S Monday 06:00–18:00 = 12 h × 2.10 = 25.20 (the day cap). Booked 26 h longer, until
+    // Tuesday 20:00: the 24 h from Monday 18:00 are capped at 25.20, Tuesday 18:00–20:00 adds
+    // 2 × 2.10, all at 50 % = 14.70. Caps anchored at the start would give only 12.60.
+    const tue20 = mon(20) + 24 * 60;
+    expect(bookingTimeCost(mon(6), mon(18), tue20, 1, "AKTIV", "S", PRICE_DATA, "Aachen")).toBe(
+      2520 + (2520 + 2 * 210) / 2,
+    );
+  });
 });
 
 describe("reconstructBooking", () => {
@@ -172,42 +205,62 @@ describe("reconstructBooking", () => {
   });
 
   it("estimates when a cap makes booked ends indistinguishable that differ in another tariff", () => {
-    // BASIS S Saturday 06:00–16:00: 10 h at 4.15 exceed the day cap 39.60, so every booked end
-    // until Sunday 06:00 gives the same amount; in AKTIV they differ.
+    // BASIS S Saturday 06:00–08:00 (2 × 4.15), booked longer: the unused time from 08:00 at 4.15
+    // reaches its own day cap 39.60 at 17:45, so every booked end from 17:45 until Sunday 08:45
+    // (the remainder after 24 h is free below an hour) gives 8.30 + 19.80; in AKTIV they differ.
     const r = reconstructBooking(
       trip({
         start: sat(6),
-        end: sat(16),
+        end: sat(8),
         tariff: "BASIS",
         priceClass: "S",
         km: 10,
-        billedTime: 3960,
+        billedTime: 830 + 1980,
         billedKm: 290,
       }),
       PRICE_DATA,
     );
     expect(r.kind).toBe("estimated");
-    expect(r.bookedEnd).toBe(sat(16));
+    expect(r.bookedEnd).toBe(sat(17, 45));
     expect(r.timeDeviation).toBe(0);
   });
 
   it("verifies a capped trip when the indistinguishable booked ends cost the same everywhere", () => {
-    // AKTIV S Wednesday 06:00–18:00 reaches the day cap 25.20 exactly; every tariff caps at
-    // 12 weekday hours, so later booked ends until 06:00 cost the same in all tariffs.
+    // AKTIV S Wednesday 06:00–08:00 (2 × 2.10), booked until 20:00: the 12 unused weekday hours
+    // reach the day cap 25.20 exactly, in every tariff, so later booked ends until Thursday 08:45
+    // cost the same in all tariffs.
     const r = reconstructBooking(
       trip({
         start: wed(6),
-        end: wed(18),
+        end: wed(8),
         tariff: "AKTIV",
         priceClass: "S",
         km: 10,
-        billedTime: 2520,
+        billedTime: 420 + 1260,
         billedKm: 260,
       }),
       PRICE_DATA,
     );
     expect(r.kind).toBe("verified");
-    expect(r.bookedEnd).toBe(wed(18));
+    expect(r.bookedEnd).toBe(wed(20));
+  });
+
+  it("reconstructs the invoiced 8-day trip: booked until 21:00 (COMFORT M, billed 201.22)", () => {
+    const r = reconstructBooking(
+      trip({
+        start: toLocalMinute(2025, 1, 24, 17),
+        end: toLocalMinute(2025, 2, 1, 17, 40),
+        tariff: "COMFORT",
+        priceClass: "M",
+        km: 1495,
+        billedTime: 20122,
+        billedKm: 26115,
+      }),
+      PRICE_DATA,
+    );
+    expect(r.chargedUntil).toBe(toLocalMinute(2025, 2, 1, 17, 45));
+    expect(r.bookedEnd).toBe(toLocalMinute(2025, 2, 1, 21));
+    expect(r.timeDeviation).toBe(0);
   });
 
   it("derives the surcharge from the billed km amount when the table does not match", () => {

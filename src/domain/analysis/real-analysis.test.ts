@@ -79,7 +79,13 @@ describe("analysis of the fixtures", () => {
   it("reproduces the recorded figures", () => {
     // The overrun of 2025-05-09 adds its 13 doubled minutes in every tariff: AKTIV +91,
     // COMFORT +80, BASIS +180 (Friday evening, weekend price 4.15).
-    expect(a?.totals).toEqual({ BASIS: 317701, AKTIV: 240102, COMFORT: 240870 });
+    // The unused booked time is priced as a span of its own (invoice of the 8-day trip). On four
+    // weekend trips used and unused time together exceed the BASIS day cap (12 weekday hours,
+    // less than 12 weekend hours), which no longer limits their sum: BASIS +3.02 (2025-10-11),
+    // +3.25 (2025-11-08), +3.02 (2025-12-06), and +12.48 for 2025-07-19, whose booked end also
+    // moves from Sunday 09:30 to Saturday 21:30, as invoiced. +21.77 in all over 317,701.
+    // AKTIV and COMFORT have no weekend price and do not change.
+    expect(a?.totals).toEqual({ BASIS: 319878, AKTIV: 240102, COMFORT: 240870 });
     expect(a?.actualTotal).toBe(231249);
     expect(a?.bestSingle).toEqual({ tariff: "AKTIV", total: 240102, saving: -8853 });
     // The path keeps Aktiv in May 2025, so it rises by the Aktiv change only: 224,751 + 91.
@@ -87,7 +93,8 @@ describe("analysis of the fixtures", () => {
     expect(a?.optimalPath.switches).toBe(7);
     expect(a?.recomputationDeviation).toBe(9);
     expect(a?.breakEven).toMatchObject([
-      { lower: "BASIS", higher: "AKTIV", monthlyTripCost: 3588 },
+      // 11.00 / (1 − 220,302 / 319,878) = 3,533.6
+      { lower: "BASIS", higher: "AKTIV", monthlyTripCost: 3534 },
       { lower: "AKTIV", higher: "COMFORT", monthlyTripCost: 12574 },
     ]);
     for (const b of a?.breakEven ?? []) {

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { toLocalMinute } from "./local-time";
 import { PRICE_DATA } from "./price-data";
+import { roundHalfUp } from "./rounding";
 import { chargesHolidays, hourPriceAt, overrunCost, timeCost } from "./time-cost";
 
 const HOUR = 60;
@@ -62,6 +63,49 @@ describe("timeCost (literal values from the research document)", () => {
       tariffs: { ...PRICE_DATA.tariffs, AKTIV: { ...PRICE_DATA.tariffs.AKTIV, prices: {} } },
     };
     expect(() => timeCost(tue(10), tue(11), "AKTIV", "S", data, undefined)).toThrow(/AKTIV.*S/);
+  });
+
+  describe("does not charge a remainder of less than an hour after full days", () => {
+    // Calculator: COMFORT M (28.20 per day, 2.35 per hour) from Friday 2027-01-22 17:00.
+    const fri = toLocalMinute(2027, 1, 22, 17);
+    const comfortM = (minutes: number) =>
+      roundHalfUp(timeCost(fri, fri + minutes, "COMFORT", "M", PRICE_DATA, "Aachen"));
+
+    it.each([
+      [DAY + 15, 2820],
+      [DAY + 30, 2820],
+      [DAY + 45, 2820],
+      [DAY + 59, 2820],
+      [DAY + 60, 3055],
+      [DAY + 75, 3114],
+      [2 * DAY + 45, 5640],
+      [3 * DAY + 45, 8460],
+      [6 * DAY + 45, 16920],
+    ])("COMFORT M, %i minutes from Friday 17:00 = %i", (minutes, cents) => {
+      expect(comfortM(minutes)).toBe(cents);
+    });
+
+    it("also after a week, as invoiced: 8 days + 45 min = week + one day", () => {
+      expect(comfortM(8 * DAY + 45)).toBe(19740);
+      expect(comfortM(8 * DAY + 60)).toBe(19740 + 235);
+    });
+
+    it("class S from Tuesday 06:00: 45 and 1 minute free, 60 minutes charged", () => {
+      const day = roundHalfUp(aktivS(tue(6), tue(6) + DAY));
+      expect(roundHalfUp(aktivS(tue(6), tue(6) + DAY + 45))).toBe(day);
+      expect(roundHalfUp(aktivS(tue(6), tue(6) + DAY + 1))).toBe(day);
+      expect(roundHalfUp(aktivS(tue(6), tue(6) + DAY + 60))).toBe(day + 210);
+      const comfortS = (minutes: number) =>
+        roundHalfUp(timeCost(tue(6), tue(6) + minutes, "COMFORT", "S", PRICE_DATA, undefined));
+      expect(comfortS(DAY + 45)).toBe(2220);
+      expect(comfortS(DAY + 1)).toBe(2220);
+      expect(comfortS(DAY + 60)).toBe(2220 + 185);
+    });
+
+    it("does not affect bookings shorter than 24 hours", () => {
+      expect(aktivS(tue(10), tue(10, 45))).toBeCloseTo(157.5, 9);
+      expect(aktivS(tue(6), tue(6, 59))).toBeCloseTo((59 * 210) / 60, 9);
+    });
   });
 
   it("prices 10,000 bookings of 30 days within 2 seconds", () => {
