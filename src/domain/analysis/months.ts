@@ -1,4 +1,5 @@
 import type { Trip } from "@/domain/import/fields";
+import { monthKey } from "@/domain/pricing/local-time";
 import { TARIFF_IDS, type PriceData, type TariffId } from "@/domain/pricing/types";
 import type { MonthRow, Settings, TripResult } from "./analyze";
 
@@ -50,53 +51,104 @@ export function monthRange(first: string, last: string): string[] {
   return months;
 }
 
+/** The month before `month`. */
+export function previousMonth(month: string): string {
+  const year = Number(month.slice(0, 4));
+  const m = Number(month.slice(5, 7));
+  return m === 1 ? `${year - 1}-12` : `${year}-${String(m - 1).padStart(2, "0")}`;
+}
+
+/** Groups items by the month key `key` gives them. */
+function groupByMonth<T>(items: T[], key: (item: T) => string): Map<string, T[]> {
+  const byMonth = new Map<string, T[]>();
+  for (const item of items) {
+    const month = key(item);
+    const list = byMonth.get(month);
+    if (list) list.push(item);
+    else byMonth.set(month, [item]);
+  }
+  return byMonth;
+}
+
 /**
- * One row per month between the first and last trip month. `compared` must already be free of
- * tariffs that cannot price some trip.
+ * The actual tariff of a month: an override wins; else the tariff of the month's last trip
+ * (returned last; at the same minute the larger trip id, so the result never depends on the
+ * order of the input); a month without trips inherits `previous`.
  */
-export function buildMonths(
-  results: TripResult[],
-  compared: TariffId[],
+function actualTariffOf(
+  month: string,
+  trips: Trip[],
+  previous: TariffId | null,
   settings: Settings,
   data: PriceData,
-): MonthRow[] {
-  const byMonth = new Map<string, TripResult[]>();
-  for (const r of results) {
-    const list = byMonth.get(r.month);
-    if (list) list.push(r);
-    else byMonth.set(r.month, [r]);
+): { tariff: TariffId; source: MonthRow["actualTariffSource"]; mixed: boolean } {
+  const override = settings.actualTariffOverrides[month];
+  if (override !== undefined && Object.hasOwn(data.tariffs, override)) {
+    return { tariff: override, source: "override", mixed: false };
   }
-  const keys = [...byMonth.keys()].sort();
-  const first = keys[0];
-  const last = keys[keys.length - 1];
-  if (first === undefined || last === undefined) return [];
+  const [head, ...rest] = trips;
+  if (head === undefined) return { tariff: previous ?? "BASIS", source: "inherited", mixed: false };
+  let latest = head;
+  for (const trip of rest) {
+    if (trip.end > latest.end || (trip.end === latest.end && trip.id > latest.id)) latest = trip;
+  }
+  const tariff = latest.tariff;
+  return { tariff, source: "trips", mixed: trips.some((trip) => trip.tariff !== tariff) };
+}
 
-  const rows: MonthRow[] = [];
+export interface MonthInput {
+  /** All imported trips; the months before `from` give the tariff the range starts with. */
+  trips: Trip[];
+  /** The priced trips inside the range. */
+  results: TripResult[];
+  /** Compared tariffs, already free of tariffs that cannot price some trip. */
+  compared: TariffId[];
+  /** First and last month of the range, inclusive. */
+  from: string;
+  to: string;
+  settings: Settings;
+  data: PriceData;
+  /** Months with rows that are not billed yet. */
+  unbilledMonths?: ReadonlySet<string>;
+  /** The first / last month of the range is only partly contained in the export. */
+  partialFirst?: boolean;
+  partialLast?: boolean;
+}
+
+/**
+ * One row per month from `from` to `to`. The actual tariff runs through all months since the
+ * first trip, so inheritance and overrides before the range carry into it; the first month of
+ * the range never counts a switch.
+ */
+export function buildMonths(input: MonthInput): MonthRow[] {
+  const { trips, results, compared, from, to, settings, data } = input;
+  const tripsByMonth = groupByMonth(trips, (trip) => monthKey(trip.end));
+  const resultsByMonth = groupByMonth(results, (r) => r.month);
+
   let previous: TariffId | null = null;
-  for (const month of monthRange(first, last)) {
-    const list = byMonth.get(month) ?? [];
-    const override = settings.actualTariffOverrides[month];
-    let actualTariff: TariffId;
-    let source: MonthRow["actualTariffSource"];
-    let mixed = false;
-    if (override !== undefined && Object.hasOwn(data.tariffs, override)) {
-      actualTariff = override;
-      source = "override";
-    } else if (list.length === 0) {
-      actualTariff = previous ?? "BASIS"; // the first month always has trips
-      source = "inherited";
-    } else {
-      let latest = list[0] as TripResult;
-      for (const r of list) if (r.trip.end >= latest.trip.end) latest = r;
-      actualTariff = latest.trip.tariff;
-      source = "trips";
-      mixed = list.some((r) => r.trip.tariff !== actualTariff);
+  const first = [...tripsByMonth.keys()].sort()[0];
+  if (first !== undefined && first < from) {
+    for (const month of monthRange(first, previousMonth(from))) {
+      previous = actualTariffOf(
+        month,
+        tripsByMonth.get(month) ?? [],
+        previous,
+        settings,
+        data,
+      ).tariff;
     }
-    const switched = previous !== null && previous !== actualTariff;
+  }
+
+  const keys = monthRange(from, to);
+  return keys.map((month, index) => {
+    const list = resultsByMonth.get(month) ?? [];
+    const actual = actualTariffOf(month, tripsByMonth.get(month) ?? [], previous, settings, data);
+    const switched = index > 0 && previous !== actual.tariff;
+    previous = actual.tariff;
     const billed = list.reduce((s, r) => s + r.trip.billedTime + r.trip.billedKm, 0);
     const actualCost =
       billed +
-      monthlyFee(actualTariff, settings.additionalDrivers, data) +
+      monthlyFee(actual.tariff, settings.additionalDrivers, data) +
       (switched ? data.switchingFee : 0);
 
     const costs: Partial<Record<TariffId, number>> = {};
@@ -111,19 +163,20 @@ export function buildMonths(
     const cheapest = compared.reduce((best, t) =>
       (costs[t] ?? 0) < (costs[best] ?? 0) ? t : best,
     );
-    rows.push({
+    return {
       month,
       tripIds: list.map((r) => r.trip.id),
-      actualTariff,
-      actualTariffMixed: mixed,
-      actualTariffSource: source,
+      actualTariff: actual.tariff,
+      actualTariffMixed: actual.mixed,
+      actualTariffSource: actual.source,
       switched,
       actualCost,
       costs,
       cheapest,
-      incomplete: false,
-    });
-    previous = actualTariff;
-  }
-  return rows;
+      incomplete: input.unbilledMonths?.has(month) ?? false,
+      partial:
+        (index === 0 && input.partialFirst === true) ||
+        (index === keys.length - 1 && input.partialLast === true),
+    };
+  });
 }

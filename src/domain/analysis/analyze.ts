@@ -1,5 +1,5 @@
 import type { Trip } from "@/domain/import/fields";
-import { monthKey } from "@/domain/pricing/local-time";
+import { dateParts, monthKey } from "@/domain/pricing/local-time";
 import { parseIsoDate } from "@/domain/pricing/price-data";
 import {
   TARIFF_IDS,
@@ -51,8 +51,19 @@ export interface MonthRow {
   /** Model cost per compared tariff incl. fees. */
   costs: Partial<Record<TariffId, number>>;
   cheapest: TariffId;
-  /** Reserved for months with unbilled rows; always false for now. */
+  /** The export has rows of this month that are not billed yet. */
   incomplete: boolean;
+  /**
+   * First or last month of the data that the export probably covers only in part: the first trip
+   * starts after the 3rd, or the last trip ends before the 26th of the month.
+   */
+  partial: boolean;
+}
+
+/** What the import knows beyond the trips. */
+export interface AnalysisContext {
+  /** Month keys of rows that are not billed yet (duplicates allowed). */
+  unbilledMonths: string[];
 }
 
 export interface Analysis {
@@ -83,18 +94,53 @@ const KINDS: ReconstructionKind[] = [
   "not-reproducible",
 ];
 
+/** Days of the month up to which the first trip may start for the month to count as complete. */
+const FIRST_DAYS = 3;
+/** Day of the month from which the last trip may end for the month to count as complete. */
+const LAST_DAY = 26;
+
+/** Number of distinct drivers in the trips minus one; the number of additional drivers. */
+export function countAdditionalDrivers(trips: Trip[]): number {
+  const drivers = new Set(trips.map((t) => t.driver?.trim() ?? "").filter((d) => d !== ""));
+  return Math.max(0, drivers.size - 1);
+}
+
 /**
- * Everything the result page shows. Null if no trip (within the period) exists, or if no
- * compared tariff can price all trips.
+ * Everything the result page shows. The months run from the first to the last trip month, or the
+ * part of the chosen period that lies within them; months without trips in between cost the fees.
+ * Null without trips, for a period outside the data, or if no compared tariff can price all trips.
  */
-export function analyze(trips: Trip[], settings: Settings, data: PriceData): Analysis | null {
+export function analyze(
+  trips: Trip[],
+  settings: Settings,
+  data: PriceData,
+  context?: AnalysisContext,
+): Analysis | null {
+  const [head, ...rest] = trips;
+  if (head === undefined) return null;
+  let earliest = head;
+  let latest = head;
+  for (const trip of rest) {
+    if (trip.start < earliest.start) earliest = trip;
+    if (trip.end > latest.end) latest = trip;
+  }
+  const firstMonth = [...trips].map((trip) => monthKey(trip.end)).sort()[0] as string;
+  const lastMonth = monthKey(latest.end);
   const { period } = settings;
+  const from = period && period.from > firstMonth ? period.from : firstMonth;
+  const to = period && period.to < lastMonth ? period.to : lastMonth;
+  if (from > to) return null;
+  // A first trip that started in an earlier month means the first month is covered from its 1st.
+  const partialFirst =
+    from === firstMonth &&
+    monthKey(earliest.start) === firstMonth &&
+    dateParts(earliest.start).day > FIRST_DAYS;
+  const partialLast = to === lastMonth && dateParts(latest.end).day < LAST_DAY;
+
   const inPeriod = trips.filter((trip) => {
-    if (!period) return true;
     const m = monthKey(trip.end);
-    return m >= period.from && m <= period.to;
+    return m >= from && m <= to;
   });
-  if (inPeriod.length === 0) return null;
 
   const results: TripResult[] = inPeriod.map((trip) => {
     const reconstruction = reconstructBooking(trip, data, settings.manualBookedEnds[trip.id]);
@@ -111,7 +157,18 @@ export function analyze(trips: Trip[], settings: Settings, data: PriceData): Ana
   );
   if (tariffs.length === 0) return null;
 
-  const months = buildMonths(results, tariffs, settings, data);
+  const months = buildMonths({
+    trips,
+    results,
+    compared: tariffs,
+    from,
+    to,
+    settings,
+    data,
+    unbilledMonths: new Set(context?.unbilledMonths),
+    partialFirst,
+    partialLast,
+  });
 
   const totals: Partial<Record<TariffId, number>> = {};
   for (const t of tariffs) totals[t] = months.reduce((s, m) => s + (m.costs[t] ?? 0), 0);
@@ -158,8 +215,6 @@ export function analyze(trips: Trip[], settings: Settings, data: PriceData): Ana
     return { month: m.month, tripsCost: cost };
   });
 
-  const drivers = new Set(inPeriod.map((t) => t.driver?.trim() ?? "").filter((d) => d !== ""));
-
   const afterPrices = parseIsoDate(data.pricesAsOf) + 24 * 60;
 
   return {
@@ -173,7 +228,7 @@ export function analyze(trips: Trip[], settings: Settings, data: PriceData): Ana
     recomputationDeviation,
     verification,
     breakEven: breakEven(tariffs, tripsCost, fees, monthly),
-    suggestedAdditionalDrivers: Math.max(0, drivers.size - 1),
+    suggestedAdditionalDrivers: countAdditionalDrivers(inPeriod),
     surchargeDerivedTrips: results.filter((r) => r.reconstruction.surchargeDerived).length,
     tripsAfterPricesAsOf: inPeriod.filter((trip) => trip.end >= afterPrices).length,
   };

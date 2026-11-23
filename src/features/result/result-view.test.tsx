@@ -438,10 +438,26 @@ describe("settings bar", () => {
 });
 
 describe("empty state", () => {
-  it("explains an empty period and offers the whole period again", async () => {
-    const { user } = await withFixtures();
+  it("shows the fees of a chosen period without trips", async () => {
+    const { store, user } = await withFixtures();
     await user.selectOptions(screen.getByLabelText("Von"), "2026-02");
     await user.selectOptions(screen.getByLabelText("Bis"), "2026-03");
+    expect(screen.queryByTestId("result-empty")).not.toBeInTheDocument();
+    expect(screen.getByTestId("summary")).toHaveTextContent("0 Fahrten");
+    // Two inherited Aktiv months: 2 × (11.00 € + 3.00 € for the one additional driver found).
+    expect(store.get(settingsAtom).additionalDrivers).toBe(1);
+    expect(store.get(analysisAtom)?.actualTotal).toBe(2800);
+    expect(screen.getByTestId("total-actual-amount").textContent).toBe(euro(2800));
+  });
+
+  it("explains a period outside the data and offers the whole period again", async () => {
+    const { store, user } = await withFixtures();
+    act(() =>
+      store.set(settingsAtom, {
+        ...store.get(settingsAtom),
+        period: { from: "2023-01", to: "2023-02" },
+      }),
+    );
     expect(screen.getByTestId("result-empty")).toHaveTextContent(
       "Im gewählten Zeitraum gibt es keine Fahrten.",
     );

@@ -334,3 +334,141 @@ describe("analyze: trips after the price date", () => {
     ).toBe(2);
   });
 });
+
+describe("analyze: period", () => {
+  const period = (from: string, to: string): Settings => ({ ...SETTINGS, period: { from, to } });
+  const months = (a: ReturnType<typeof analyze>) => a?.months.map((m) => m.month);
+
+  it("keeps the selected edge months without trips and their fees", () => {
+    const trips = [trip(2025, 1, 10), trip(2025, 4, 10, "BASIS"), trip(2025, 6, 10)];
+    const a = analyze(trips, period("2025-02", "2025-05"), PRICE_DATA);
+    expect(months(a)).toEqual(["2025-02", "2025-03", "2025-04", "2025-05"]);
+    expect(a?.months.map((m) => m.actualTariff)).toEqual(["AKTIV", "AKTIV", "BASIS", "BASIS"]);
+    expect(a?.months.map((m) => m.actualTariffSource)).toEqual([
+      "inherited",
+      "inherited",
+      "trips",
+      "inherited",
+    ]);
+    expect(a?.months.map((m) => m.switched)).toEqual([false, false, true, false]);
+    // Two AKTIV fees, the Basis trip as billed plus the switching fee, one Basis month without.
+    expect(a?.actualTotal).toBe(2 * fee("AKTIV") + 1600 + 500);
+    expect(a?.trips).toHaveLength(1);
+    expect(a?.months[0]?.costs.AKTIV).toBe(fee("AKTIV"));
+  });
+
+  it("covers a period that lies entirely in a gap with fees only", () => {
+    const a = analyze(
+      [trip(2025, 1, 10), trip(2025, 4, 10)],
+      period("2025-02", "2025-03"),
+      PRICE_DATA,
+    );
+    expect(months(a)).toEqual(["2025-02", "2025-03"]);
+    expect(a?.trips).toEqual([]);
+    expect(a?.months.map((m) => m.actualTariff)).toEqual(["AKTIV", "AKTIV"]);
+    expect(a?.months.map((m) => m.switched)).toEqual([false, false]);
+    expect(a?.actualTotal).toBe(2 * fee("AKTIV"));
+    expect(a?.totals).toEqual({ BASIS: 0, AKTIV: 2 * fee("AKTIV"), COMFORT: 2 * fee("COMFORT") });
+    expect(a?.bestSingle).toEqual({ tariff: "BASIS", total: 0, saving: 2 * fee("AKTIV") });
+    expect(a?.recomputationDeviation).toBe(0);
+  });
+
+  it("clips a period that reaches beyond the data to the months with data", () => {
+    const trips = [trip(2025, 1, 10), trip(2025, 2, 10), trip(2025, 3, 10), trip(2025, 4, 10)];
+    expect(months(analyze(trips, period("2024-11", "2025-02"), PRICE_DATA))).toEqual([
+      "2025-01",
+      "2025-02",
+    ]);
+    expect(months(analyze(trips, period("2025-03", "2025-12"), PRICE_DATA))).toEqual([
+      "2025-03",
+      "2025-04",
+    ]);
+    expect(analyze(trips, period("2025-05", "2025-12"), PRICE_DATA)).toBeNull();
+  });
+
+  it("carries an override before the period into it", () => {
+    const a = analyze(
+      [trip(2025, 1, 10), trip(2025, 4, 10)],
+      { ...period("2025-03", "2025-04"), actualTariffOverrides: { "2025-02": "COMFORT" } },
+      PRICE_DATA,
+    );
+    expect(a?.months.map((m) => m.actualTariff)).toEqual(["COMFORT", "AKTIV"]);
+    expect(a?.months.map((m) => m.actualTariffSource)).toEqual(["inherited", "trips"]);
+    expect(a?.months.map((m) => m.switched)).toEqual([false, true]);
+    expect(a?.months[0]?.actualCost).toBe(fee("COMFORT"));
+  });
+
+  it("never counts a switch in the first month of the period", () => {
+    const a = analyze(
+      [trip(2025, 1, 10, "AKTIV"), trip(2025, 2, 10, "BASIS")],
+      period("2025-02", "2025-02"),
+      PRICE_DATA,
+    );
+    expect(a?.months[0]?.switched).toBe(false);
+    expect(a?.actualTotal).toBe(1600);
+  });
+});
+
+describe("analyze: incomplete and partial months", () => {
+  it("marks the months of not yet billed rows inside the range as incomplete", () => {
+    const trips = [trip(2025, 1, 2), trip(2025, 3, 28)];
+    const a = analyze(trips, SETTINGS, PRICE_DATA, {
+      unbilledMonths: ["2025-02", "2025-02", "2024-12", "2025-04"],
+    });
+    expect(a?.months.map((m) => m.incomplete)).toEqual([false, true, false]);
+    expect(analyze(trips, SETTINGS, PRICE_DATA)?.months.some((m) => m.incomplete)).toBe(false);
+  });
+
+  it("marks the first month partial if the first trip starts after the 3rd", () => {
+    const flags = (first: number) =>
+      analyze(
+        [trip(2025, 1, first), trip(2025, 2, 10), trip(2025, 3, 28)],
+        SETTINGS,
+        PRICE_DATA,
+      )?.months.map((m) => m.partial);
+    expect(flags(3)).toEqual([false, false, false]);
+    expect(flags(4)).toEqual([true, false, false]);
+  });
+
+  it("marks the last month partial if the last trip ends before the 26th", () => {
+    const flags = (last: number) =>
+      analyze(
+        [trip(2025, 1, 1), trip(2025, 2, 10), trip(2025, 3, last)],
+        SETTINGS,
+        PRICE_DATA,
+      )?.months.map((m) => m.partial);
+    expect(flags(26)).toEqual([false, false, false]);
+    expect(flags(25)).toEqual([false, false, true]);
+  });
+
+  it("judges the first month by a trip that started in the month before", () => {
+    const spanning = trip(2025, 1, 31, "AKTIV", { end: toLocalMinute(2025, 2, 1, 1, 0) });
+    const a = analyze([spanning, trip(2025, 2, 27)], SETTINGS, PRICE_DATA);
+    expect(a?.months.map((m) => m.month)).toEqual(["2025-02"]);
+    expect(a?.months[0]?.partial).toBe(false);
+  });
+
+  it("flags only the edges of the data, not the edges of a period", () => {
+    const trips = [trip(2025, 1, 10), trip(2025, 2, 10), trip(2025, 3, 10)];
+    const a = analyze(
+      trips,
+      { ...SETTINGS, period: { from: "2025-02", to: "2025-02" } },
+      PRICE_DATA,
+    );
+    expect(a?.months[0]?.partial).toBe(false);
+    const all = analyze(trips, SETTINGS, PRICE_DATA);
+    expect(all?.months.map((m) => m.partial)).toEqual([true, false, true]);
+  });
+});
+
+describe("analyze: actual tariff of a month", () => {
+  it("breaks a tie of two trips returned at the same minute by trip id, not input order", () => {
+    const a = trip(2025, 1, 10, "BASIS", { id: "a" });
+    const b = trip(2025, 1, 10, "COMFORT", { id: "b" });
+    const forward = analyze([a, b], SETTINGS, PRICE_DATA)?.months[0];
+    const backward = analyze([b, a], SETTINGS, PRICE_DATA)?.months[0];
+    expect(forward?.actualTariff).toBe("COMFORT");
+    expect(backward?.actualTariff).toBe("COMFORT");
+    expect(backward?.actualTariffMixed).toBe(true);
+  });
+});
