@@ -1,7 +1,15 @@
-# Personal trip exports and other private material must never be committed
+# Personal source data (portal exports, invoices) lives in private/ and must never be committed
+private/
+# Safety net in case such files are dropped elsewhere in the working tree
 Fahrten_*.csv
 Fahrten_*.xlsx
-private/
+*.pdf
+*.PDF
 
 node_modules/
 dist/
+.superpowers/
+playwright-report/
+test-results/
+coverage/
+*.tsbuildinfo

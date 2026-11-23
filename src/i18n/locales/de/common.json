@@ -1,0 +1,505 @@
+{
+  "app": {
+    "title": "cambio Tarif-Check",
+    "subtitle": "Finde heraus, welcher cambio-Tarif für deine Fahrten am günstigsten gewesen wäre."
+  },
+  "nav": {
+    "home": "Start",
+    "howItWorks": "So funktioniert’s"
+  },
+  "language": {
+    "label": "Sprache",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "theme": {
+    "label": "Darstellung",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
+  "howItWorks": {
+    "title": "So funktioniert’s",
+    "intro": "Kurz erklärt, was hier gerechnet wird, was dabei nicht berücksichtigt ist und welche Preise zugrunde liegen.",
+    "whatItDoes": {
+      "title": "Was die Seite macht",
+      "body": "Die Seite vergleicht, was deine Fahrten tatsächlich gekostet haben, mit dem, was sie in den anderen cambio-Tarifen gekostet hätten. Für jede Fahrt gelten dabei die Preise, die zum Zeitpunkt der Fahrt gültig waren.",
+      "hindsight": "Das Ergebnis ist ein Rückblick auf deine bisherigen Fahrten. Es sagt nicht voraus, welcher Tarif in Zukunft am günstigsten ist."
+    },
+    "data": {
+      "title": "Woher die Daten kommen und wo sie bleiben",
+      "source": "Die Fahrten stammen aus dem Export, den du im cambio-Kundenportal unter „Fahrtenarchiv“ herunterladen kannst (CSV oder Excel).",
+      "privacy": "Alles wird in deinem Browser berechnet. Deine Daten werden weder hochgeladen noch gespeichert; sobald du die Seite neu lädst oder schließt, sind sie weg."
+    },
+    "trip": {
+      "title": "Wie eine Fahrt nachgerechnet wird",
+      "intro": "Jede Fahrt wird minutengenau mit den hinterlegten Preisen berechnet:",
+      "time": "Zeit: Jede Minute kostet ein Sechzigstel des Stundenpreises der Wagenklasse im jeweiligen Tarif.",
+      "night": "Nacht: Von {{nightFrom}} bis {{nightTo}} Uhr kostet die Stunde in jedem Tarif {{nightPrice}}.",
+      "weekend": "Wochenende: Von {{weekendFromDay}} {{weekendFromTime}} Uhr bis {{weekendToDay}} {{weekendToTime}} Uhr gilt der Wochenendpreis. Den gibt es nur in {{weekendTariffs}}; in den anderen Tarifen ist der Stundenpreis immer gleich. Feiertage zählen nur in einigen Regionen wie Wochenenden, nämlich in {{holidayCities}}. In allen anderen Städten kosten Feiertage den normalen Preis. Die Stunden von {{nightFrom}} bis {{nightTo}} Uhr kosten auch am Wochenende und an Feiertagen den Nachtpreis.",
+      "caps": "Deckel: Jeder 24-Stunden-Block ab Buchungsbeginn kostet höchstens den Preis für {{dayCapHours}} Stunden, jeder 7-Tage-Block höchstens den Preis für {{weekCapDays}} volle Tage. Bleibt nach vollen Tagen ein Rest von weniger als einer Stunde, kostet er nichts.",
+      "km": "Kilometer: Die ersten {{kmBoundary}} km kosten den höheren Preis, jeder weitere Kilometer den günstigeren. Dazu kommt ein Kraftstoffzuschlag je Kilometer, der sich im Lauf der Zeit ändert."
+    },
+    "earlyReturn": {
+      "title": "Frühe Rückgabe und das gebuchte Ende",
+      "export": "Im Export steht die Zeit der Rückgabe, nicht das ursprünglich gebuchte Ende. Gibst du das Auto früher zurück, berechnet cambio die ungenutzte gebuchte Zeit mit 50 %.",
+      "reconstruction": "Die Seite ermittelt das gebuchte Ende aus dem abgerechneten Betrag: Bis zur auf die nächste Viertelstunde aufgerundeten Rückgabe gilt der volle Preis, der Rest der Buchung kostet 50 %. Dieselbe Buchung wird dann in den anderen Tarifen nachgerechnet.",
+      "late": "Gibst du das Auto nach dem gebuchten Ende zurück, kostet jede Minute danach den doppelten Zeitpreis. Die Seite erkennt das am abgerechneten Betrag und rechnet dieselbe Verspätung auch in den anderen Tarifen nach.",
+      "ambiguous": "Passen mehrere gebuchte Enden zum Betrag, wird das früheste verwendet; passt keines, wird bis zur Rückgabe gerechnet. In beiden Fällen kannst du das gebuchte Ende in der Fahrtenliste selbst eintragen."
+    },
+    "kinds": {
+      "title": "Was die Einstufungen bedeuten",
+      "intro": "Jede Fahrt bekommt eine Einstufung, die zeigt, wie verlässlich die Nachrechnung ist:",
+      "rounding": "Wie cambio genau rundet, ist nicht bekannt. Deshalb gilt ein Unterschied von einem Cent im Zeitbetrag als „nachgerechnet“ und wird nur als „1 Cent Rundung“ vermerkt."
+    },
+    "months": {
+      "title": "Der Monatsvergleich",
+      "month": "Eine Fahrt zählt in dem Monat, in dem sie zurückgegeben wurde. Jeder Monat enthält die Monatsgebühr des Tarifs, bei weiteren Fahrer:innen auch deren Gebühr.",
+      "actual": "Die tatsächlichen Kosten sind die abgerechneten Beträge plus Gebühren plus {{switchingFee}} je Tarifwechsel. Monate ohne Fahrt übernehmen den Tarif des Vormonats, solange du ihn nicht in der Tabelle korrigierst.",
+      "path": "Der „optimale Pfad“ ist ein Rückblick: Er wählt für jeden Monat den Tarif, bei dem die Summe samt Wechselgebühren am kleinsten ist. Im Voraus kennt man den Monat nicht."
+    },
+    "limits": {
+      "title": "Was nicht berücksichtigt ist",
+      "intro": "Der Vergleich lässt aus:",
+      "discounts": "Partnerrabatte und Stadtangebote",
+      "signup": "die Anmeldegebühr",
+      "sipack": "das SiPack",
+      "penalties": "weitere Strafgebühren",
+      "lateFees": "pauschale Verspätungsgebühren, die cambio berechnet, wenn eine verspätete Rückgabe eine folgende Buchung betrifft",
+      "credit": "Fahrtguthaben, die cambio mit den Fahrtkosten verrechnet – sie hängen nicht vom Tarif ab",
+      "business": "Geschäftskunden-Tarife",
+      "before": "Fahrten vor dem {{date}}",
+      "holidays": "Feiertage folgen einer festen Liste, die vom Kalender von cambio abweichen kann. Die regionale Regel stammt aus dem Preisrechner von cambio und ist nur für Aachen durch eine Rechnung bestätigt.",
+      "cap": "Die ungenutzte gebuchte Zeit kostet die Hälfte des Preises genau dieser Stunden, als eigener Zeitraum ab der Rückgabe mit eigenem Tagesdeckel; so steht es auf den Rechnungen. Dass sie auch dann voll mit 50 % zählt, wenn genutzte und ungenutzte Zeit zusammen über dem Tagesdeckel lägen, ist eine Annahme."
+    },
+    "prices": {
+      "title": "Preisstand",
+      "asOf": "Die Preise stammen vom {{date}}.",
+      "outdated": "Preise können sich ändern; diese Seite kennt nur den genannten Stand. Prüfe vor einem Wechsel die aktuellen Preise bei cambio.",
+      "holidayCities": "Feiertage zum Wochenendpreis in: {{cities}}",
+      "vat": "Alle Beträge sind in Euro und enthalten die Mehrwertsteuer. Die Kilometerpreise gelten ohne Kraftstoffzuschlag.",
+      "tariffs": {
+        "title": "Tarife und Gebühren",
+        "tariff": "Tarif",
+        "monthlyFee": "Monatsgebühr",
+        "additionalDriver": "Weitere Fahrer:in je Monat",
+        "notAllowed": "nicht möglich",
+        "availability": "Verfügbar",
+        "everywhere": "überall"
+      },
+      "classes": {
+        "title": "Preise je Tarif und Wagenklasse",
+        "tariff": "Tarif",
+        "class": "Klasse",
+        "hourWeekday": "Stunde",
+        "hourWeekend": "Stunde am Wochenende",
+        "dayCap": "Tagesdeckel",
+        "weekCap": "Wochendeckel",
+        "kmTier1": "km bis {{boundary}}",
+        "kmTier2": "km ab {{next}}",
+        "same": "wie Stunde",
+        "note": "Der Tagesdeckel ist {{dayCapHours}} × Stundenpreis, wo kein anderer Wert hinterlegt ist; der Wochendeckel ist {{weekCapDays}} × {{dayCapHours}} × Stundenpreis. „wie Stunde“ heißt: kein eigener Wochenendpreis."
+      },
+      "surcharge": {
+        "title": "Kraftstoffzuschlag je km",
+        "from": "Gültig ab",
+        "amount": "Zuschlag",
+        "cents_one": "{{count, number}} Cent",
+        "cents_other": "{{count, number}} Cent"
+      },
+      "switching": "Ein Tarifwechsel kostet {{fee}}."
+    },
+    "disclaimer": {
+      "title": "Kein offizielles Angebot",
+      "body": "Diese Seite ist ein unabhängiges, inoffizielles Werkzeug und steht in keiner Verbindung zu cambio. Für die Richtigkeit der Ergebnisse gibt es keine Gewähr.",
+      "source": "Den Quellcode findest du hier:"
+    }
+  },
+  "footer": {
+    "version": "Version {{version}}",
+    "disclaimer": "Kein offizielles Angebot von cambio",
+    "repository": "Quellcode auf GitHub"
+  },
+  "import": {
+    "dropzone": {
+      "title": "Fahrten-Export hier ablegen",
+      "hint": "oder Dateien auswählen – CSV oder Excel (.xlsx), auch mehrere",
+      "choose": "Dateien auswählen",
+      "release": "Zum Einlesen loslassen",
+      "busy": "Dateien werden gelesen …",
+      "inputLabel": "Fahrten-Export auswählen (CSV oder Excel)"
+    },
+    "pageDrop": {
+      "hint": "CSV oder Excel (.xlsx) aus dem Fahrtenarchiv; die Fahrten kommen zu den bereits geladenen hinzu."
+    },
+    "privacy": {
+      "title": "Deine Daten bleiben bei dir",
+      "text": "Die Auswertung läuft komplett in deinem Browser. Deine Fahrten werden weder hochgeladen noch gespeichert."
+    },
+    "where": {
+      "title": "Wo bekomme ich den Export?",
+      "text": "Du findest den Export im cambio-Kundenportal unter „Fahrtenarchiv“. Wähle dort den gewünschten Zeitraum und lade die Tabelle als CSV oder Excel herunter."
+    },
+    "completeness": "Die Auswertung stimmt nur, wenn der Export alle Fahrten des Zeitraums enthält – auch die aller weiteren Fahrer:innen.",
+    "fields": {
+      "city": "Stadt",
+      "vehicleClass": "Wagenklasse",
+      "start": "Buchungsbeginn",
+      "end": "Buchungsende",
+      "km": "Kilometer",
+      "billedTime": "Betrag Zeit",
+      "billedKm": "Betrag Kilometer",
+      "tariff": "Tarif",
+      "driver": "Fahrende Person",
+      "tripStart": "Fahrtbeginn",
+      "tripEnd": "Fahrtende",
+      "billedTotal": "Betrag gesamt",
+      "status": "Verarbeitungsstatus",
+      "invoiceDate": "Rechnungsdatum"
+    },
+    "reasons": {
+      "invalid-date": "Datum oder Uhrzeit nicht lesbar",
+      "invalid-number": "Zahl nicht lesbar oder negativ",
+      "end-before-start": "Buchungsende liegt vor dem Beginn",
+      "unknown-tariff": "Tarif nicht bekannt",
+      "unknown-class": "Wagenklasse nicht bekannt",
+      "before-price-data": "Fahrt liegt vor den hinterlegten Preisen",
+      "not-billed": "Fahrt noch nicht abgerechnet"
+    },
+    "errors": {
+      "empty": "Die Datei ist leer.",
+      "unsupported": "Dieses Dateiformat oder diese Tabelle wird nicht unterstützt. Bitte nimm eine CSV- oder Excel-Datei (.xlsx) aus dem Fahrtenarchiv.",
+      "unreadable": "Die Datei konnte nicht gelesen werden. Vielleicht ist sie beschädigt oder anders aufgebaut als erwartet.",
+      "too-large": "Die Datei ist größer als 5 MB und wird nicht eingelesen."
+    },
+    "skipped": "Übersprungen – die Spalten wurden nicht zugeordnet.",
+    "noTrips": {
+      "title": "Diese Datei enthält keine auswertbaren Fahrten.",
+      "headerOnly": "Sie enthält nur die Kopfzeile, aber keine Zeilen darunter."
+    },
+    "mapping": {
+      "title": "Spalten zuordnen",
+      "description": "In „{{file}}“ konnten nicht alle Spalten erkannt werden. Wähle für jedes Feld die passende Spalte.",
+      "required": "Pflichtfelder",
+      "optional": "Weitere Felder (optional)",
+      "placeholder": "Spalte wählen …",
+      "none": "Nicht zuordnen",
+      "ambiguous": "Mehrere Spalten passen – bitte wähle eine.",
+      "duplicate": "Diese Spalte ist schon vergeben",
+      "preview": "Vorschau der ersten Zeilen",
+      "confirm": "Zuordnung übernehmen",
+      "cancel": "Datei überspringen",
+      "close": "Schließen",
+      "column": "Spalte {{n}}",
+      "pick": "Bitte Spalte wählen"
+    },
+    "summary": {
+      "title": "Eingelesene Fahrten",
+      "trips_one": "{{count, number}} Fahrt",
+      "trips_other": "{{count, number}} Fahrten",
+      "period": "Zeitraum",
+      "files": "Dateien",
+      "fileTrips_one": "{{count, number}} Fahrt",
+      "fileTrips_other": "{{count, number}} Fahrten",
+      "duplicates_one": "{{count, number}} doppelte Fahrt entfernt",
+      "duplicates_other": "{{count, number}} doppelte Fahrten entfernt",
+      "problems": "Nicht übernommene Zeilen",
+      "row": "Zeile",
+      "rows_one": "{{count, number}} Zeile",
+      "rows_other": "{{count, number}} Zeilen",
+      "missingMonths": "Monate ohne Fahrten",
+      "driversHint_one": "Im Export kommt {{count, number}} weitere fahrende Person vor. Sie ist in den Einstellungen als zusätzliche Fahrer:in eingetragen.",
+      "driversHint_other": "Im Export kommen {{count, number}} weitere fahrende Personen vor. Sie sind in den Einstellungen als zusätzliche Fahrer:innen eingetragen.",
+      "addFile": "Datei hinzufügen",
+      "startOver": "Neu starten",
+      "confirmTitle": "Neu starten?",
+      "confirmText": "Alle eingelesenen Fahrten und Einstellungen werden aus dem Browser entfernt. Deine Dateien bleiben unverändert.",
+      "confirmYes": "Ja, neu starten",
+      "confirmNo": "Abbrechen",
+      "moreRows": "… und {{count, number}} weitere"
+    },
+    "notice": {
+      "unofficial": "Inoffizielles Werkzeug",
+      "pricesAsOf": "Preisstand {{date}}",
+      "more": "So funktioniert’s"
+    }
+  },
+  "result": {
+    "summary": {
+      "scope": "{{from}} – {{to}} · {{trips}}",
+      "headline": {
+        "saving": "Mit dem Tarif {{tariff}} hättest du {{amount}} gespart.",
+        "alreadyBest": "Du warst die ganze Zeit im günstigsten Tarif: {{tariff}}.",
+        "switchingWon": "Du hast durch deine Wechsel {{amount}} weniger bezahlt als im besten einzelnen Tarif ({{tariff}}).",
+        "cheaperThanBest": "Du hast {{amount}} weniger bezahlt als im besten einzelnen Tarif ({{tariff}}).",
+        "equal": "Du hast genau so viel bezahlt wie im besten einzelnen Tarif ({{tariff}})."
+      },
+      "sub": {
+        "saving": "Du hast {{actual}} bezahlt. Mit {{tariff}} wären es für dieselben Fahrten {{best}} gewesen.",
+        "alreadyBest": "Kein anderer Tarif wäre für deine Fahrten günstiger gewesen. Ein Wechsel lohnt sich nach diesen Zahlen nicht.",
+        "switchingWon": "Kein einzelner Tarif wäre über den ganzen Zeitraum günstiger gewesen als dein tatsächlicher Verlauf.",
+        "cheaperThanBest": "Kein einzelner Tarif wäre über den ganzen Zeitraum günstiger gewesen als das, was du tatsächlich bezahlt hast.",
+        "equal": "Ein einzelner Tarif hätte dir für diese Fahrten nichts gespart.",
+        "alreadyBestHindsight": "Kein anderer einzelner Tarif wäre günstiger gewesen. Rückblickend hätten Wechsel zwischen den Tarifen {{hindsight}} gespart – im Voraus kennt man den Monat aber nicht."
+      },
+      "actual": {
+        "label": "Tatsächlich bezahlt",
+        "note": "inkl. Grundgebühren und Wechselgebühren"
+      },
+      "best": {
+        "label": "Bester einzelner Tarif: {{tariff}}"
+      },
+      "optimal": {
+        "label": "Rückblickend optimal, {{switches}}",
+        "switches_one": "{{count, number}} Wechsel",
+        "switches_other": "{{count, number}} Wechsel",
+        "note": "im Voraus kennt man den Monat nicht"
+      },
+      "diff": {
+        "more": "{{amount}} mehr als tatsächlich",
+        "less": "{{amount}} weniger als tatsächlich",
+        "same": "genau so viel wie tatsächlich"
+      },
+      "verification_one": "{{exact, number}} von {{count, number}} Fahrt auf den Cent nachgerechnet",
+      "verification_other": "{{exact, number}} von {{count, number}} Fahrten auf den Cent nachgerechnet",
+      "verificationParts": {
+        "verified-rounding_one": "{{count, number}} mit 1 Cent Rundungsabweichung",
+        "verified-rounding_other": "{{count, number}} mit 1 Cent Rundungsabweichung",
+        "estimated_one": "{{count, number}} geschätzt",
+        "estimated_other": "{{count, number}} geschätzt",
+        "manual_one": "{{count, number}} von Hand ergänzt",
+        "manual_other": "{{count, number}} von Hand ergänzt",
+        "overrunInferred_one": "{{count, number}} verspätet zurückgegeben (Rückgabezeit aus dem Betrag erschlossen)",
+        "overrunInferred_other": "{{count, number}} verspätet zurückgegeben (Rückgabezeit aus dem Betrag erschlossen)",
+        "not-reproducible_one": "{{count, number}} nicht nachrechenbar",
+        "not-reproducible_other": "{{count, number}} nicht nachrechenbar"
+      },
+      "verificationHint": "Für jede Fahrt wird die Buchung aus dem abgerechneten Betrag rekonstruiert und mit den hinterlegten Preisen nachgerechnet. Als auf den Cent nachgerechnet zählen nur Fahrten, deren Betrag genau herauskommt – nicht Fahrten mit 1 Cent Rundungsabweichung, geschätzte oder von Hand ergänzte.",
+      "deviation": "Abweichung der Nachrechnung insgesamt: {{amount}}",
+      "warnings": {
+        "title": "Hinweise",
+        "open_one": "{{count, number}} Fahrt ließ sich nicht eindeutig nachrechnen. Du kannst ihr gebuchtes Ende in der Fahrtenliste eintragen.",
+        "open_other": "{{count, number}} Fahrten ließen sich nicht eindeutig nachrechnen. Du kannst ihr gebuchtes Ende in der Fahrtenliste eintragen.",
+        "surcharge_one": "Bei {{count, number}} Fahrt wurde der Kraftstoffzuschlag aus dem abgerechneten Kilometerbetrag abgeleitet.",
+        "surcharge_other": "Bei {{count, number}} Fahrten wurde der Kraftstoffzuschlag aus dem abgerechneten Kilometerbetrag abgeleitet.",
+        "mixed": "In {{months}} wurden Fahrten in mehreren Tarifen abgerechnet. Als dein Tarif gilt der Tarif der letzten Fahrt im Monat.",
+        "inherited": "In {{months}} gab es keine Fahrten. Angenommen wird jeweils der Tarif des Vormonats – du kannst ihn in der Tabelle ändern.",
+        "incomplete": "In {{months}} gibt es noch nicht abgerechnete Fahrten. Sie fehlen in der Auswertung.",
+        "afterPrices_one": "{{count, number}} Fahrt liegt nach dem Preisstand ({{date}}) und wurde mit den zuletzt bekannten Preisen berechnet.",
+        "afterPrices_other": "{{count, number}} Fahrten liegen nach dem Preisstand ({{date}}) und wurden mit den zuletzt bekannten Preisen berechnet.",
+        "partial": "Vermutlich nur teilweise im Export enthalten: {{months}}. Diese Monate können zu niedrig ausfallen."
+      }
+    },
+    "settings": {
+      "title": "Deine Angaben",
+      "drivers": "Weitere Fahrer:innen",
+      "fewerDrivers": "Eine weitere Fahrer:in weniger",
+      "moreDrivers": "Eine weitere Fahrer:in mehr",
+      "driversAuto": "aus dem Export übernommen",
+      "under26": "Ich bin unter 26",
+      "under26Hint": "Den Campus-Tarif gibt es nur ohne weitere Fahrer:innen.",
+      "under26Campus": "Dein Export enthält Fahrten im Campus-Tarif.",
+      "period": "Zeitraum",
+      "from": "Von",
+      "to": "Bis",
+      "allMonths": "Gesamter Zeitraum",
+      "prices": "Preise und Berechnung"
+    },
+    "matrix": {
+      "title": "Monat für Monat",
+      "intro": "Was jeder Tarif für deine Fahrten gekostet hätte, inklusive Grundgebühr.",
+      "caption": "Kosten je Tarif und Monat in Euro, inklusive Grundgebühr, dazu deine tatsächlichen Kosten und dein Tarif je Monat.",
+      "tariff": "Tarif",
+      "sum": "Summe",
+      "perMonth": "{{amount}} / Monat",
+      "actual": "Tatsächlich",
+      "yourTariff": "Dein Tarif",
+      "scrollHint": "Seitlich scrollen für alle Monate",
+      "scrollLeft": "Frühere Monate zeigen",
+      "scrollRight": "Spätere Monate zeigen",
+      "showTrips": "Fahrten im {{month}} anzeigen",
+      "noTrips": "Keine Fahrten im {{month}}",
+      "switchFee": "inkl. {{amount}} Wechselgebühr",
+      "marks": {
+        "cheapest": "günstigster Tarif",
+        "actual": "dein Tarif",
+        "path": "optimaler Pfad",
+        "bestTotal": "günstigster Tarif insgesamt"
+      },
+      "legend": {
+        "title": "Legende",
+        "cheapest": "Günstigster Tarif im Monat",
+        "actual": "Dein Tarif",
+        "path": "Rückblickend optimaler Pfad (mit Wechselgebühren)",
+        "switch": "Tarifwechsel, {{amount}} Gebühr",
+        "incomplete": "Noch nicht abgerechnete Fahrten im Monat",
+        "partial": "Monat vermutlich nur teilweise im Export"
+      },
+      "source": {
+        "inherited": "angenommen",
+        "override": "von Hand",
+        "mixed": "gemischt"
+      },
+      "sourceHint": {
+        "trips": "Aus deinen Fahrten übernommen.",
+        "inherited": "In diesem Monat gab es keine Fahrt. Angenommen wird der Tarif des Vormonats.",
+        "override": "Von dir festgelegt.",
+        "mixed": "Fahrten in mehreren Tarifen abgerechnet; es zählt der Tarif der letzten Fahrt."
+      },
+      "menuLabel": "Dein Tarif im {{month}}",
+      "change": "Dein Tarif im {{month}}: {{tariff}}. Ändern",
+      "resetOverride": "Wieder aus den Fahrten bestimmen",
+      "notCompared": "wird nicht verglichen",
+      "breakdown": {
+        "tripCosts": "Fahrtkosten",
+        "tripCostsBilled": "Fahrtkosten laut Rechnung",
+        "time": "davon Zeit",
+        "km": "davon Kilometer",
+        "fee": "Grundgebühr",
+        "drivers": "Weitere Fahrer:innen",
+        "switch": "Tarifwechsel",
+        "sum": "Summe",
+        "usage_one": "{{count, number}} Fahrt · {{km}} km",
+        "usage_other": "{{count, number}} Fahrten · {{km}} km",
+        "tariffSource": {
+          "trips": "{{tariff}}, aus deinen Fahrten",
+          "inherited": "{{tariff}}, angenommen",
+          "override": "{{tariff}}, von Hand festgelegt"
+        }
+      },
+      "usage": {
+        "title": "Deine Nutzung",
+        "trips": "Fahrten",
+        "km": "Kilometer",
+        "hours": "Stunden"
+      },
+      "incomplete": "In diesem Monat gibt es noch nicht abgerechnete Fahrten",
+      "partial": "Dieser Monat ist im Export vermutlich nicht vollständig enthalten"
+    },
+    "chart": {
+      "title": "Monatskosten im Verlauf",
+      "note": "Alle Werte stehen auch in der Tabelle „Monat für Monat“.",
+      "legend": "Linien",
+      "view": "Darstellung",
+      "monthly": "Je Monat",
+      "cumulative": "Aufsummiert",
+      "loading": "Diagramm wird geladen …"
+    },
+    "breakEven": {
+      "title": "Ab wann lohnt sich welcher Tarif?",
+      "intro": "Ab diesen Fahrtkosten im Monat gleicht der teurere Tarif seine höhere Grundgebühr durch günstigere Preise aus – gerechnet mit deinen Fahrten.",
+      "pays": "{{higher}} lohnt sich gegenüber {{lower}} ab {{amount}} Fahrtkosten im Monat (zu {{lower}}-Preisen).",
+      "never": "{{higher}} lohnt sich gegenüber {{lower}} bei deinen Fahrten nie: Die Preise sind nicht günstig genug, um die Grundgebühr auszugleichen.",
+      "months": "{{count, number}} von {{total, number}} Monaten lagen darüber",
+      "above": "darüber",
+      "below": "darunter",
+      "none": "Es wird nur ein Tarif verglichen."
+    },
+    "trips": {
+      "title": "Deine Fahrten",
+      "intro": "Nach Monaten, neueste zuerst. Zu jeder Fahrt: was abgerechnet wurde und was sie in jedem Tarif gekostet hätte.",
+      "toCheck_one": "{{count, number}} zu prüfen",
+      "toCheck_other": "{{count, number}} zu prüfen",
+      "paid": "bezahlt inkl. Gebühren",
+      "bookedUntil": "gebucht bis {{time}}",
+      "booked": "gebucht {{duration}}",
+      "overrun": "gebucht bis {{time}}, {{minutes}} min später zurückgegeben",
+      "overrunInferred": "gebucht bis {{time}}, vermutlich {{minutes}} min später zurückgegeben",
+      "deviation": "Nachrechnung {{amount}}",
+      "deviationHint": "Unterschied zwischen nachgerechnetem und abgerechnetem Betrag im Tarif der Fahrt",
+      "columns": {
+        "trip": "Fahrt",
+        "duration": "Dauer",
+        "km": "km",
+        "vehicle": "Wagenklasse, Tarif",
+        "billed": "Abgerechnet",
+        "status": "Nachrechnung"
+      }
+    },
+    "kinds": {
+      "verified": {
+        "label": "nachgerechnet",
+        "text": "Mit den hinterlegten Preisen kostet die Fahrt auf den Cent genau den abgerechneten Betrag."
+      },
+      "verified-rounding": {
+        "label": "nachgerechnet (1 Cent Rundung)",
+        "text": "Die Nachrechnung weicht nur um einen Cent ab – das liegt an der Rundung."
+      },
+      "estimated": {
+        "label": "geschätzt",
+        "text": "Mehrere gebuchte Enden passen zum Betrag; gerechnet wird mit dem frühesten. Wenn du das gebuchte Ende kennst, trag es ein."
+      },
+      "manual": {
+        "label": "von Hand ergänzt",
+        "text": "Gerechnet wird mit dem gebuchten Ende, das du eingetragen hast."
+      },
+      "cancelled": {
+        "label": "kurzfristig storniert (50 %)",
+        "text": "Die Buchung wurde kurzfristig storniert; berechnet wird die Hälfte des Zeitpreises."
+      },
+      "unused": {
+        "label": "nicht angetreten (100 %)",
+        "text": "Die Buchung wurde nicht angetreten; berechnet wird der volle Zeitpreis."
+      },
+      "overrun": {
+        "label": "verspätet zurückgegeben",
+        "text_one": "Das Auto wurde {{count, number}} Minute nach dem gebuchten Ende zurückgegeben. Diese Zeit kostet den doppelten Zeitpreis.",
+        "text_other": "Das Auto wurde {{count, number}} Minuten nach dem gebuchten Ende zurückgegeben. Diese Zeit kostet den doppelten Zeitpreis.",
+        "inferred_one": "Der Betrag passt zu einer Rückgabe {{count, number}} Minute nach dem gebuchten Ende. Die Rückgabezeit steht nicht im Export und ist aus dem Betrag erschlossen.",
+        "inferred_other": "Der Betrag passt zu einer Rückgabe {{count, number}} Minuten nach dem gebuchten Ende. Die Rückgabezeit steht nicht im Export und ist aus dem Betrag erschlossen.",
+        "general": "Das Auto wurde nach dem gebuchten Ende zurückgegeben. Diese Zeit kostet den doppelten Zeitpreis."
+      },
+      "not-reproducible": {
+        "label": "nicht nachrechenbar",
+        "text": "Kein gebuchtes Ende ergibt den abgerechneten Betrag. Gerechnet wird bis zur Rückgabe; trag das gebuchte Ende ein, wenn du es kennst."
+      }
+    },
+    "bookedEnd": {
+      "open": "Gebuchtes Ende eintragen",
+      "edit": "Gebuchtes Ende ändern",
+      "title": "Gebuchtes Ende",
+      "description": "Bis wann war die Fahrt gebucht? Zurückgegeben wurde das Auto am {{time}}. Liegt das gebuchte Ende davor, zählt die Zeit danach als verspätete Rückgabe zum doppelten Zeitpreis.",
+      "inferred": "Gebucht bis {{booked}} · zurückgegeben vermutlich {{returned}}. Die Rückgabezeit steht nicht im Export, sie ist aus dem Betrag erschlossen. Stimmt das nicht, trag das gebuchte Ende ein oder rechne ohne verspätete Rückgabe.",
+      "noOverrun": "Keine verspätete Rückgabe",
+      "date": "Datum",
+      "time": "Uhrzeit",
+      "apply": "Übernehmen",
+      "clear": "Eintrag entfernen",
+      "tooEarly": "Das gebuchte Ende kann nicht vor {{time}} liegen.",
+      "invalid": "Dieses Datum gibt es nicht. Bitte ein gültiges Datum wählen.",
+      "tooLate": "Das gebuchte Ende kann höchstens 30 Tage nach Fahrtbeginn liegen, also spätestens {{time}}."
+    },
+    "empty": {
+      "title": "Keine Auswertung möglich",
+      "period": "Im gewählten Zeitraum gibt es keine Fahrten.",
+      "tariffs": "Für deine Fahrten lässt sich kein Tarif vollständig berechnen.",
+      "reset": "Gesamten Zeitraum anzeigen"
+    }
+  },
+  "tariffs": {
+    "CAMPUS": "Campus",
+    "BASIS": "Basis",
+    "START": "Start",
+    "AKTIV": "Aktiv",
+    "COMFORT": "Comfort"
+  },
+  "units": {
+    "hour": "h",
+    "minute": "min"
+  },
+  "lazy": {
+    "loading": "Wird geladen …",
+    "failed": "Dieser Teil der Seite konnte nicht geladen werden. Prüfe deine Internetverbindung.",
+    "retry": "Erneut versuchen"
+  },
+  "router": {
+    "error": {
+      "title": "Etwas ist schiefgelaufen",
+      "text": "Die Seite konnte nicht angezeigt werden. Deine Fahrten bleiben geladen, solange du diese Seite nicht schließt."
+    },
+    "notFound": {
+      "title": "Diese Seite gibt es nicht.",
+      "home": "Zur Startseite"
+    }
+  }
+}

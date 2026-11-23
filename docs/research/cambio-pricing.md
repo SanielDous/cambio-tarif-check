@@ -481,7 +481,7 @@ Not used by the app, recorded for completeness:
 
 There is no JSON API. The calculator is a server-rendered form on the tariff page whose hidden
 fields are HMAC-signed, so they must be scraped first. A working client is in
-[`calculator-client.py`](calculator-client.py).
+[`tools/record-calculator.py`](../../tools/record-calculator.py).
 
 1. `GET https://www.cambio-carsharing.de/tarife` with `Cookie: selectedCity=<uid>`. Take the
    `<form action>` of the calculator (contains a `cHash`) and all hidden inputs

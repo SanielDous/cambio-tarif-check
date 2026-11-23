@@ -1,0 +1,505 @@
+{
+  "app": {
+    "title": "cambio Tarif-Check",
+    "subtitle": "Find out which cambio tariff would have been the cheapest for your trips."
+  },
+  "nav": {
+    "home": "Home",
+    "howItWorks": "How it works"
+  },
+  "language": {
+    "label": "Language",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "theme": {
+    "label": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "intro": "A short explanation of what is calculated here, what is left out, and which prices are used.",
+    "whatItDoes": {
+      "title": "What this page does",
+      "body": "This page compares what your trips actually cost with what they would have cost in the other cambio tariffs. Each trip is priced with the prices that were valid at the time of the trip.",
+      "hindsight": "The result is a look back at your past trips. It does not predict which tariff will be the cheapest in future."
+    },
+    "data": {
+      "title": "Where the data comes from and where it stays",
+      "source": "The trips come from the export you can download in the cambio customer portal under “Fahrtenarchiv” (trip archive), as CSV or Excel.",
+      "privacy": "Everything is calculated in your browser. Your data is neither uploaded nor stored; once you reload or close the page, it is gone."
+    },
+    "trip": {
+      "title": "How a trip is recalculated",
+      "intro": "Every trip is priced to the minute with the stored prices:",
+      "time": "Time: each minute costs one sixtieth of the hourly price of the vehicle class in that tariff.",
+      "night": "Night: from {{nightFrom}} to {{nightTo}} the hour costs {{nightPrice}} in every tariff.",
+      "weekend": "Weekend: from {{weekendFromDay}} {{weekendFromTime}} until {{weekendToDay}} {{weekendToTime}} the weekend price applies. It exists only in {{weekendTariffs}}; in the other tariffs the hourly price is always the same. Public holidays count like weekends only in some regions, namely in {{holidayCities}}. In all other cities public holidays cost the normal price. The hours from {{nightFrom}} to {{nightTo}} cost the night price on weekends and public holidays too.",
+      "caps": "Caps: each 24-hour block counted from the start of the booking costs at most the price of {{dayCapHours}} hours, each 7-day block at most the price of {{weekCapDays}} full days. A remainder of less than one hour after full days is not charged.",
+      "km": "Kilometres: the first {{kmBoundary}} km cost the higher price, every further kilometre the cheaper one. A fuel surcharge per kilometre is added, and it changes over time."
+    },
+    "earlyReturn": {
+      "title": "Early return and the booked end",
+      "export": "The export contains the time of return, not the originally booked end. If you return the car early, cambio charges the unused booked time at 50 %.",
+      "reconstruction": "This page works out the booked end from the billed amount: up to the return, rounded up to the next quarter hour, the full price applies, and the rest of the booking costs 50 %. The same booking is then priced in the other tariffs.",
+      "late": "If you return the car after the booked end, every minute after it costs double the time price. The page recognises this from the billed amount and prices the same delay in the other tariffs too.",
+      "ambiguous": "If several booked ends fit the amount, the earliest is used; if none fits, the trip is priced up to the return. In both cases you can enter the booked end yourself in the trip list."
+    },
+    "kinds": {
+      "title": "What the classifications mean",
+      "intro": "Every trip gets a classification that shows how reliable its recalculation is:",
+      "rounding": "How exactly cambio rounds is not known. A difference of one cent in the time amount is therefore treated as matching and only marked “1 cent rounding”."
+    },
+    "months": {
+      "title": "The monthly comparison",
+      "month": "A trip counts in the month in which it was returned. Each month includes the monthly fee of the tariff and, with additional drivers, their fee.",
+      "actual": "Actual cost is the billed amounts plus fees plus {{switchingFee}} per tariff change. Months without trips take the previous month’s tariff unless you correct it in the table.",
+      "path": "The “optimal path” is hindsight: for each month it picks the tariff that makes the total, including switching fees, the smallest. You do not know the month in advance."
+    },
+    "limits": {
+      "title": "What is not included",
+      "intro": "The comparison leaves out:",
+      "discounts": "partner discounts and city offers",
+      "signup": "the sign-up fee",
+      "sipack": "SiPack",
+      "penalties": "other penalty fees",
+      "lateFees": "flat late fees (“Verspätungsgebühr”) that cambio charges when a late return affects a following booking",
+      "credit": "trip credits (“Fahrtguthaben”) that cambio offsets against trip costs – they do not depend on the tariff",
+      "business": "business tariffs",
+      "before": "trips before {{date}}",
+      "holidays": "Public holidays follow a fixed list that may differ from cambio’s calendar. The regional rule comes from cambio’s price calculator and is confirmed by an invoice only for Aachen.",
+      "cap": "The unused booked time is charged at half the price of exactly those hours, as a span of its own from the return with its own day cap; this is how the invoices show it. That it counts in full at 50 % even when used and unused time together would exceed the day cap is an assumption."
+    },
+    "prices": {
+      "title": "Price list",
+      "asOf": "The prices are as of {{date}}.",
+      "outdated": "Prices can change, and this page only knows the date given. Check the current prices with cambio before you switch.",
+      "holidayCities": "Public holidays at the weekend price in: {{cities}}",
+      "vat": "All amounts are in euros and include VAT. Kilometre prices are without the fuel surcharge.",
+      "tariffs": {
+        "title": "Tariffs and fees",
+        "tariff": "Tariff",
+        "monthlyFee": "Monthly fee",
+        "additionalDriver": "Additional driver per month",
+        "notAllowed": "not possible",
+        "availability": "Available",
+        "everywhere": "everywhere"
+      },
+      "classes": {
+        "title": "Prices per tariff and vehicle class",
+        "tariff": "Tariff",
+        "class": "Class",
+        "hourWeekday": "Hour",
+        "hourWeekend": "Hour, weekend",
+        "dayCap": "Day cap",
+        "weekCap": "Week cap",
+        "kmTier1": "km up to {{boundary}}",
+        "kmTier2": "km from {{next}}",
+        "same": "as hour",
+        "note": "The day cap is {{dayCapHours}} × the hourly price unless another value is stored; the week cap is {{weekCapDays}} × {{dayCapHours}} × the hourly price. “as hour” means there is no separate weekend price."
+      },
+      "surcharge": {
+        "title": "Fuel surcharge per km",
+        "from": "Valid from",
+        "amount": "Surcharge",
+        "cents_one": "{{count, number}} cent",
+        "cents_other": "{{count, number}} cents"
+      },
+      "switching": "A tariff change costs {{fee}}."
+    },
+    "disclaimer": {
+      "title": "Not an official offer",
+      "body": "This page is an independent, unofficial tool and is not affiliated with cambio. There is no guarantee that the results are correct.",
+      "source": "You can find the source code here:"
+    }
+  },
+  "footer": {
+    "version": "Version {{version}}",
+    "disclaimer": "Not an official offer from cambio",
+    "repository": "Source code on GitHub"
+  },
+  "import": {
+    "dropzone": {
+      "title": "Drop your trip export here",
+      "hint": "or choose files – CSV or Excel (.xlsx), several at once",
+      "choose": "Choose files",
+      "release": "Release to read the files",
+      "busy": "Reading files …",
+      "inputLabel": "Choose trip export (CSV or Excel)"
+    },
+    "pageDrop": {
+      "hint": "CSV or Excel (.xlsx) from the trip archive; the trips are added to those already loaded."
+    },
+    "privacy": {
+      "title": "Your data stays with you",
+      "text": "The analysis runs entirely in your browser. Your trips are neither uploaded nor stored."
+    },
+    "where": {
+      "title": "Where do I get the export?",
+      "text": "You can find the export in the cambio customer portal under “Fahrtenarchiv” (trip archive). Pick the period you want there and download the table as CSV or Excel."
+    },
+    "completeness": "The analysis is only correct if the export contains all trips of the period – including those of any additional drivers.",
+    "fields": {
+      "city": "City",
+      "vehicleClass": "Vehicle class",
+      "start": "Booking start",
+      "end": "Booking end",
+      "km": "Kilometres",
+      "billedTime": "Time amount",
+      "billedKm": "Kilometre amount",
+      "tariff": "Tariff",
+      "driver": "Driver",
+      "tripStart": "Trip start",
+      "tripEnd": "Trip end",
+      "billedTotal": "Total amount",
+      "status": "Processing status",
+      "invoiceDate": "Invoice date"
+    },
+    "reasons": {
+      "invalid-date": "Date or time not readable",
+      "invalid-number": "Number not readable or negative",
+      "end-before-start": "Booking end is before its start",
+      "unknown-tariff": "Tariff not known",
+      "unknown-class": "Vehicle class not known",
+      "before-price-data": "Trip is older than the stored prices",
+      "not-billed": "Trip not billed yet"
+    },
+    "errors": {
+      "empty": "The file is empty.",
+      "unsupported": "This file type or table is not supported. Please use a CSV or Excel (.xlsx) file from the trip archive.",
+      "unreadable": "The file could not be read. It may be damaged or structured differently than expected.",
+      "too-large": "The file is larger than 5 MB and was not read."
+    },
+    "skipped": "Skipped – the columns were not mapped.",
+    "noTrips": {
+      "title": "This file contains no trips that can be analysed.",
+      "headerOnly": "It contains only the header row and no rows below it."
+    },
+    "mapping": {
+      "title": "Map columns",
+      "description": "Not all columns in “{{file}}” could be recognised. Choose the matching column for each field.",
+      "required": "Required fields",
+      "optional": "More fields (optional)",
+      "placeholder": "Choose column …",
+      "none": "Do not map",
+      "ambiguous": "Several columns match – please pick one.",
+      "duplicate": "This column is already taken",
+      "preview": "Preview of the first rows",
+      "confirm": "Use this mapping",
+      "cancel": "Skip file",
+      "close": "Close",
+      "column": "Column {{n}}",
+      "pick": "Please choose a column"
+    },
+    "summary": {
+      "title": "Imported trips",
+      "trips_one": "{{count, number}} trip",
+      "trips_other": "{{count, number}} trips",
+      "period": "Period",
+      "files": "Files",
+      "fileTrips_one": "{{count, number}} trip",
+      "fileTrips_other": "{{count, number}} trips",
+      "duplicates_one": "{{count, number}} duplicate trip removed",
+      "duplicates_other": "{{count, number}} duplicate trips removed",
+      "problems": "Rows not imported",
+      "row": "Row",
+      "rows_one": "{{count, number}} row",
+      "rows_other": "{{count, number}} rows",
+      "missingMonths": "Months without trips",
+      "driversHint_one": "The export contains {{count, number}} other driver. It has been entered as an additional driver in the settings.",
+      "driversHint_other": "The export contains {{count, number}} other drivers. They have been entered as additional drivers in the settings.",
+      "addFile": "Add file",
+      "startOver": "Start over",
+      "confirmTitle": "Start over?",
+      "confirmText": "All imported trips and settings are removed from the browser. Your files stay untouched.",
+      "confirmYes": "Yes, start over",
+      "confirmNo": "Cancel",
+      "moreRows": "… and {{count, number}} more"
+    },
+    "notice": {
+      "unofficial": "Unofficial tool",
+      "pricesAsOf": "Prices as of {{date}}",
+      "more": "How it works"
+    }
+  },
+  "result": {
+    "summary": {
+      "scope": "{{from}} – {{to}} · {{trips}}",
+      "headline": {
+        "saving": "With the {{tariff}} tariff you would have saved {{amount}}.",
+        "alreadyBest": "You were in the cheapest tariff the whole time: {{tariff}}.",
+        "switchingWon": "Thanks to your switches you paid {{amount}} less than in the best single tariff ({{tariff}}).",
+        "cheaperThanBest": "You paid {{amount}} less than in the best single tariff ({{tariff}}).",
+        "equal": "You paid exactly as much as in the best single tariff ({{tariff}})."
+      },
+      "sub": {
+        "saving": "You paid {{actual}}. With {{tariff}}, the same trips would have cost {{best}}.",
+        "alreadyBest": "No other tariff would have been cheaper for your trips. By these numbers, switching does not pay off.",
+        "switchingWon": "No single tariff would have been cheaper over the whole period than what you actually did.",
+        "cheaperThanBest": "No single tariff would have been cheaper over the whole period than what you actually paid.",
+        "equal": "A single tariff would not have saved you anything on these trips.",
+        "alreadyBestHindsight": "No other single tariff would have been cheaper. In hindsight, switching between tariffs would have saved {{hindsight}} – but you cannot know the month in advance."
+      },
+      "actual": {
+        "label": "Actually paid",
+        "note": "incl. monthly and switching fees"
+      },
+      "best": {
+        "label": "Best single tariff: {{tariff}}"
+      },
+      "optimal": {
+        "label": "Optimal in hindsight, {{switches}}",
+        "switches_one": "{{count, number}} switch",
+        "switches_other": "{{count, number}} switches",
+        "note": "you cannot know the month in advance"
+      },
+      "diff": {
+        "more": "{{amount}} more than actually paid",
+        "less": "{{amount}} less than actually paid",
+        "same": "exactly what you paid"
+      },
+      "verification_one": "{{exact, number}} of {{count, number}} trip recomputed to the cent",
+      "verification_other": "{{exact, number}} of {{count, number}} trips recomputed to the cent",
+      "verificationParts": {
+        "verified-rounding_one": "{{count, number}} with a 1 cent rounding difference",
+        "verified-rounding_other": "{{count, number}} with a 1 cent rounding difference",
+        "estimated_one": "{{count, number}} estimated",
+        "estimated_other": "{{count, number}} estimated",
+        "manual_one": "{{count, number}} added by hand",
+        "manual_other": "{{count, number}} added by hand",
+        "overrunInferred_one": "{{count, number}} returned late (return time inferred from the amount)",
+        "overrunInferred_other": "{{count, number}} returned late (return time inferred from the amount)",
+        "not-reproducible_one": "{{count, number}} not reproducible",
+        "not-reproducible_other": "{{count, number}} not reproducible"
+      },
+      "verificationHint": "For every trip, the booking is reconstructed from the billed amount and recomputed with the stored prices. Only trips whose amount comes out exactly count as recomputed to the cent – not those with a 1 cent rounding difference, estimated ones or ones completed by hand.",
+      "deviation": "Total recomputation difference: {{amount}}",
+      "warnings": {
+        "title": "Notes",
+        "open_one": "{{count, number}} trip could not be recomputed unambiguously. You can enter its booked end in the trip list.",
+        "open_other": "{{count, number}} trips could not be recomputed unambiguously. You can enter their booked end in the trip list.",
+        "surcharge_one": "For {{count, number}} trip, the fuel surcharge was derived from the billed distance amount.",
+        "surcharge_other": "For {{count, number}} trips, the fuel surcharge was derived from the billed distance amount.",
+        "mixed": "In {{months}}, trips were billed in more than one tariff. Your tariff is taken from the month's last trip.",
+        "inherited": "There were no trips in {{months}}. The previous month's tariff is assumed – you can change it in the table.",
+        "incomplete": "There are trips in {{months}} that are not billed yet. They are left out of the analysis.",
+        "afterPrices_one": "{{count, number}} trip is after the price date ({{date}}) and was priced with the latest known prices.",
+        "afterPrices_other": "{{count, number}} trips are after the price date ({{date}}) and were priced with the latest known prices.",
+        "partial": "Probably only partly contained in the export: {{months}}. These months may come out too low."
+      }
+    },
+    "settings": {
+      "title": "Your details",
+      "drivers": "Additional drivers",
+      "fewerDrivers": "One additional driver fewer",
+      "moreDrivers": "One additional driver more",
+      "driversAuto": "taken from the export",
+      "under26": "I am under 26",
+      "under26Hint": "The Campus tariff is only available without additional drivers.",
+      "under26Campus": "Your export contains trips in the Campus tariff.",
+      "period": "Period",
+      "from": "From",
+      "to": "To",
+      "allMonths": "Whole period",
+      "prices": "Prices and calculation"
+    },
+    "matrix": {
+      "title": "Month by month",
+      "intro": "What each tariff would have cost for your trips, including the monthly fee.",
+      "caption": "Cost per tariff and month in euros, including the monthly fee, plus your actual cost and tariff per month.",
+      "tariff": "Tariff",
+      "sum": "Total",
+      "perMonth": "{{amount}} / month",
+      "actual": "Actual",
+      "yourTariff": "Your tariff",
+      "scrollHint": "Scroll sideways for all months",
+      "scrollLeft": "Show earlier months",
+      "scrollRight": "Show later months",
+      "showTrips": "Show trips in {{month}}",
+      "noTrips": "No trips in {{month}}",
+      "switchFee": "incl. {{amount}} switching fee",
+      "marks": {
+        "cheapest": "cheapest tariff",
+        "actual": "your tariff",
+        "path": "optimal path",
+        "bestTotal": "cheapest tariff overall"
+      },
+      "legend": {
+        "title": "Legend",
+        "cheapest": "Cheapest tariff of the month",
+        "actual": "Your tariff",
+        "path": "Optimal path in hindsight (with switching fees)",
+        "switch": "Tariff switch, {{amount}} fee",
+        "incomplete": "Trips not billed yet in the month",
+        "partial": "Month probably only partly in the export"
+      },
+      "source": {
+        "inherited": "assumed",
+        "override": "set by you",
+        "mixed": "mixed"
+      },
+      "sourceHint": {
+        "trips": "Taken from your trips.",
+        "inherited": "No trip this month. The previous month's tariff is assumed.",
+        "override": "Set by you.",
+        "mixed": "Trips billed in more than one tariff; the last trip's tariff counts."
+      },
+      "menuLabel": "Your tariff in {{month}}",
+      "change": "Your tariff in {{month}}: {{tariff}}. Change",
+      "resetOverride": "Determine from the trips again",
+      "notCompared": "not compared",
+      "breakdown": {
+        "tripCosts": "Trip costs",
+        "tripCostsBilled": "Trip costs as billed",
+        "time": "of which time",
+        "km": "of which kilometres",
+        "fee": "Base fee",
+        "drivers": "Additional drivers",
+        "switch": "Tariff change",
+        "sum": "Total",
+        "usage_one": "{{count, number}} trip · {{km}} km",
+        "usage_other": "{{count, number}} trips · {{km}} km",
+        "tariffSource": {
+          "trips": "{{tariff}}, from your trips",
+          "inherited": "{{tariff}}, assumed",
+          "override": "{{tariff}}, set by hand"
+        }
+      },
+      "usage": {
+        "title": "Your usage",
+        "trips": "Trips",
+        "km": "Kilometres",
+        "hours": "Hours"
+      },
+      "incomplete": "This month has trips that are not billed yet",
+      "partial": "This month is probably not fully contained in the export"
+    },
+    "chart": {
+      "title": "Monthly cost over time",
+      "note": "All values are also in the “Month by month” table.",
+      "legend": "Lines",
+      "view": "View",
+      "monthly": "Per month",
+      "cumulative": "Cumulative",
+      "loading": "Loading chart …"
+    },
+    "breakEven": {
+      "title": "When does which tariff pay off?",
+      "intro": "From these monthly trip costs on, the pricier tariff makes up for its higher monthly fee through lower prices – based on your trips.",
+      "pays": "{{higher}} pays off compared with {{lower}} from {{amount}} of trip cost per month (at {{lower}} prices).",
+      "never": "{{higher}} never pays off compared with {{lower}} for your trips: its prices are not low enough to make up for the fee.",
+      "months": "{{count, number}} of {{total, number}} months were above",
+      "above": "above",
+      "below": "below",
+      "none": "Only one tariff is compared."
+    },
+    "trips": {
+      "title": "Your trips",
+      "intro": "By month, newest first. For every trip: what was billed and what it would have cost in each tariff.",
+      "toCheck_one": "{{count, number}} to check",
+      "toCheck_other": "{{count, number}} to check",
+      "paid": "paid incl. fees",
+      "bookedUntil": "booked until {{time}}",
+      "booked": "booked {{duration}}",
+      "overrun": "booked until {{time}}, returned {{minutes}} min later",
+      "overrunInferred": "booked until {{time}}, probably returned {{minutes}} min later",
+      "deviation": "Recomputed {{amount}}",
+      "deviationHint": "Difference between the recomputed and the billed amount in the trip's tariff",
+      "columns": {
+        "trip": "Trip",
+        "duration": "Duration",
+        "km": "km",
+        "vehicle": "Vehicle class, tariff",
+        "billed": "Billed",
+        "status": "Recomputation"
+      }
+    },
+    "kinds": {
+      "verified": {
+        "label": "recomputed",
+        "text": "With the stored prices, the trip costs exactly the billed amount, to the cent."
+      },
+      "verified-rounding": {
+        "label": "recomputed (1 cent rounding)",
+        "text": "The recomputation differs by one cent only – a matter of rounding."
+      },
+      "estimated": {
+        "label": "estimated",
+        "text": "Several booked ends match the amount; the earliest one is used. If you know the booked end, enter it."
+      },
+      "manual": {
+        "label": "added by hand",
+        "text": "The booked end you entered is used."
+      },
+      "cancelled": {
+        "label": "cancelled at short notice (50 %)",
+        "text": "The booking was cancelled at short notice; half of the time price is charged."
+      },
+      "unused": {
+        "label": "not started (100 %)",
+        "text": "The booking was not used; the full time price is charged."
+      },
+      "overrun": {
+        "label": "returned late",
+        "text_one": "The car was returned {{count, number}} minute after the booked end. This time costs double the time price.",
+        "text_other": "The car was returned {{count, number}} minutes after the booked end. This time costs double the time price.",
+        "inferred_one": "The amount matches a return {{count, number}} minute after the booked end. The return time is not in the export; it is inferred from the amount.",
+        "inferred_other": "The amount matches a return {{count, number}} minutes after the booked end. The return time is not in the export; it is inferred from the amount.",
+        "general": "The car was returned after the booked end. This time costs double the time price."
+      },
+      "not-reproducible": {
+        "label": "not reproducible",
+        "text": "No booked end yields the billed amount. The trip is priced up to the return; enter the booked end if you know it."
+      }
+    },
+    "bookedEnd": {
+      "open": "Enter booked end",
+      "edit": "Change booked end",
+      "title": "Booked end",
+      "description": "Until when was the trip booked? The car was returned on {{time}}. If the booked end lies before that, the time after it counts as a late return at double the time price.",
+      "inferred": "Booked until {{booked}} · probably returned {{returned}}. The return time is not in the export; it is inferred from the amount. If that is wrong, enter the booked end or compute without a late return.",
+      "noOverrun": "No late return",
+      "date": "Date",
+      "time": "Time",
+      "apply": "Apply",
+      "clear": "Remove entry",
+      "tooEarly": "The booked end cannot be before {{time}}.",
+      "invalid": "This date does not exist. Please choose a valid date.",
+      "tooLate": "The booked end can be at most 30 days after the trip start, so {{time}} at the latest."
+    },
+    "empty": {
+      "title": "No result possible",
+      "period": "There are no trips in the chosen period.",
+      "tariffs": "No tariff can price all of your trips.",
+      "reset": "Show the whole period"
+    }
+  },
+  "tariffs": {
+    "CAMPUS": "Campus",
+    "BASIS": "Basis",
+    "START": "Start",
+    "AKTIV": "Aktiv",
+    "COMFORT": "Comfort"
+  },
+  "units": {
+    "hour": "h",
+    "minute": "min"
+  },
+  "lazy": {
+    "loading": "Loading …",
+    "failed": "This part of the page could not be loaded. Check your internet connection.",
+    "retry": "Try again"
+  },
+  "router": {
+    "error": {
+      "title": "Something went wrong",
+      "text": "The page could not be displayed. Your trips stay loaded as long as you do not close this page."
+    },
+    "notFound": {
+      "title": "This page does not exist.",
+      "home": "Back to the start page"
+    }
+  }
+}
