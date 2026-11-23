@@ -23,8 +23,9 @@ const isEmpty = (cell: unknown): boolean =>
 function toTime(cell: unknown, field: FieldId): LocalMinute {
   if (cell instanceof Date) {
     const ms = cell.getTime();
-    // Whole minutes since the epoch in UTC are the naive local minutes (rounded: serials are floats).
-    if (Number.isFinite(ms)) return Math.round(ms / 60_000);
+    // Seconds are dropped like in the text format; the detour over whole seconds absorbs the
+    // float error of date serials (17:14:59.999 is 17:15).
+    if (Number.isFinite(ms)) return Math.floor(Math.round(ms / 1000) / 60);
   } else if (typeof cell === "string") {
     const t = parseLocal(cell);
     if (t !== null) return t;
@@ -32,17 +33,33 @@ function toTime(cell: unknown, field: FieldId): LocalMinute {
   throw new RowError("invalid-date", field);
 }
 
-/** Numbers as text may use a decimal comma and thousands points. */
+const NUMBER_FORMATS = [
+  /^-?\d+$/,
+  /^-?\d+,\d+$/,
+  // German thousands points. "1.234" is therefore 1234, never 1.234.
+  /^-?\d{1,3}(\.\d{3})+(,\d+)?$/,
+  /^-?\d+\.\d{1,2}$/,
+];
+
+/** Plain numbers only: malformed text is rejected rather than guessed. Never negative. */
 function toNumber(cell: unknown, field: FieldId): number {
-  if (typeof cell === "number" && Number.isFinite(cell)) return cell;
-  if (typeof cell === "string") {
-    const text = cell.replace(/\s|€/g, "");
-    let normalized = text;
-    if (text.includes(",")) normalized = text.replaceAll(".", "").replace(",", ".");
-    else if (/^-?\d{1,3}(\.\d{3})+$/.test(text)) normalized = text.replaceAll(".", "");
-    if (/^-?(\d+\.?\d*|\.\d+)$/.test(normalized)) return Number(normalized);
+  let value: number | undefined;
+  if (typeof cell === "number") {
+    if (Number.isFinite(cell)) value = cell;
+  } else if (typeof cell === "string") {
+    const text = cell
+      .replace(/^\s*(?:€|EUR)/i, "")
+      .replace(/(?:€|EUR)\s*$/i, "")
+      .trim();
+    if (NUMBER_FORMATS.some((format) => format.test(text))) {
+      value = Number(text.replaceAll(".", "").replace(",", "."));
+      // Dot decimals ("4.98") must keep their point.
+      if (NUMBER_FORMATS[3]?.test(text) && !NUMBER_FORMATS[2]?.test(text)) value = Number(text);
+    }
   }
-  throw new RowError("invalid-number", field);
+  if (value === undefined) throw new RowError("invalid-number", field);
+  if (value < 0) throw new RowError("invalid-number", `${field}: negative value`);
+  return value + 0; // turns -0 into 0
 }
 
 const toCents = (cell: unknown, field: FieldId): number => Math.round(toNumber(cell, field) * 100);
@@ -119,7 +136,6 @@ export function normalizeRows(
 ): { trips: Trip[]; problems: RowProblem[] } {
   const trips: Trip[] = [];
   const problems: RowProblem[] = [];
-  // Row numbers count the header as row 1.
   table.rows.forEach((row, index) => {
     if (row.every(isEmpty)) return;
     try {
@@ -128,7 +144,7 @@ export function normalizeRows(
       if (!(error instanceof RowError)) throw error;
       const problem: RowProblem = {
         fileName: table.fileName,
-        rowNumber: index + 2,
+        rowNumber: table.rowNumbers[index] ?? index + 2,
         reason: error.reason,
       };
       if (error.detail !== undefined) problem.detail = error.detail;

@@ -17,11 +17,36 @@ function cellText(cell: unknown): string {
     : "";
 }
 
+/**
+ * The delimiter that splits most of the first non-blank lines into several fields. Papa Parse's
+ * own guess is thrown off by title lines and blank lines, which this file format may contain.
+ */
+function guessDelimiter(text: string): string | undefined {
+  const lines = text
+    .split(/\r\n|\n|\r/)
+    .filter((line) => line.trim() !== "")
+    .slice(0, HEADER_SEARCH_ROWS * 2);
+  let best: { delimiter: string; wide: number; total: number } | undefined;
+  for (const delimiter of [";", ",", "\t", "|"]) {
+    const counts = lines.map((line) => line.split(delimiter).length - 1);
+    const wide = counts.filter((count) => count >= HEADER_MIN_FIELDS - 1).length;
+    const total = counts.reduce((sum, count) => sum + count, 0);
+    if (wide > 0 && (!best || wide > best.wide || (wide === best.wide && total > best.total))) {
+      best = { delimiter, wide, total };
+    }
+  }
+  return best?.delimiter;
+}
+
+/** Rows by position: index + 1 is the row number (blank rows are kept so that it stays true). */
 function readCsv(bytes: Uint8Array): unknown[][] {
   // TextDecoder drops a leading BOM. Invalid UTF-8 shows up as U+FFFD: retry as windows-1252.
   let text = new TextDecoder("utf-8").decode(bytes);
   if (text.includes("\uFFFD")) text = new TextDecoder("windows-1252").decode(bytes);
-  return Papa.parse<string[]>(text, { skipEmptyLines: "greedy" }).data;
+  const { data, errors } = Papa.parse<string[]>(text, { delimiter: guessDelimiter(text) });
+  const quotes = errors.find((error) => error.type === "Quotes");
+  if (quotes) throw new ImportError("unreadable", quotes.message);
+  return data;
 }
 
 /**
@@ -40,8 +65,11 @@ async function readXlsx(file: File): Promise<unknown[][]> {
 
 /** Drops everything above the header row and returns headers and data rows. */
 function splitHeader(fileName: string, all: unknown[][]): RawTable {
-  const rows = all.filter((row) => !row.every(isBlank));
-  if (rows.length === 0) throw new ImportError("empty");
+  const numbered = all
+    .map((row, index) => ({ row, number: index + 1 }))
+    .filter(({ row }) => !row.every(isBlank));
+  if (numbered.length === 0) throw new ImportError("empty");
+  const rows = numbered.map(({ row }) => row);
   const index = rows
     .slice(0, HEADER_SEARCH_ROWS)
     .findIndex(
@@ -51,7 +79,13 @@ function splitHeader(fileName: string, all: unknown[][]): RawTable {
   if (index < 0 || header === undefined) {
     throw new ImportError("unsupported", "No header row with recognised columns found");
   }
-  return { fileName, headers: header.map(cellText), rows: rows.slice(index + 1) };
+  const data = numbered.slice(index + 1);
+  return {
+    fileName,
+    headers: header.map(cellText),
+    rows: data.map(({ row }) => row),
+    rowNumbers: data.map(({ number }) => number),
+  };
 }
 
 /** Reads a CSV or XLSX trip export into headers and raw rows. Throws only `ImportError`. */
@@ -68,6 +102,7 @@ export async function readTable(file: File): Promise<RawTable> {
     try {
       all = isXlsx ? await readXlsx(file) : readCsv(new Uint8Array(await file.arrayBuffer()));
     } catch (error) {
+      if (error instanceof ImportError) throw error;
       throw new ImportError("unreadable", error instanceof Error ? error.message : undefined);
     }
     return splitHeader(file.name, all);

@@ -143,3 +143,12 @@ describe("detectColumns", () => {
     expect(missing).toEqual(REQUIRED_FIELDS);
   });
 });
+
+describe("detectColumns with ambiguous columns", () => {
+  it("does not hand a column of an ambiguous field to another field", () => {
+    const { mapping, ambiguous } = detectColumns([...TODAY, "Kilometer"]);
+    expect(ambiguous).toEqual(["km"]);
+    const kmColumns = [11, TODAY.length];
+    expect(Object.values(mapping).filter((c) => kmColumns.includes(c))).toEqual([]);
+  });
+});

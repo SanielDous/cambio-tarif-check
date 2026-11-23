@@ -1,6 +1,7 @@
 import type { Trip } from "./fields";
 
-/** Removes trips whose id was already seen (the same trip imported twice); keeps the first. */
+/** Removes trips whose id was already seen (the same trip imported twice); keeps the first.
+ * Rows that are identical in every id field are the same trip, also within one file. */
 export function dedupeTrips(trips: Trip[]): { trips: Trip[]; duplicates: number } {
   const seen = new Set<string>();
   const unique: Trip[] = [];

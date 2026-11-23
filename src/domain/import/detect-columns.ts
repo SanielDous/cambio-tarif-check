@@ -92,7 +92,9 @@ export function detectColumns(headers: string[]): Detection {
       mapping[best.id] = only;
       claimed.add(only);
     } else {
+      // The tied columns belong to this field's question; no other field may take them silently.
       ambiguous.push(best.id);
+      for (const column of best.columns) claimed.add(column);
     }
   }
 

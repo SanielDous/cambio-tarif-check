@@ -182,7 +182,12 @@ describe("normalizeRows", () => {
     "4,94",
     "AKTIV",
   ];
-  const table = (...rows: unknown[][]): RawTable => ({ fileName: "t.csv", headers, rows });
+  const table = (...rows: unknown[][]): RawTable => ({
+    fileName: "t.csv",
+    headers,
+    rows,
+    rowNumbers: rows.map((_, i) => i + 2),
+  });
   const mapping = detectColumns(headers).mapping;
   const run = (row: unknown[]) => normalizeRows(table(row), mapping, PRICE_DATA);
   /** The good row with some cells replaced. */
@@ -272,5 +277,128 @@ describe("dedupeTrips", () => {
     const result = dedupeTrips([...a, ...b]);
     expect(result.trips).toHaveLength(85);
     expect(result.duplicates).toBe(0);
+  });
+});
+
+describe("row numbers", () => {
+  const header =
+    "Stadt;Wagenklasse;Buchungsbeginn;Buchungsende;Kilometer;Betrag Zeit;Betrag Kilometer;Tarif";
+  const valid = "Aachen;S Kleinwagen;15.12.2025 17:15:00;15.12.2025 19:21:00;19;4,98;4,94;AKTIV";
+  const invalid = valid.replace("AKTIV", "PREMIUM");
+
+  it("reports the line number as seen in an editor", async () => {
+    const text = ["Title", "", header, valid, "", invalid].join("\r\n");
+    const table = await readTable(new File([text], "x.csv"));
+    expect(table.rowNumbers).toEqual([4, 6]);
+    const { trips, problems } = normalizeRows(
+      table,
+      detectColumns(table.headers).mapping,
+      PRICE_DATA,
+    );
+    expect(trips).toHaveLength(1);
+    expect(problems).toMatchObject([{ rowNumber: 6, reason: "unknown-tariff" }]);
+  });
+
+  it("rejects an unterminated quote as unreadable", async () => {
+    const text = `${header}\n"Aachen;S Kleinwagen;15.12.2025 17:15:00\n`;
+    await expect(readTable(new File([text], "x.csv"))).rejects.toMatchObject({
+      code: "unreadable",
+    });
+  });
+});
+
+describe("number and time parsing", () => {
+  const headers = [
+    "Stadt",
+    "Wagenklasse",
+    "Buchungsbeginn",
+    "Buchungsende",
+    "Kilometer",
+    "Betrag Zeit",
+    "Betrag Kilometer",
+    "Tarif",
+  ];
+  const good: unknown[] = [
+    "Aachen",
+    "S Kleinwagen",
+    "15.12.2025 17:15:00",
+    "15.12.2025 19:21:00",
+    "19",
+    "4,98",
+    "4,94",
+    "AKTIV",
+  ];
+  const mapping = detectColumns(headers).mapping;
+  const run = (changes: Record<number, unknown>) =>
+    normalizeRows(
+      {
+        fileName: "t.csv",
+        headers,
+        rows: [good.map((v, i) => (i in changes ? changes[i] : v))],
+        rowNumbers: [2],
+      },
+      mapping,
+      PRICE_DATA,
+    );
+
+  it.each<[string, number]>([
+    ["19", 19],
+    [" 19 ", 19],
+    ["-0", 0],
+    ["19,5", 19.5],
+    ["1.234", 1234], // German thousands point, never a decimal point with three digits
+    ["1.234,5", 1234.5],
+    ["1.234.567", 1234567],
+    ["4.98", 4.98],
+    ["4.9", 4.9],
+    ["19 €", 19],
+    ["19 EUR", 19],
+    ["€ 19", 19],
+  ])("accepts %j as km", (text, value) => {
+    expect(run({ 4: text }).trips[0]?.km).toBe(value);
+  });
+
+  it.each(["1,234.56", "1.2,3", "4€98", "abc", "", "1.2345", "1,2,3", "12.", ".5", "1e3"])(
+    "rejects %j as km",
+    (text) => {
+      const { trips, problems } = run({ 4: text });
+      expect(trips).toEqual([]);
+      expect(problems[0]).toMatchObject({ reason: "invalid-number" });
+    },
+  );
+
+  it.each([4, 5, 6])("rejects a negative value in column %i with a detail", (column) => {
+    for (const value of ["-1", -1]) {
+      const { trips, problems } = run({ [column]: value });
+      expect(trips).toEqual([]);
+      expect(problems[0]).toMatchObject({ reason: "invalid-number" });
+      expect(problems[0]?.detail).toMatch(/negative/);
+    }
+  });
+
+  it("rejects non-finite numeric cells", () => {
+    expect(run({ 4: Number.NaN }).problems[0]).toMatchObject({ reason: "invalid-number" });
+    expect(run({ 5: Number.POSITIVE_INFINITY }).problems[0]).toMatchObject({
+      reason: "invalid-number",
+    });
+  });
+
+  it("truncates seconds to the minute in text and in Date cells", () => {
+    const text = run({ 2: "15.12.2025 17:15:40", 3: "15.12.2025 19:21:59" }).trips[0];
+    const date = run({
+      2: new Date(Date.UTC(2025, 11, 15, 17, 15, 40)),
+      3: new Date(Date.UTC(2025, 11, 15, 19, 21, 59)),
+    }).trips[0];
+    expect(text?.start).toBe(parseLocal("15.12.2025 17:15"));
+    expect(text?.end).toBe(parseLocal("15.12.2025 19:21"));
+    expect(date).toEqual(text);
+  });
+
+  it("tolerates a float error just below a full minute in Date cells", () => {
+    const { trips } = run({
+      2: new Date(Date.UTC(2025, 11, 15, 17, 14, 59, 999)),
+      3: new Date(Date.UTC(2025, 11, 15, 19, 21)),
+    });
+    expect(trips[0]?.start).toBe(parseLocal("15.12.2025 17:15"));
   });
 });

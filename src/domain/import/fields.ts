@@ -119,6 +119,8 @@ export interface RawTable {
   fileName: string;
   headers: string[];
   rows: unknown[][];
+  /** 1-based row number in the file as seen in an editor, parallel to `rows`. */
+  rowNumbers: number[];
 }
 
 /** Column index per field. */
@@ -134,7 +136,7 @@ export interface Detection {
 
 export type RowProblem = {
   fileName: string;
-  /** 1-based, counting the header row as row 1. */
+  /** 1-based row number in the file as seen in a spreadsheet or editor. */
   rowNumber: number;
   reason:
     | "invalid-date"

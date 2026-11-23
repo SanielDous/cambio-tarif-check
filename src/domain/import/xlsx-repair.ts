@@ -5,6 +5,10 @@
  * uncompressed. Workbooks that already carry references are returned untouched.
  */
 
+import { ImportError } from "./fields";
+
+const MAX_INFLATED_BYTES = 100 * 1024 * 1024;
+
 const decoder = new TextDecoder();
 const encoder = new TextEncoder();
 
@@ -33,6 +37,7 @@ async function readZip(bytes: Uint8Array): Promise<Map<string, Uint8Array>> {
   const count = view.getUint16(end + 10, true);
   let offset = view.getUint32(end + 16, true);
   const entries = new Map<string, Uint8Array>();
+  let inflated = 0;
   for (let n = 0; n < count; n++) {
     if (view.getUint32(offset, true) !== SIGNATURE_CENTRAL) throw new Error("Broken ZIP archive");
     const method = view.getUint16(offset + 10, true);
@@ -40,6 +45,9 @@ async function readZip(bytes: Uint8Array): Promise<Map<string, Uint8Array>> {
     const nameLength = view.getUint16(offset + 28, true);
     const extraLength = view.getUint16(offset + 30, true);
     const commentLength = view.getUint16(offset + 32, true);
+    // Check the declared size first so that a ZIP bomb is never inflated.
+    inflated += view.getUint32(offset + 24, true);
+    if (inflated > MAX_INFLATED_BYTES) throw new ImportError("too-large");
     const localOffset = view.getUint32(offset + 42, true);
     const name = decoder.decode(bytes.subarray(offset + 46, offset + 46 + nameLength));
     if (view.getUint32(localOffset, true) !== SIGNATURE_LOCAL)
@@ -125,33 +133,57 @@ function columnLetters(index: number): string {
   return letters;
 }
 
-const HAS_REFS = /<(?:\w+:)?c\s[^>]*\sr="/;
 const ELEMENT = /<((?:\w+:)?(?:row|c))(?=[\s/>])([^>]*?)(\/?)>/g;
+const REF = /\sr="([A-Z]*)(\d*)"/;
 
-/** Numbers rows and cells of a worksheet that has no references. */
-function addCellRefs(xml: string): string {
-  let row = 0;
-  let column = 0;
-  return xml.replace(ELEMENT, (_match, tag: string, attributes: string, close: string) => {
-    if (tag.endsWith("row")) {
-      row += 1;
-      column = 0;
-      return /\sr="/.test(attributes) ? _match : `<${tag}${attributes} r="${row}"${close}>`;
-    }
-    const ref = columnLetters(column++) + row;
-    return `<${tag}${attributes} r="${ref}"${close}>`;
-  });
+function columnIndex(letters: string): number {
+  let index = 0;
+  for (const letter of letters) index = index * 26 + letter.charCodeAt(0) - 64;
+  return index - 1;
 }
 
-/** Returns a workbook that read-excel-file can read; unchanged if it already has references. */
+/**
+ * Adds the missing `r` attribute to rows and cells, counting on from the last reference seen.
+ * Elements that have one are left alone. Returns null if nothing was missing.
+ */
+function addCellRefs(xml: string): string | null {
+  let row = 0;
+  let column = 0;
+  let changed = false;
+  const result = xml.replace(ELEMENT, (match, tag: string, attributes: string, close: string) => {
+    const ref = REF.exec(attributes);
+    if (tag.endsWith("row")) {
+      column = 0;
+      if (ref) {
+        row = Number(ref[2]) || row + 1;
+        return match;
+      }
+      row += 1;
+      changed = true;
+      return `<${tag}${attributes} r="${row}"${close}>`;
+    }
+    if (ref) {
+      column = (ref[1] ? columnIndex(ref[1]) : column) + 1;
+      return match;
+    }
+    changed = true;
+    return `<${tag}${attributes} r="${columnLetters(column++)}${row}"${close}>`;
+  });
+  return changed ? result : null;
+}
+
+/**
+ * Returns a workbook that read-excel-file can read. A workbook in which nothing needed repair is
+ * returned as the very same bytes.
+ */
 export async function addMissingCellReferences(bytes: Uint8Array): Promise<Uint8Array> {
   const entries = await readZip(bytes);
   let changed = false;
   for (const [name, data] of entries) {
     if (!/^xl\/worksheets\/[^/]+\.xml$/.test(name)) continue;
-    const xml = decoder.decode(data);
-    if (HAS_REFS.test(xml)) continue;
-    entries.set(name, encoder.encode(addCellRefs(xml)));
+    const repaired = addCellRefs(decoder.decode(data));
+    if (repaired === null) continue;
+    entries.set(name, encoder.encode(repaired));
     changed = true;
   }
   return changed ? writeZip(entries) : bytes;
