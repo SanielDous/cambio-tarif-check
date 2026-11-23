@@ -21,6 +21,8 @@ export interface Settings {
   period: { from: string; to: string } | null;
   /** Manually entered booked end, by trip id. */
   manualBookedEnds: Record<string, LocalMinute>;
+  /** Actual tariff by month key; wins over the export and over inheritance. */
+  actualTariffOverrides: Record<string, TariffId>;
 }
 
 export interface TripResult {
@@ -35,6 +37,8 @@ export interface MonthRow {
   tripIds: string[];
   actualTariff: TariffId;
   actualTariffMixed: boolean;
+  /** Where the actual tariff comes from. */
+  actualTariffSource: "trips" | "inherited" | "override";
   switched: boolean;
   /** Billed time and km + fees of the actual tariff + switching fee. */
   actualCost: number;

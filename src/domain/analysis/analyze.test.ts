@@ -11,6 +11,7 @@ const SETTINGS: Settings = {
   under26: false,
   period: null,
   manualBookedEnds: {},
+  actualTariffOverrides: {},
 };
 
 let counter = 0;
@@ -215,5 +216,71 @@ describe("breakEven", () => {
   it("is null without trip cost", () => {
     const r = breakEven(["BASIS", "AKTIV"], { BASIS: 0, AKTIV: 0 }, { BASIS: 0, AKTIV: 1100 });
     expect(r[0]?.monthlyTripCost).toBeNull();
+  });
+});
+
+describe("actual tariff overrides", () => {
+  const withOverrides = (o: Settings["actualTariffOverrides"]): Settings => ({
+    ...SETTINGS,
+    actualTariffOverrides: o,
+  });
+
+  it("uses the override of a gap month for its fee", () => {
+    const a = analyze(
+      [trip(2025, 1, 10), trip(2025, 3, 10)],
+      withOverrides({ "2025-02": "COMFORT" }),
+      PRICE_DATA,
+    );
+    const feb = a?.months[1];
+    expect(feb?.actualTariff).toBe("COMFORT");
+    expect(feb?.actualTariffSource).toBe("override");
+    expect(feb?.actualTariffMixed).toBe(false);
+    expect(feb?.switched).toBe(true);
+    expect(feb?.actualCost).toBe(fee("COMFORT") + 500);
+    expect(a?.months[0]?.actualTariffSource).toBe("trips");
+  });
+
+  it("propagates through following gap months but not past a month with trips", () => {
+    const a = analyze(
+      [trip(2025, 1, 10), trip(2025, 4, 10)],
+      withOverrides({ "2025-02": "COMFORT" }),
+      PRICE_DATA,
+    );
+    const rows = a?.months ?? [];
+    expect(rows.map((m) => m.actualTariff)).toEqual(["AKTIV", "COMFORT", "COMFORT", "AKTIV"]);
+    expect(rows.map((m) => m.actualTariffSource)).toEqual([
+      "trips",
+      "override",
+      "inherited",
+      "trips",
+    ]);
+    expect(rows[2]?.switched).toBe(false);
+    expect(rows[3]?.switched).toBe(true);
+  });
+
+  it("removes the switch when overriding to the previous tariff", () => {
+    const trips = [trip(2025, 1, 10, "BASIS"), trip(2025, 2, 10, "AKTIV")];
+    const a = analyze(trips, withOverrides({ "2025-02": "BASIS" }), PRICE_DATA);
+    const feb = a?.months[1];
+    expect(feb?.switched).toBe(false);
+    expect(feb?.actualCost).toBe(1600 + fee("BASIS"));
+  });
+
+  it("keeps billed amounts but changes fee and switch for a month with trips", () => {
+    const a = analyze(
+      [trip(2025, 1, 10, "AKTIV"), trip(2025, 2, 10, "AKTIV")],
+      withOverrides({ "2025-02": "COMFORT" }),
+      PRICE_DATA,
+    );
+    const feb = a?.months[1];
+    expect(feb?.actualTariffMixed).toBe(false);
+    expect(feb?.actualCost).toBe(1600 + fee("COMFORT") + 500);
+  });
+
+  it("ignores an unknown tariff", () => {
+    const bad = { "2025-02": "NOPE" } as unknown as Settings["actualTariffOverrides"];
+    const a = analyze([trip(2025, 1, 10), trip(2025, 3, 10)], withOverrides(bad), PRICE_DATA);
+    expect(a?.months[1]?.actualTariffSource).toBe("inherited");
+    expect(a?.months[1]?.actualTariff).toBe("AKTIV");
   });
 });

@@ -78,14 +78,21 @@ export function buildMonths(
   let previous: TariffId | null = null;
   for (const month of monthRange(first, last)) {
     const list = byMonth.get(month) ?? [];
+    const override = settings.actualTariffOverrides[month];
     let actualTariff: TariffId;
+    let source: MonthRow["actualTariffSource"];
     let mixed = false;
-    if (list.length === 0) {
-      actualTariff = previous ?? "BASIS"; // unreachable: the first month always has trips
+    if (override !== undefined && Object.hasOwn(data.tariffs, override)) {
+      actualTariff = override;
+      source = "override";
+    } else if (list.length === 0) {
+      actualTariff = previous ?? "BASIS"; // the first month always has trips
+      source = "inherited";
     } else {
       let latest = list[0] as TripResult;
       for (const r of list) if (r.trip.end >= latest.trip.end) latest = r;
       actualTariff = latest.trip.tariff;
+      source = "trips";
       mixed = list.some((r) => r.trip.tariff !== actualTariff);
     }
     const switched = previous !== null && previous !== actualTariff;
@@ -112,6 +119,7 @@ export function buildMonths(
       tripIds: list.map((r) => r.trip.id),
       actualTariff,
       actualTariffMixed: mixed,
+      actualTariffSource: source,
       switched,
       actualCost,
       costs,

@@ -15,6 +15,7 @@ const SETTINGS: Settings = {
   under26: false,
   period: null,
   manualBookedEnds: {},
+  actualTariffOverrides: {},
 };
 
 async function readTrips(name: string): Promise<Trip[]> {
@@ -77,5 +78,34 @@ describe("analysis of the fixtures", () => {
       { lower: "BASIS", higher: "AKTIV", monthlyTripCost: 3589 },
       { lower: "AKTIV", higher: "COMFORT", monthlyTripCost: 12574 },
     ]);
+  });
+});
+
+describe("override on the fixtures", () => {
+  it("turns the empty months of 2026 into Basis", () => {
+    const base = analyze(trips, SETTINGS, PRICE_DATA);
+    const a = analyze(
+      trips,
+      { ...SETTINGS, actualTariffOverrides: { "2026-01": "BASIS" } },
+      PRICE_DATA,
+    );
+    const rows = a?.months.slice(13, 18) ?? [];
+    expect(rows.map((m) => m.month)).toEqual([
+      "2026-01",
+      "2026-02",
+      "2026-03",
+      "2026-04",
+      "2026-05",
+    ]);
+    expect(rows.map((m) => m.actualTariff)).toEqual(Array(5).fill("BASIS"));
+    expect(rows.slice(0, 4).map((m) => m.actualTariffSource)).toEqual([
+      "override",
+      "inherited",
+      "inherited",
+      "inherited",
+    ]);
+    expect(rows.map((m) => m.switched)).toEqual([true, false, false, false, false]);
+    expect(a?.months.filter((m) => m.switched)).toHaveLength(7);
+    expect((base?.actualTotal ?? 0) - (a?.actualTotal ?? 0)).toBe(4 * 1100);
   });
 });
