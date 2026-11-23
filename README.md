@@ -65,7 +65,8 @@ committed.
 ## Releases and deployment
 
 Releases are made by semantic-release from Conventional Commits: pushes to `main` create the
-version and changelog and, once enabled, deploy to GitHub Pages. To go live:
+version and the release notes on GitHub (no changelog file is written) and, once enabled, deploy
+to GitHub Pages. To go live:
 
 1. In the repository settings, enable GitHub Pages with the source "GitHub Actions".
 2. Set the repository variable `PAGES_ENABLED` to `true`.

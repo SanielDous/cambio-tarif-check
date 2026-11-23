@@ -12,11 +12,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import type { MonthRow } from "@/domain/analysis/analyze";
-import type { TariffId } from "@/domain/pricing/types";
+import { TARIFF_IDS, type TariffId } from "@/domain/pricing/types";
 import { formatMonth } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { settingsAtom } from "@/state/atoms";
-import { ALL_TARIFFS, tariffColor } from "./tariffs";
+import { tariffColor } from "./tariffs";
 
 /** Where the actual tariff of a month comes from, as shown below its name. */
 function sourceKey(row: MonthRow): "inherited" | "override" | "mixed" | null {
@@ -39,7 +39,7 @@ export function ActualTariffMenu({ row, compared }: { row: MonthRow; compared: T
   const sourceLabel = source ? t(`result.matrix.source.${source}`) : null;
 
   // Compared tariffs, plus the month's own tariff if it is not compared.
-  const options = ALL_TARIFFS.filter((id) => compared.includes(id) || id === row.actualTariff);
+  const options = TARIFF_IDS.filter((id) => compared.includes(id) || id === row.actualTariff);
 
   const setOverride = (value: TariffId | null) => {
     const overrides = { ...settings.actualTariffOverrides };

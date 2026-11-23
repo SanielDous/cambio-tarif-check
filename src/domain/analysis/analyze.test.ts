@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Trip } from "@/domain/import/fields";
 import { toLocalMinute } from "@/domain/pricing/local-time";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
-import type { TariffId } from "@/domain/pricing/types";
+import type { PriceData, TariffId } from "@/domain/pricing/types";
 import { analyze, comparedTariffs, type Settings } from "./analyze";
 import { breakEven } from "./break-even";
 
@@ -332,5 +332,218 @@ describe("analyze: trips after the price date", () => {
     expect(
       analyze([earlier, sameDay, nextDay, later], SETTINGS, PRICE_DATA)?.tripsAfterPricesAsOf,
     ).toBe(2);
+  });
+});
+
+describe("analyze: period", () => {
+  const period = (from: string, to: string): Settings => ({ ...SETTINGS, period: { from, to } });
+  const months = (a: ReturnType<typeof analyze>) => a?.months.map((m) => m.month);
+
+  it("keeps the selected edge months without trips and their fees", () => {
+    const trips = [trip(2025, 1, 10), trip(2025, 4, 10, "BASIS"), trip(2025, 6, 10)];
+    const a = analyze(trips, period("2025-02", "2025-05"), PRICE_DATA);
+    expect(months(a)).toEqual(["2025-02", "2025-03", "2025-04", "2025-05"]);
+    expect(a?.months.map((m) => m.actualTariff)).toEqual(["AKTIV", "AKTIV", "BASIS", "BASIS"]);
+    expect(a?.months.map((m) => m.actualTariffSource)).toEqual([
+      "inherited",
+      "inherited",
+      "trips",
+      "inherited",
+    ]);
+    expect(a?.months.map((m) => m.switched)).toEqual([false, false, true, false]);
+    // Two AKTIV fees, the Basis trip as billed plus the switching fee, one Basis month without.
+    expect(a?.actualTotal).toBe(2 * fee("AKTIV") + 1600 + 500);
+    expect(a?.trips).toHaveLength(1);
+    expect(a?.months[0]?.costs.AKTIV).toBe(fee("AKTIV"));
+  });
+
+  it("covers a period that lies entirely in a gap with fees only", () => {
+    const a = analyze(
+      [trip(2025, 1, 10), trip(2025, 4, 10)],
+      period("2025-02", "2025-03"),
+      PRICE_DATA,
+    );
+    expect(months(a)).toEqual(["2025-02", "2025-03"]);
+    expect(a?.trips).toEqual([]);
+    expect(a?.months.map((m) => m.actualTariff)).toEqual(["AKTIV", "AKTIV"]);
+    expect(a?.months.map((m) => m.switched)).toEqual([false, false]);
+    expect(a?.actualTotal).toBe(2 * fee("AKTIV"));
+    expect(a?.totals).toEqual({ BASIS: 0, AKTIV: 2 * fee("AKTIV"), COMFORT: 2 * fee("COMFORT") });
+    expect(a?.bestSingle).toEqual({ tariff: "BASIS", total: 0, saving: 2 * fee("AKTIV") });
+    expect(a?.recomputationDeviation).toBe(0);
+  });
+
+  it("clips a period that reaches beyond the data to the months with data", () => {
+    const trips = [trip(2025, 1, 10), trip(2025, 2, 10), trip(2025, 3, 10), trip(2025, 4, 10)];
+    expect(months(analyze(trips, period("2024-11", "2025-02"), PRICE_DATA))).toEqual([
+      "2025-01",
+      "2025-02",
+    ]);
+    expect(months(analyze(trips, period("2025-03", "2025-12"), PRICE_DATA))).toEqual([
+      "2025-03",
+      "2025-04",
+    ]);
+    expect(analyze(trips, period("2025-05", "2025-12"), PRICE_DATA)).toBeNull();
+  });
+
+  it("carries an override before the period into it", () => {
+    const a = analyze(
+      [trip(2025, 1, 10), trip(2025, 4, 10)],
+      { ...period("2025-03", "2025-04"), actualTariffOverrides: { "2025-02": "COMFORT" } },
+      PRICE_DATA,
+    );
+    expect(a?.months.map((m) => m.actualTariff)).toEqual(["COMFORT", "AKTIV"]);
+    expect(a?.months.map((m) => m.actualTariffSource)).toEqual(["inherited", "trips"]);
+    expect(a?.months.map((m) => m.switched)).toEqual([false, true]);
+    expect(a?.months[0]?.actualCost).toBe(fee("COMFORT"));
+  });
+
+  it("never counts a switch in the first month of the period", () => {
+    const a = analyze(
+      [trip(2025, 1, 10, "AKTIV"), trip(2025, 2, 10, "BASIS")],
+      period("2025-02", "2025-02"),
+      PRICE_DATA,
+    );
+    expect(a?.months[0]?.switched).toBe(false);
+    expect(a?.actualTotal).toBe(1600);
+  });
+});
+
+describe("analyze: incomplete and partial months", () => {
+  it("marks the months of not yet billed rows inside the range as incomplete", () => {
+    const trips = [trip(2025, 1, 2), trip(2025, 3, 28)];
+    const a = analyze(trips, SETTINGS, PRICE_DATA, {
+      unbilledMonths: ["2025-02", "2025-02", "2024-12", "2025-04"],
+    });
+    expect(a?.months.map((m) => m.incomplete)).toEqual([false, true, false]);
+    expect(analyze(trips, SETTINGS, PRICE_DATA)?.months.some((m) => m.incomplete)).toBe(false);
+  });
+
+  it("marks the first month partial if the first trip starts after the 3rd", () => {
+    const flags = (first: number) =>
+      analyze(
+        [trip(2025, 1, first), trip(2025, 2, 10), trip(2025, 3, 28)],
+        SETTINGS,
+        PRICE_DATA,
+      )?.months.map((m) => m.partial);
+    expect(flags(3)).toEqual([false, false, false]);
+    expect(flags(4)).toEqual([true, false, false]);
+  });
+
+  it("marks the last month partial if the last trip ends before the 26th", () => {
+    const flags = (last: number) =>
+      analyze(
+        [trip(2025, 1, 1), trip(2025, 2, 10), trip(2025, 3, last)],
+        SETTINGS,
+        PRICE_DATA,
+      )?.months.map((m) => m.partial);
+    expect(flags(26)).toEqual([false, false, false]);
+    expect(flags(25)).toEqual([false, false, true]);
+  });
+
+  it("judges the first month by a trip that started in the month before", () => {
+    const spanning = trip(2025, 1, 31, "AKTIV", { end: toLocalMinute(2025, 2, 1, 1, 0) });
+    const a = analyze([spanning, trip(2025, 2, 27)], SETTINGS, PRICE_DATA);
+    expect(a?.months.map((m) => m.month)).toEqual(["2025-02"]);
+    expect(a?.months[0]?.partial).toBe(false);
+  });
+
+  it("flags only the edges of the data, not the edges of a period", () => {
+    const trips = [trip(2025, 1, 10), trip(2025, 2, 10), trip(2025, 3, 10)];
+    const a = analyze(
+      trips,
+      { ...SETTINGS, period: { from: "2025-02", to: "2025-02" } },
+      PRICE_DATA,
+    );
+    expect(a?.months[0]?.partial).toBe(false);
+    const all = analyze(trips, SETTINGS, PRICE_DATA);
+    expect(all?.months.map((m) => m.partial)).toEqual([true, false, true]);
+  });
+});
+
+describe("analyze: actual tariff of a month", () => {
+  it("breaks a tie of two trips returned at the same minute by trip id, not input order", () => {
+    const a = trip(2025, 1, 10, "BASIS", { id: "a" });
+    const b = trip(2025, 1, 10, "COMFORT", { id: "b" });
+    const forward = analyze([a, b], SETTINGS, PRICE_DATA)?.months[0];
+    const backward = analyze([b, a], SETTINGS, PRICE_DATA)?.months[0];
+    expect(forward?.actualTariff).toBe("COMFORT");
+    expect(backward?.actualTariff).toBe("COMFORT");
+    expect(backward?.actualTariffMixed).toBe(true);
+  });
+});
+
+describe("analyze: hand-derived figures", () => {
+  // Wednesday 2025-01-15 10:00–11:00, AKTIV S, 10 km. Fuel surcharge 1 ct/km since 2024-07-01.
+  // AKTIV: 1 h × 2.10 + 10 × (0.25 + 0.01) = 2.10 + 2.60, billed exactly like that.
+  const wednesday = (month: number, extra: Partial<Trip> = {}): Trip =>
+    trip(2025, month, 15, "AKTIV", {
+      start: toLocalMinute(2025, month, 15, 10, 0),
+      end: toLocalMinute(2025, month, 15, 11, 0),
+      km: 10,
+      billedTime: 210,
+      billedKm: 260,
+      ...extra,
+    });
+
+  it("prices a month as its trips in the tariff plus the fee", () => {
+    const a = analyze([wednesday(1)], SETTINGS, PRICE_DATA);
+    expect(a?.trips[0]?.reconstruction.kind).toBe("verified");
+    // BASIS S weekday 3.30/h, km 0.28 + 0.01; COMFORT S 1.85/h, km 0.22 + 0.01.
+    expect(a?.months[0]?.costs).toEqual({
+      BASIS: 330 + 290,
+      AKTIV: 210 + 260 + 1100,
+      COMFORT: 185 + 230 + 2700,
+    });
+    expect(a?.months[0]?.cheapest).toBe("BASIS");
+    expect(a?.months[0]?.actualCost).toBe(210 + 260 + 1100);
+  });
+
+  it("signs the recomputation deviation as model minus billed, within the period only", () => {
+    // January billed 3 ct more km than the model (2.63), March 5 ct less (2.55).
+    const trips = [wednesday(1, { billedKm: 263 }), wednesday(3, { billedKm: 255 })];
+    expect(analyze(trips, SETTINGS, PRICE_DATA)?.recomputationDeviation).toBe(-3 + 5);
+    const march = { ...SETTINGS, period: { from: "2025-02", to: "2025-03" } };
+    expect(analyze(trips, march, PRICE_DATA)?.recomputationDeviation).toBe(5);
+    const january = { ...SETTINGS, period: { from: "2025-01", to: "2025-01" } };
+    expect(analyze(trips, january, PRICE_DATA)?.recomputationDeviation).toBe(-3);
+  });
+
+  it("drops a compared tariff that has no price for a trip's class", () => {
+    const data: PriceData = structuredClone(PRICE_DATA);
+    delete data.tariffs.COMFORT.prices.S;
+    const a = analyze([wednesday(1)], SETTINGS, data);
+    expect(a?.tariffs).toEqual(["BASIS", "AKTIV"]);
+    expect(a?.months[0]?.costs).not.toHaveProperty("COMFORT");
+  });
+
+  it("prefers the lower fee when two tariffs cost the same in total", () => {
+    // Trips: BASIS 6.20, AKTIV 4.70. An AKTIV fee of 1.50 makes both 6.20.
+    const tie: PriceData = structuredClone(PRICE_DATA);
+    tie.tariffs.AKTIV.monthlyFee = 150;
+    const a = analyze([wednesday(1)], SETTINGS, tie);
+    expect(a?.totals.BASIS).toBe(620);
+    expect(a?.totals.AKTIV).toBe(620);
+    expect(a?.bestSingle.tariff).toBe("BASIS");
+    expect(a?.months[0]?.cheapest).toBe("BASIS");
+    tie.tariffs.AKTIV.monthlyFee = 149;
+    expect(analyze([wednesday(1)], SETTINGS, tie)?.bestSingle).toMatchObject({
+      tariff: "AKTIV",
+      total: 619,
+    });
+  });
+
+  it("does not change its inputs", () => {
+    const trips = [wednesday(1), wednesday(3, { billedKm: 255, driver: "A" })];
+    const settings: Settings = {
+      ...SETTINGS,
+      period: { from: "2025-01", to: "2025-03" },
+      manualBookedEnds: { [trips[1]?.id ?? ""]: toLocalMinute(2025, 3, 15, 12, 0) },
+      actualTariffOverrides: { "2025-02": "COMFORT" },
+    };
+    const context = { unbilledMonths: ["2025-02"] };
+    const before = structuredClone({ trips, settings, data: PRICE_DATA, context });
+    analyze(trips, settings, PRICE_DATA, context);
+    expect({ trips, settings, data: PRICE_DATA, context }).toEqual(before);
   });
 });

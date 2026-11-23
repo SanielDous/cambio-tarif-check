@@ -26,10 +26,12 @@ FMT = "%d.%m.%Y %H:%M"
 
 BASE = "https://www.cambio-carsharing.de"
 PREFIX = "tx_auwcambio_costcalculator"
+# An honest, generic client name; no personal contact.
+USER_AGENT = "cambio-tarif-check-fixture-recorder (+https://github.com/SanielDous/cambio-tarif-check)"
 
 
 def calc(city, vehicle_class, start, end, km, raw=False):
-    headers = {"User-Agent": "Mozilla/5.0", "Cookie": "selectedCity=%s" % city}
+    headers = {"User-Agent": USER_AGENT, "Cookie": "selectedCity=%s" % city}
 
     # Step 1: load the page and scrape the signed form (action with cHash + hidden fields).
     page = urllib.request.urlopen(urllib.request.Request(BASE + "/tarife", headers=headers))

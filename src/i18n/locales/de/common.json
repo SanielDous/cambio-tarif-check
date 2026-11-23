@@ -125,6 +125,9 @@
       "busy": "Dateien werden gelesen …",
       "inputLabel": "Fahrten-Export auswählen (CSV oder Excel)"
     },
+    "pageDrop": {
+      "hint": "CSV oder Excel (.xlsx) aus dem Fahrtenarchiv; die Fahrten kommen zu den bereits geladenen hinzu."
+    },
     "privacy": {
       "title": "Deine Daten bleiben bei dir",
       "text": "Die Auswertung läuft komplett in deinem Browser. Deine Fahrten werden weder hochgeladen noch gespeichert."
@@ -166,6 +169,10 @@
       "too-large": "Die Datei ist größer als 5 MB und wird nicht eingelesen."
     },
     "skipped": "Übersprungen – die Spalten wurden nicht zugeordnet.",
+    "noTrips": {
+      "title": "Diese Datei enthält keine auswertbaren Fahrten.",
+      "headerOnly": "Sie enthält nur die Kopfzeile, aber keine Zeilen darunter."
+    },
     "mapping": {
       "title": "Spalten zuordnen",
       "description": "In „{{file}}“ konnten nicht alle Spalten erkannt werden. Wähle für jedes Feld die passende Spalte.",
@@ -271,9 +278,10 @@
         "surcharge_other": "Bei {{count, number}} Fahrten wurde der Kraftstoffzuschlag aus dem abgerechneten Kilometerbetrag abgeleitet.",
         "mixed": "In {{months}} wurden Fahrten in mehreren Tarifen abgerechnet. Als dein Tarif gilt der Tarif der letzten Fahrt im Monat.",
         "inherited": "In {{months}} gab es keine Fahrten. Angenommen wird jeweils der Tarif des Vormonats – du kannst ihn in der Tabelle ändern.",
-        "incomplete": "Für {{months}} fehlen möglicherweise Fahrten.",
+        "incomplete": "In {{months}} gibt es noch nicht abgerechnete Fahrten. Sie fehlen in der Auswertung.",
         "afterPrices_one": "{{count, number}} Fahrt liegt nach dem Preisstand ({{date}}) und wurde mit den zuletzt bekannten Preisen berechnet.",
-        "afterPrices_other": "{{count, number}} Fahrten liegen nach dem Preisstand ({{date}}) und wurden mit den zuletzt bekannten Preisen berechnet."
+        "afterPrices_other": "{{count, number}} Fahrten liegen nach dem Preisstand ({{date}}) und wurden mit den zuletzt bekannten Preisen berechnet.",
+        "partial": "Vermutlich nur teilweise im Export enthalten: {{months}}. Diese Monate können zu niedrig ausfallen."
       }
     },
     "settings": {
@@ -284,6 +292,7 @@
       "driversAuto": "aus dem Export übernommen",
       "under26": "Ich bin unter 26",
       "under26Hint": "Den Campus-Tarif gibt es nur ohne weitere Fahrer:innen.",
+      "under26Campus": "Dein Export enthält Fahrten im Campus-Tarif.",
       "period": "Zeitraum",
       "from": "Von",
       "to": "Bis",
@@ -316,7 +325,9 @@
         "cheapest": "Günstigster Tarif im Monat",
         "actual": "Dein Tarif",
         "path": "Rückblickend optimaler Pfad (mit Wechselgebühren)",
-        "switch": "Tarifwechsel, {{amount}} Gebühr"
+        "switch": "Tarifwechsel, {{amount}} Gebühr",
+        "incomplete": "Noch nicht abgerechnete Fahrten im Monat",
+        "partial": "Monat vermutlich nur teilweise im Export"
       },
       "source": {
         "inherited": "angenommen",
@@ -332,7 +343,9 @@
       "menuLabel": "Dein Tarif im {{month}}",
       "change": "Dein Tarif im {{month}}: {{tariff}}. Ändern",
       "resetOverride": "Wieder aus den Fahrten bestimmen",
-      "notCompared": "wird nicht verglichen"
+      "notCompared": "wird nicht verglichen",
+      "incomplete": "In diesem Monat gibt es noch nicht abgerechnete Fahrten",
+      "partial": "Dieser Monat ist im Export vermutlich nicht vollständig enthalten"
     },
     "chart": {
       "title": "Monatskosten im Verlauf",
@@ -441,7 +454,7 @@
   "router": {
     "error": {
       "title": "Etwas ist schiefgelaufen",
-      "text": "Die Seite konnte nicht angezeigt werden. Deine Fahrten bleiben dabei im Speicher des Browsers."
+      "text": "Die Seite konnte nicht angezeigt werden. Deine Fahrten bleiben geladen, solange du diese Seite nicht schließt."
     },
     "notFound": {
       "title": "Diese Seite gibt es nicht.",

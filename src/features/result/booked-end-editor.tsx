@@ -6,11 +6,12 @@ import { Button } from "@/components/ui/button";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { TripResult } from "@/domain/analysis/analyze";
+import { MAX_BOOKING_MINUTES } from "@/domain/analysis/reconstruct-booking";
 import { dateParts } from "@/domain/pricing/local-time";
 import type { LocalMinute } from "@/domain/pricing/types";
 import { formatDateTime, formatTime } from "@/lib/format";
 import { settingsAtom } from "@/state/atoms";
-import { MAX_BOOKING_MINUTES, parseBookedEnd, toDateValue } from "./booked-end";
+import { parseBookedEnd, toDateValue } from "./booked-end";
 
 const QUARTER = 15;
 /** Minutes of the day in quarter-hour steps: 0, 15, …, 1425. */

@@ -1,12 +1,9 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { parseIsoDate } from "@/domain/pricing/price-data";
-import type { PriceClass, PriceData, TariffId } from "@/domain/pricing/types";
-import { ALL_TARIFFS } from "@/features/result/tariffs";
+import { PRICE_CLASSES, TARIFF_IDS, type PriceData, type TariffId } from "@/domain/pricing/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
-
-const CLASSES: PriceClass[] = ["XS", "S", "M", "L", "XL"];
 
 /** A table in its own horizontally scrollable, keyboard-focusable region. */
 function Scroller({ labelledBy, children }: { labelledBy: string; children: ReactNode }) {
@@ -37,7 +34,7 @@ export function PriceTables({ data }: { data: PriceData }) {
   const { t, i18n } = useTranslation("common");
   const lang = i18n.language;
   const money = (cents: number) => formatCurrency(cents, lang);
-  const tariffs = ALL_TARIFFS.filter((id) => data.tariffs[id]);
+  const tariffs = TARIFF_IDS.filter((id) => data.tariffs[id]);
   const name = (id: TariffId) => t(`tariffs.${id}`);
 
   return (
@@ -131,7 +128,7 @@ export function PriceTables({ data }: { data: PriceData }) {
               </tr>
             </thead>
             {tariffs.map((id) => {
-              const classes = CLASSES.filter((c) => data.tariffs[id].prices[c]);
+              const classes = PRICE_CLASSES.filter((c) => data.tariffs[id].prices[c]);
               return (
                 <tbody key={id} className="border-b last:border-b-0" data-tariff={id}>
                   {classes.map((c, index) => {

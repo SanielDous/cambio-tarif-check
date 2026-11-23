@@ -231,6 +231,32 @@ describe("reconstructBooking", () => {
     expect(r.surchargeCents).toBe(1);
     expect(r.surchargeDerived).toBe(false);
     expect(r.kmDeviation).toBe(-3);
+    expect(r.kind).toBe("not-reproducible");
+  });
+
+  it("makes a trip with an unexplained km amount not reproducible, keeping the booked end", () => {
+    // AKTIV S, 10 km: (25 + 1) × 10 = 2.60; billed 7.60. Even 10 ct surcharge gives only 3.50.
+    // The time amount 2.10 (1 h) matches exactly, so the booked end found is still the best guess.
+    const kmOff = trip({
+      start: wed(10),
+      end: wed(11),
+      tariff: "AKTIV",
+      priceClass: "S",
+      km: 10,
+      billedTime: 210,
+      billedKm: 760,
+    });
+    const r = reconstructBooking(kmOff, PRICE_DATA);
+    expect(r.kind).toBe("not-reproducible");
+    expect(r.bookedEnd).toBe(wed(11));
+    expect(r.chargedUntil).toBe(wed(11));
+    expect(r.timeDeviation).toBe(0);
+    expect(r.kmDeviation).toBe(-500);
+
+    const manual = reconstructBooking(kmOff, PRICE_DATA, wed(12));
+    expect(manual.kind).toBe("manual");
+    expect(manual.bookedEnd).toBe(wed(12));
+    expect(manual.kmDeviation).toBe(-500);
   });
 
   describe("manual booked end", () => {
