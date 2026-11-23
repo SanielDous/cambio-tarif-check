@@ -10,7 +10,8 @@ import { scrollBehavior } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { Hint } from "./hint";
 import { MatrixLegend } from "./matrix-legend";
-import { ActualRows, stickyLeft, stickyRight, TariffRow } from "./matrix-rows";
+import { MatrixNavProvider } from "./matrix-nav";
+import { ActualRows, stickyLeft, stickyRight, TariffRow, UsageRows } from "./matrix-rows";
 import { PathOverlay } from "./path-overlay";
 
 export const MATRIX_CAPTION_ID = "cost-matrix-caption";
@@ -104,6 +105,15 @@ export function TariffMatrix({
   const exact = (cents: number) => formatCurrency(cents, lang);
   const { ref: scrollRef, edges, update, scrollBy } = useScrollEdges();
   const tableRef = useRef<HTMLDivElement>(null);
+  // The amount cells are one tab stop; the arrow keys move between them (see `CellButton`).
+  const [cell, setCell] = useState<readonly [number, number]>([0, 0]);
+  const rowCount = tariffs.length + 1;
+  const nav = {
+    active: [Math.min(cell[0], rowCount - 1), Math.min(cell[1], months.length - 1)] as const,
+    setActive: setCell,
+    rows: rowCount,
+    columns: months.length,
+  };
   const marks = (cheapest: boolean, actual: boolean, path: boolean) =>
     [
       cheapest && t("result.matrix.marks.cheapest"),
@@ -233,21 +243,25 @@ export function TariffMatrix({
                   </th>
                 </tr>
               </thead>
-              <tbody>
-                {tariffs.map((tariff, rowIndex) => (
-                  <TariffRow
-                    key={tariff}
-                    tariff={tariff}
-                    first={rowIndex === 0}
-                    fee={monthlyFee(tariff, additionalDrivers, PRICE_DATA)}
-                    analysis={analysis}
-                    whole={whole}
-                    exact={exact}
-                    marks={marks}
-                  />
-                ))}
-                <ActualRows analysis={analysis} />
-              </tbody>
+              <MatrixNavProvider value={nav}>
+                <tbody>
+                  {tariffs.map((tariff, rowIndex) => (
+                    <TariffRow
+                      key={tariff}
+                      tariff={tariff}
+                      rowIndex={rowIndex}
+                      first={rowIndex === 0}
+                      fee={monthlyFee(tariff, additionalDrivers, PRICE_DATA)}
+                      analysis={analysis}
+                      whole={whole}
+                      exact={exact}
+                      marks={marks}
+                    />
+                  ))}
+                  <ActualRows analysis={analysis} />
+                </tbody>
+                <UsageRows analysis={analysis} />
+              </MatrixNavProvider>
             </table>
             <PathOverlay
               containerRef={tableRef}

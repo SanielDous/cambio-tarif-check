@@ -50,6 +50,24 @@ export interface MonthRow {
   actualCost: number;
   /** Model cost per compared tariff incl. fees. */
   costs: Partial<Record<TariffId, number>>;
+  /** What `costs` is made of per compared tariff, in cents; the parts add up to `costs`. */
+  breakdown: Partial<
+    Record<TariffId, { time: number; km: number; fee: number; driverFee: number }>
+  >;
+  /** What `actualCost` is made of, in cents; the parts add up to `actualCost`. */
+  actualBreakdown: {
+    billedTime: number;
+    billedKm: number;
+    fee: number;
+    driverFee: number;
+    switchFee: number;
+  };
+  /** Trips of the month. */
+  tripCount: number;
+  /** Driven kilometres of the month's trips. */
+  km: number;
+  /** Σ minutes from booking start to the charged-until time of the month's trips. */
+  chargedMinutes: number;
   cheapest: TariffId;
   /** The export has rows of this month that are not billed yet. */
   incomplete: boolean;

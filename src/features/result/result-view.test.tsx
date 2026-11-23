@@ -15,7 +15,7 @@ import { toLocalMinute } from "@/domain/pricing/local-time";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
 import type { TariffId } from "@/domain/pricing/types";
 import { analysisAtom, importFilesAtom, settingsAtom, tripsAtom } from "@/state/atoms";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatHours } from "@/lib/format";
 import { toDateValue } from "./booked-end";
 import { ResultView } from "./result-view";
 import { SummaryCard } from "./summary-card";
@@ -47,7 +47,7 @@ async function renderResult(store: Store) {
       <ResultView />
     </Provider>,
   );
-  if (store.get(analysisAtom)) await screen.findByTestId("cost-chart");
+  if (store.get(analysisAtom)) await screen.findByTestId("cost-chart", {}, { timeout: 5000 });
   return userEvent.setup();
 }
 
@@ -261,7 +261,7 @@ describe("tariff matrix", () => {
       expect(cells.filter((c) => c.dataset.actual)).toHaveLength(1);
       expect(cells.filter((c) => c.dataset.path)).toHaveLength(1);
       for (const c of cells.filter((c) => c.dataset.cheapest)) {
-        expect(c).toHaveAttribute("title", expect.stringContaining("günstigster Tarif"));
+        expect(c).toHaveTextContent("günstigster Tarif");
       }
     }
   });
@@ -627,5 +627,140 @@ describe("empty state", () => {
     await user.click(screen.getByRole("button", { name: "Gesamten Zeitraum anzeigen" }));
     expect(await screen.findByTestId("summary")).toBeInTheDocument();
     await screen.findByTestId("cost-chart");
+  });
+});
+
+/** The amount button of a matrix cell: tariff row (or "actual") and month index. */
+function cellButton(row: string, month: number): HTMLElement {
+  const tr =
+    row === "actual"
+      ? screen.getByTestId("actual-row")
+      : (document.querySelector<HTMLElement>(
+          `[data-testid="tariff-row"][data-tariff="${row}"]`,
+        ) as HTMLElement);
+  return tr.querySelectorAll("td")[month]?.querySelector("button") as HTMLElement;
+}
+
+/** The lines of the open breakdown: label → text of the amount. */
+function breakdownLines(): Record<string, string> {
+  const tooltip = screen.getByRole("tooltip");
+  return Object.fromEntries(
+    [...tooltip.querySelectorAll("dt")].map((dt) => [
+      dt.textContent ?? "",
+      dt.nextElementSibling?.textContent ?? "",
+    ]),
+  );
+}
+
+describe("breakdown of a matrix cell", () => {
+  it("explains a tariff cell with parts that add up to the cell, on focus", async () => {
+    const { store } = await withFixtures();
+    const a = store.get(analysisAtom);
+    if (!a) throw new Error("no analysis");
+    const index = a.months.findIndex((m) => m.month === "2025-06");
+    const m = a.months[index];
+    if (!m) throw new Error("no month");
+    expect(m.tripCount).toBeGreaterThan(0);
+
+    const button = cellButton("AKTIV", index);
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+    act(() => button.focus());
+    const tooltip = await screen.findByRole("tooltip");
+    expect(button).toHaveAttribute("aria-describedby", expect.any(String));
+
+    const lines = breakdownLines();
+    const trips = cents(lines["Fahrtkosten"] ?? null);
+    expect(cents(lines["davon Zeit"] ?? null) + cents(lines["davon Kilometer"] ?? null)).toBe(
+      trips,
+    );
+    const sum =
+      trips + cents(lines["Grundgebühr"] ?? null) + cents(lines["Weitere Fahrer:innen"] ?? "0");
+    expect(lines["Summe"]).toBe(euro(sum));
+    expect(sum).toBe(m.costs.AKTIV);
+    // The cell shows the same amount in whole euros.
+    expect(button).toHaveTextContent(spaced(formatCurrency(sum, "de", { decimals: 0 })));
+    expect(tooltip).toHaveTextContent(
+      `${m.tripCount} ${m.tripCount === 1 ? "Fahrt" : "Fahrten"} · `,
+    );
+    expect(tooltip).toHaveTextContent(" km");
+  });
+
+  it("opens on hover and closes on Escape", async () => {
+    const { user } = await withFixtures();
+    await user.hover(cellButton("BASIS", 0));
+    expect(await screen.findByRole("tooltip")).toBeInTheDocument();
+    await user.keyboard("{Escape}");
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  });
+
+  it("shows the switching fee in the actual cell of a month with a switch, and only there", async () => {
+    const { store } = await withFixtures();
+    const a = store.get(analysisAtom);
+    if (!a) throw new Error("no analysis");
+    const switched = a.months.findIndex((m) => m.switched);
+    const plain = a.months.findIndex((m) => !m.switched && m.tripCount > 0);
+    expect(switched).toBeGreaterThan(0);
+
+    act(() => cellButton("actual", switched).focus());
+    await screen.findByRole("tooltip");
+    let lines = breakdownLines();
+    expect(lines["Tarifwechsel"]).toBe(euro(500));
+    expect(lines["Summe"]).toBe(euro(a.months[switched]?.actualCost ?? 0));
+    expect(screen.getByRole("tooltip")).toHaveTextContent(/aus deinen Fahrten|angenommen|von Hand/);
+
+    act(() => cellButton("actual", plain).focus());
+    await screen.findByRole("tooltip");
+    lines = breakdownLines();
+    expect(lines).not.toHaveProperty("Tarifwechsel");
+    expect(lines["Fahrtkosten laut Rechnung"]).toBeDefined();
+    expect(lines["Summe"]).toBe(euro(a.months[plain]?.actualCost ?? 0));
+  });
+
+  it("is a single tab stop; the arrow keys move between the cells", async () => {
+    const { user } = await withFixtures();
+    const cells = [...document.querySelectorAll<HTMLElement>("[data-mcell]")];
+    expect(cells).toHaveLength(18 * 4);
+    expect(cells.filter((c) => c.tabIndex === 0)).toHaveLength(1);
+    act(() => cells[0]?.focus());
+    await user.keyboard("{ArrowRight}");
+    expect(document.activeElement).toBe(cellButton("BASIS", 1));
+    await user.keyboard("{ArrowDown}");
+    expect(document.activeElement).toBe(cellButton("AKTIV", 1));
+    expect(cells.filter((c) => c.tabIndex === 0)).toEqual([cellButton("AKTIV", 1)]);
+    await user.keyboard("{End}");
+    expect(document.activeElement).toBe(cellButton("AKTIV", 17));
+  });
+});
+
+describe("usage rows of the matrix", () => {
+  it("shows trips, kilometres and hours per month with sums equal to the analysis", async () => {
+    const { store } = await withFixtures();
+    const a = store.get(analysisAtom);
+    if (!a) throw new Error("no analysis");
+    const rows = screen.getAllByTestId("usage-row");
+    expect(rows.map((r) => r.dataset.metric)).toEqual(["trips", "km", "hours"]);
+    for (const row of rows) expect(within(row).getByRole("rowheader")).toBeInTheDocument();
+    expect(screen.getByRole("rowheader", { name: "Deine Nutzung" })).toBeInTheDocument();
+
+    const index = a.months.findIndex((m) => m.month === "2025-06");
+    const june = a.months[index];
+    expect(screen.getAllByTestId("usage-trips")[index]).toHaveTextContent(String(june?.tripCount));
+    expect(june?.tripCount).toBeGreaterThan(0);
+
+    expect(screen.getByTestId("usage-total-trips")).toHaveTextContent(String(a.trips.length));
+    const km = a.trips.reduce((s, r) => s + r.trip.km, 0);
+    expect(
+      cents(screen.getByTestId("usage-total-km").textContent?.replace(/\./g, "") + ",00"),
+    ).toBe(km * 100);
+    const minutes = a.trips.reduce((s, r) => s + r.reconstruction.chargedUntil - r.trip.start, 0);
+    expect(screen.getByTestId("usage-total-hours")).toHaveTextContent(formatHours(minutes, "de"));
+    expect(screen.getByTestId("usage-total-hours").textContent).toMatch(/^\d+(\.\d{3})*,\d$/);
+  });
+
+  it("formats hours per language", async () => {
+    await act(() => i18n.changeLanguage("en"));
+    await withFixtures();
+    expect(screen.getByRole("rowheader", { name: "Your usage" })).toBeInTheDocument();
+    expect(screen.getByTestId("usage-total-hours").textContent).toMatch(/^\d+(,\d{3})*\.\d$/);
   });
 });

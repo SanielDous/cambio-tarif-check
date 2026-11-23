@@ -134,3 +134,20 @@ export function formatDuration(minutes: number, units: { hour: string; minute: s
   if (h === 0) return `${m} ${units.minute}`;
   return m === 0 ? `${h} ${units.hour}` : `${h} ${units.hour} ${m} ${units.minute}`;
 }
+
+/** A number with exactly `digits` decimals: "12,5" (de), "12.5" (en). */
+export function formatDecimal(value: number, language: string, digits = 1): string {
+  return cached(
+    `decimal|${language}|${digits}`,
+    () =>
+      new Intl.NumberFormat(language, {
+        minimumFractionDigits: digits,
+        maximumFractionDigits: digits,
+      }),
+  ).format(value);
+}
+
+/** Minutes as hours with one decimal: "12,5" (de), "12.5" (en). */
+export function formatHours(minutes: number, language: string): string {
+  return formatDecimal(minutes / 60, language, 1);
+}

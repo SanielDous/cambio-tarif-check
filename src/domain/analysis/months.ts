@@ -145,20 +145,40 @@ export function buildMonths(input: MonthInput): MonthRow[] {
     const actual = actualTariffOf(month, tripsByMonth.get(month) ?? [], previous, settings, data);
     const switched = index > 0 && previous !== actual.tariff;
     previous = actual.tariff;
-    const billed = list.reduce((s, r) => s + r.trip.billedTime + r.trip.billedKm, 0);
+    const billedTime = list.reduce((s, r) => s + r.trip.billedTime, 0);
+    const billedKm = list.reduce((s, r) => s + r.trip.billedKm, 0);
+    const driverFeeOf = (t: TariffId) =>
+      settings.additionalDrivers * (data.tariffs[t].additionalDriverFee ?? 0);
+    const actualBreakdown: MonthRow["actualBreakdown"] = {
+      billedTime,
+      billedKm,
+      fee: data.tariffs[actual.tariff].monthlyFee,
+      driverFee: driverFeeOf(actual.tariff),
+      switchFee: switched ? data.switchingFee : 0,
+    };
     const actualCost =
-      billed +
-      monthlyFee(actual.tariff, settings.additionalDrivers, data) +
-      (switched ? data.switchingFee : 0);
+      actualBreakdown.billedTime +
+      actualBreakdown.billedKm +
+      actualBreakdown.fee +
+      actualBreakdown.driverFee +
+      actualBreakdown.switchFee;
 
     const costs: Partial<Record<TariffId, number>> = {};
+    const breakdown: MonthRow["breakdown"] = {};
     for (const t of compared) {
-      let sum = monthlyFee(t, settings.additionalDrivers, data);
+      let time = 0;
+      let km = 0;
       for (const r of list) {
         const c = r.costs[t];
-        if (c) sum += c.time + c.km;
+        if (c) {
+          time += c.time;
+          km += c.km;
+        }
       }
-      costs[t] = sum;
+      const fee = data.tariffs[t].monthlyFee;
+      const driverFee = driverFeeOf(t);
+      breakdown[t] = { time, km, fee, driverFee };
+      costs[t] = time + km + fee + driverFee;
     }
     const cheapest = compared.reduce((best, t) =>
       (costs[t] ?? 0) < (costs[best] ?? 0) ? t : best,
@@ -172,6 +192,11 @@ export function buildMonths(input: MonthInput): MonthRow[] {
       switched,
       actualCost,
       costs,
+      breakdown,
+      actualBreakdown,
+      tripCount: list.length,
+      km: list.reduce((s, r) => s + r.trip.km, 0),
+      chargedMinutes: list.reduce((s, r) => s + (r.reconstruction.chargedUntil - r.trip.start), 0),
       cheapest,
       incomplete: input.unbilledMonths?.has(month) ?? false,
       partial:

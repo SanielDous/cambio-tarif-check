@@ -50,6 +50,10 @@ for (const width of [1280, 390]) {
     await expect(matrix).toBeVisible();
     await expect(page.getByTestId("month-header")).toHaveCount(13);
     await expect(page.locator(".recharts-surface")).toBeVisible();
+    await expect(matrix.getByRole("rowheader", { name: "Deine Nutzung" })).toBeAttached();
+    await expect(matrix.getByTestId("usage-row")).toHaveCount(3);
+    await matrix.getByTestId("usage-row").first().scrollIntoViewIfNeeded();
+    await expect(matrix.getByTestId("usage-row").first()).toBeVisible();
     expect(await hasHorizontalOverflow(page)).toBe(false);
 
     await page.getByRole("button", { name: "Fahrten im Dezember 2025 anzeigen" }).click();
@@ -159,6 +163,26 @@ test.describe("keyboard", () => {
     await expect(toggle).toHaveAttribute("aria-expanded", "false");
     await page.keyboard.press("Enter");
     await expect(toggle).toHaveAttribute("aria-expanded", "true");
+  });
+
+  test("opens the breakdown of a matrix cell by keyboard", async ({ page }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.goto("./");
+    await page.locator('input[type="file"]').setInputFiles("tests/fixtures/trips-2025.csv");
+    await expect(page.getByTestId("headline")).toBeVisible();
+
+    // The amount cells are one tab stop, entered once; arrows move inside.
+    await tabTo(page, "button[data-mcell]");
+    await expect(page.locator("button[data-mcell]:focus")).toHaveAttribute("data-mcell", "0:0");
+    const tooltip = page.getByRole("tooltip");
+    await expect(tooltip).toBeVisible();
+    await expect(tooltip).toContainText("Grundgebühr");
+    await expect(tooltip).toContainText("Summe");
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator("button[data-mcell]:focus")).toHaveAttribute("data-mcell", "1:0");
+    await page.keyboard.press("Escape");
+    await expect(tooltip).toBeHidden();
+    expect(await page.locator('button[data-mcell][tabindex="0"]').count()).toBe(1);
   });
 
   test("keeps the outline of the start page and the result in order", async ({ page }) => {
