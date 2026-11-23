@@ -1,7 +1,9 @@
 name: Release
 
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
     branches: [main]
 
 concurrency:
@@ -10,6 +12,7 @@ concurrency:
 
 jobs:
   release:
+    if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -20,6 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -31,9 +35,10 @@ jobs:
 
   deploy:
     needs: release
-    if: vars.PAGES_ENABLED == 'true'
+    if: github.event.workflow_run.conclusion == 'success' && vars.PAGES_ENABLED == 'true'
     runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
     environment:
@@ -41,6 +46,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
@@ -49,7 +56,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
         env:
-          APP_VERSION: ${{ needs.release.outputs.version != '' && needs.release.outputs.version || github.sha }}
+          APP_VERSION: ${{ needs.release.outputs.version != '' && needs.release.outputs.version || format('dev-{0}', substr(github.event.workflow_run.head_sha, 0, 7)) }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
