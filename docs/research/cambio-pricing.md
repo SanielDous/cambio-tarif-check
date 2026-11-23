@@ -95,18 +95,30 @@ Effective km price = base price + surcharge, applied to **both** km tiers and id
 tariffs. (documented; timeline reconstructed from the dated note on the tariff page in archived
 snapshots)
 
-| From       | Surcharge per km | Notes                                   |
-| ---------- | ---------------- | --------------------------------------- |
-| 2024-07-01 | +0.01            | Confirmed by snapshots throughout 2025  |
-| 2026-01-15 | +0.01            | New price list                          |
-| 2026-03-07 | +0.03            |                                         |
-| 2026-04-23 | +0.03            |                                         |
-| 2026-09-17 | +0.05            |                                         |
-| 2026-10-01 | +0.04            |                                         |
-| 2026-11-06 | +0.03            | Current at research date                |
+| From       | Surcharge per km | Evidence                                                        |
+| ---------- | ---------------- | --------------------------------------------------------------- |
+| 2023-12-15 | +0.01            | On the previous price list (2023-06-01); not used by the app    |
+| 2024-05-02 | +0.02            | One German snapshot (2024-05-29), confirmed by the price table  |
+| 2024-07-01 | +0.01            | Many snapshots until 2025-12-11; 84 of 84 billed km amounts     |
+| 2026-01-15 | +0.01            | New price list, note re-dated                                   |
+| 2026-03-07 | +0.03            | Snapshots 2026-03-08 and 03-11                                  |
+| 2026-04-02 | +0.04            | One snapshot (2026-04-19)                                       |
+| 2026-04-23 | +0.03            | Eight snapshots 2026-05-12 to 07-15; one billed trip in May     |
+| 2026-07-21 | +0.04            | Snapshots 2026-08-10 and 08-13                                  |
+| 2026-09-17 | +0.05            | Snapshot 2026-09-24                                             |
+| 2026-10-01 | +0.04            | Snapshot 2026-10-27                                             |
+| 2026-11-06 | +0.03            | Live site on 2026-11-23                                         |
 
-- 2025-12-12 to 2026-01-14 has no snapshot; +0.01 is inferred because both neighbours say +0.01.
-- Changes during 2026 that fell between two snapshots may be missing.
+The timeline comes from every archived capture (about 150) of the pages that carry the dated note:
+the tariff page, the business tariff pages, the English price page and the FAQ entry
+"Anpassungsvorbehalt". Remaining uncertainty:
+
+- 2025-12-12 to 2026-01-14 has no capture; +0.01 is inferred because both neighbours say +0.01.
+- A note only names the start of the current value. A value that came and went between two
+  captures would be invisible. Unobserved windows in 2026: 03-01 to 03-06, 03-11 to 04-01,
+  04-19 to 04-22, 07-15 to 07-20, 08-13 to 09-16, 09-24 to 09-30, 10-27 to 11-05.
+- English pages lag behind and once showed a wrong value (1 instead of 2 cents in May 2024,
+  contradicted by the table on the same page). German pages are the reference.
 - Rule printed in the price list: the base price holds for a petrol (E5) price of 1.55–1.69 EUR/l;
   +1 ct from 1.70, +2 ct from 1.85, +3 ct from 2.00, +4 ct from 2.15, based on a 14-day average.
 
