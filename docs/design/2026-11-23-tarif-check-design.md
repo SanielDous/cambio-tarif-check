@@ -1,6 +1,6 @@
 # cambio Tarif-Check – design
 
-Status: **draft, awaiting approval**. All question issues (#2–#7) are answered and reflected here.
+Status: **core implemented; open for comments**. All question issues (#2–#7) are answered and reflected here.
 Items marked _(assumption)_ are unverified readings of cambio's rules, items marked _(my call)_
 were decided by the author of this document.
 
@@ -321,3 +321,36 @@ Each step is usable on its own and delivered through its own pull requests.
 - Exact rounding rule of the billed time amount (an invoice PDF would settle it).
 - One trip whose time amount exceeds the full price of its booking.
 - How the 50 % charge interacts with day/week caps and night hours.
+
+## Changes made during implementation
+
+The core (delivery step 1) is built. Where the implementation deviates from or adds to the text
+above, this list is authoritative:
+
+- **Actual tariff per month can be corrected by hand** in the result matrix. A correction also
+  applies to the following months without trips. Months whose tariff is only assumed are labelled.
+- **Period filter:** selected months without trips stay in the analysis with their fees; the tariff
+  at the start of the period is carried over from the month before.
+- **Incomplete and partial months:** months with not-yet-billed trips are marked "incomplete"; the
+  first and last month of an export are marked "probably partial" when the first trip is after the
+  3rd or the last trip before the 26th of the month.
+- **Not-yet-billed rows** are recognised by empty amounts, by a status other than `BILLED`, or by
+  amounts of zero with kilometres driven.
+- **Verification wording:** only trips reproduced exactly count as "to the cent"; trips one cent
+  off, estimated, completed by hand and not reproducible are listed separately.
+- **A km amount that no surcharge explains** makes a trip "not reproducible".
+- **Holidays:** the nine nationwide holidays plus All Saints (1 November), as observed in the
+  calculator.
+- **BASIS, class L:** the day cap is 85.50 as returned by the calculator, not 12 × 7.15.
+- **Rounding:** the calculator's rule could not be determined either (it rounds the same half-cent
+  amount differently in different tariffs); one cent of tolerance applies to calculator fixtures
+  and to billed amounts alike.
+- **Calculator fixtures:** 166 recorded responses instead of "about 200".
+- **XLSX:** the portal's workbook omits cell references, which the reader library cannot handle; a
+  repair step adds them before reading.
+- **Loading:** result page, explanation page, chart and XLSX reader are loaded on demand; a failed
+  load shows a retry message and never reloads the page.
+- **Dropping files** works anywhere on the page.
+- **Price entries have no validity period yet** (only the fuel surcharges do). This is needed with
+  the first real price change and belongs to delivery step 2.
+- **semantic-release** runs through a GitHub Action instead of a local dependency.
