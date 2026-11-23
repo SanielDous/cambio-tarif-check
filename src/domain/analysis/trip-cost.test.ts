@@ -89,4 +89,29 @@ describe("tripCostInTariff", () => {
     const r = reconstructBooking(earlyReturn, data);
     expect(tripCostInTariff(earlyReturn, r, "START", data)).toBeNull();
   });
+
+  it("prices a holiday trip by the trip's city", () => {
+    // Easter Monday 2027, BASIS S 10:00–12:00: weekend price 4.15 in Aachen, 3.30 in Hamburg.
+    const start = toLocalMinute(2027, 3, 29, 10);
+    const holiday: Trip = {
+      id: "h",
+      city: "Aachen",
+      vehicleClass: "S Kleinwagen",
+      priceClass: "S",
+      start,
+      end: start + 120,
+      km: 0,
+      billedTime: 830,
+      billedKm: 0,
+      tariff: "BASIS",
+    };
+    const r = reconstructBooking(holiday, PRICE_DATA);
+    expect(tripCostInTariff(holiday, r, "BASIS", PRICE_DATA)?.time).toBe(830);
+    expect(tripCostInTariff({ ...holiday, city: "Hamburg" }, r, "BASIS", PRICE_DATA)?.time).toBe(
+      660,
+    );
+    expect(tripCostInTariff({ ...holiday, city: "Hamburg" }, r, "AKTIV", PRICE_DATA)).toEqual(
+      tripCostInTariff(holiday, r, "AKTIV", PRICE_DATA),
+    );
+  });
 });

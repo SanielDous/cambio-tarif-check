@@ -143,3 +143,16 @@ describe("tariff and class lists", () => {
     }
   });
 });
+
+describe("holidayCities", () => {
+  it("lists the 22 cities that charge holidays at the weekend price", () => {
+    expect(PRICE_DATA.holidayCities).toHaveLength(22);
+    expect(new Set(PRICE_DATA.holidayCities).size).toBe(22);
+    for (const city of ["Aachen", "Köln", "Saarbrücken"]) {
+      expect(PRICE_DATA.holidayCities).toContain(city);
+    }
+    for (const city of ["Hamburg", "Bremen", "Berlin", "Wuppertal", "Dortmund"]) {
+      expect(PRICE_DATA.holidayCities).not.toContain(city);
+    }
+  });
+});

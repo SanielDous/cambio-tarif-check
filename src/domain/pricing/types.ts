@@ -45,6 +45,11 @@ export interface PriceData {
   switchingFee: 500;
   dayCapHours: 12;
   weekCapDays: 6;
+  /**
+   * Cities in which public holidays are charged at the weekend price (BASIS and CAMPUS). Holidays
+   * cost the normal price everywhere else.
+   */
+  holidayCities: string[];
   /** Fuel surcharge in cents per km, by start date ("YYYY-MM-DD"), ascending. */
   fuelSurcharges: { from: string; cents: number }[];
 }

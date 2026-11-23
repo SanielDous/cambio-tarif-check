@@ -101,6 +101,33 @@ export const PRICE_DATA: PriceData = {
   switchingFee: 500,
   dayCapHours: 12,
   weekCapDays: 6,
+  // Verified with cambio's price calculator (all regional companies, holidays of 2027) and, for
+  // Aachen, a real invoice. ASSUMED by neighbourhood, because the calculator offers no suitable
+  // vehicle there: Eschweiler (like Aachen), Dormagen and Bergheim (like Köln).
+  holidayCities: [
+    "Aachen",
+    "Düren",
+    "Herzogenrath",
+    "Jülich",
+    "Würselen",
+    "Bonn",
+    "Brühl",
+    "Düsseldorf",
+    "Erftstadt",
+    "Frechen",
+    "Hürth",
+    "Köln",
+    "Sankt Augustin",
+    "Siegburg",
+    "Euskirchen",
+    "Pulheim",
+    "Troisdorf",
+    "Kerpen",
+    "Saarbrücken",
+    "Eschweiler",
+    "Dormagen",
+    "Bergheim",
+  ],
   fuelSurcharges: [
     { from: "2024-05-02", cents: 2 },
     { from: "2024-07-01", cents: 1 },
