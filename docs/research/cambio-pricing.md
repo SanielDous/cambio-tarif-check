@@ -349,8 +349,9 @@ Open questions:
 
 ## Findings from invoices
 
-The account owner provided 30 invoices (2024-11 to 2026-05) covering 90 trips; they stay local and
-are not part of the repository. An invoice lists every trip with separate line items, each with
+The account owner provided 37 invoices (2023-09 to 2026-05) covering 108 trips; they stay local
+and are not part of the repository. All 85 trips of the two exports appear on them with exactly
+the same total. An invoice lists every trip with separate line items, each with
 net amount, VAT and gross amount. (invoice)
 
 ### Line items of a trip
@@ -391,9 +392,19 @@ or a tolerance of a few minutes).
   hour price and duration (e.g. AKTIV S: 75 min up, 105 min down, 135 min down, 165 min up,
   555 min down; a 30-minute cancelled item 0.525 always down). All other amounts follow ordinary
   rounding. This is the signature of binary floating-point arithmetic.
-- No formula tried reproduces all 40 (best: 4 misses, e.g. price × minutes / 60 in double
-  precision, with the 50 % item computed as half the difference of two costs). Plain half-up
-  rounding misses 11. The exact formula stays **open**; the tolerance of one cent stays.
+- No formula tried reproduces all of them (best: 2 misses out of the 25 distinct full-price
+  observations below; about 200 combinations of double and single precision formulas, net and
+  gross computation, summation per minute or quarter hour and several rounding functions). Plain
+  half-up rounding misses 4 of the 25. The exact formula stays **open**; the tolerance of one cent
+  stays.
+- All distinct half-cent observations for full-price items (hour price in cents, minutes,
+  direction), for anyone who wants to try:
+  185: 90 up, 150 up, 210 up, 330 up, 390 up, 450 up · 190: 135 up ·
+  210: 75 up, 105 down, 135 down, 165 up, 195 up, 225 up, 255 up, 315 up, 345 up, 435 up,
+  555 down · 235: 210 up, 270 up, 330 up · 335: 150 up · 498: 375 up · 510: 255 down ·
+  715: 150 up. The same (price, minutes) pair always rounds the same way (62 distinct pairs,
+  none inconsistent). 50 % items: 210 for 30 min (0.525) down three times; 210 for 450 min
+  (7.875) up.
 
 ### Day and week caps
 
@@ -403,6 +414,21 @@ or a tolerance of a few minutes).
   169.20 + one day 28.20; the 45 minutes after the eighth 24-hour block were **not charged**. The
   model expects 1.76 more. The cancelled 3 h 15 min were charged at 50 % of the uncapped price
   (3.82). One observation; cause unknown (**open**).
+
+### Older invoices (before 2024-05-02)
+
+Not used by the app, recorded for completeness:
+
+- Prices of the previous price list as far as they occur: AKTIV S 1.90 per hour, AKTIV L 5.10,
+  BASIS S 3.35 on weekdays and 3.95 at the weekend rate; km incl. surcharge: AKTIV S 0.26,
+  AKTIV L 0.38, BASIS S 0.30.
+- **3 October 2023 (a Tuesday) was charged at the weekend rate in BASIS.** This is direct evidence
+  that nationwide holidays count, and supports the reading that the calculator answers for 2028
+  holidays only reflect a calendar that is not maintained that far ahead.
+- Unused booked range of an electric car is listed ("x Km Reichweite nicht genutzt") without a
+  charge.
+- One-off items seen: sign-up fee 30.00 (once per authorised driver), booking fee 1.00 for a
+  booking by phone.
 
 ### Fees
 
