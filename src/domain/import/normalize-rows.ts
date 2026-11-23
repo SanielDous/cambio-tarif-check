@@ -115,8 +115,12 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
     ? 0
     : toCents(cell("billedTime"), "billedTime");
   const billedKm = isBlankCell(cell("billedKm")) ? 0 : toCents(cell("billedKm"), "billedKm");
-  // A trip with km is never free: amounts of 0 stand for an invoice that is still to come.
-  if (billedTime === 0 && billedKm === 0 && km > 0) throw new RowError("not-billed");
+  // Without a known billed status a trip with km is never free: amounts of 0 stand for an invoice
+  // that is still to come. With one it is a genuinely free trip (fully credited, say), kept so
+  // that it is listed and flagged rather than silently dropped.
+  if (billedTime === 0 && billedKm === 0 && km > 0 && !isBilledStatus(status)) {
+    throw new RowError("not-billed");
+  }
   if (end < start) throw new RowError("end-before-start");
   if (end < parseIsoDate(data.validFrom)) throw new RowError("before-price-data", data.validFrom);
 

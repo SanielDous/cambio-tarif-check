@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { reconstructBooking } from "@/domain/analysis/reconstruct-booking";
 import { dateParts, parseLocal } from "@/domain/pricing/local-time";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
 import { dedupeTrips } from "./dedupe";
@@ -311,6 +312,19 @@ describe("normalizeRows", () => {
       const { trips, problems } = run(row({ 5: "0", 6: "0,00" }));
       expect(trips).toEqual([]);
       expect(problems[0]).toMatchObject({ reason: "not-billed", month: "2025-12" });
+    });
+
+    it("keeps a free trip with km when its status is a known billed status", () => {
+      const { trips, problems } = runStatus("BILLED", { 5: "0", 6: "0,00" });
+      expect(problems).toEqual([]);
+      expect(trips[0]).toMatchObject({ km: 19, billedTime: 0, billedKm: 0 });
+      // Listed, and flagged by the reconstruction, since no price explains it.
+      expect(reconstructBooking(trips[0] as Trip, PRICE_DATA).kind).toBe("not-reproducible");
+    });
+
+    it("reports zero amounts with km as not billed under an unknown or missing status", () => {
+      expect(runStatus("OPEN", { 5: "0", 6: "0" }).problems[0]?.reason).toBe("not-billed");
+      expect(runStatus(null, { 5: "0", 6: "0" }).problems[0]?.reason).toBe("not-billed");
     });
 
     it("keeps zero amounts without km and one zero amount with km", () => {
