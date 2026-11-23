@@ -211,6 +211,23 @@ Sources: tariff page, FAQ "Tarifwechsel", terms and conditions. (documented)
   Easter Monday 2027-03-29 and Ascension Day 2027-05-06 returned weekend prices. Corpus Christi
   2027-05-27 (regional) and 12-24 returned weekday prices. This is not in the price list.
 
+### Public holidays (recorded calculator responses, 2026-11-23)
+
+166 calculator responses were recorded as test fixtures. For bookings 10:00–12:00 in BASIS, class S
+(weekday 6.60, weekend 8.30):
+
+- Weekend price: 2027-01-01, Good Friday 2027-03-26, Easter Monday 2027-03-29, Ascension Day
+  2027-05-06, Whit Monday 2027-05-17 and **All Saints 2027-11-01** (a Monday).
+- Weekday price: Epiphany 2027-01-06, Corpus Christi 2027-05-27, 2027-12-24, 2027-12-31,
+  Reformation Day 2028-10-31.
+- Weekday price also for 2028-05-01, 2028-10-03, 2028-12-25 and 2028-12-26, although these are
+  nationwide holidays. The holiday calendar seems to be maintained by hand and not yet filled
+  for 2028. (In 2027 these four fall on a weekend, so they could not be tested there.)
+
+So the calendar is not simply "nationwide holidays": All Saints counts, Corpus Christi does not,
+although both are holidays in North Rhine-Westphalia. Whether the calendar differs by city was not
+tested (all holiday requests used Aachen). Holidays in past years cannot be queried.
+
 ### Derived from the trip export
 
 Export format (CSV from the customer portal; an XLSX with the same columns exists):
