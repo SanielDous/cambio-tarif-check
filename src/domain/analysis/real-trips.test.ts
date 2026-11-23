@@ -2,9 +2,11 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import type { Trip } from "@/domain/import/fields";
-import { dateParts, parseLocal } from "@/domain/pricing/local-time";
+import { detectColumns } from "@/domain/import/detect-columns";
+import { normalizeRows } from "@/domain/import/normalize-rows";
+import { readTable } from "@/domain/import/read-table";
+import { dateParts } from "@/domain/pricing/local-time";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
-import type { PriceClass, TariffId } from "@/domain/pricing/types";
 import {
   reconstructBooking,
   type Reconstruction,
@@ -13,41 +15,19 @@ import {
 
 const FIXTURES = resolve(import.meta.dirname, "../../../tests/fixtures");
 
-/** Minimal reader for the anonymised portal CSV (no quoted fields in the fixtures). */
-function readTrips(name: string): Trip[] {
-  const text = readFileSync(resolve(FIXTURES, name), "utf8").replace(/^\uFEFF/, "");
-  const [header = "", ...lines] = text.split("\r\n").filter((line) => line !== "");
-  const columns = header.split(";");
-  const column = (fields: string[], name: string): string => {
-    const value = fields[columns.indexOf(name)];
-    if (value === undefined) throw new Error(`Missing column ${name}`);
-    return value;
-  };
-  const time = (text: string) => {
-    const t = parseLocal(text);
-    if (t === null) throw new Error(`Bad time ${text}`);
-    return t;
-  };
-  const cents = (text: string) => Math.round(Number(text.replace(",", ".")) * 100);
-  return lines.map((line, index) => {
-    const fields = line.split(";");
-    const vehicleClass = column(fields, "Wagenklasse");
-    return {
-      id: `${name}#${index + 1}`,
-      city: column(fields, "Stadt"),
-      vehicleClass,
-      priceClass: vehicleClass.split(" ")[0] as PriceClass,
-      start: time(column(fields, "Buchungsbeginn")),
-      end: time(column(fields, "Buchungsende")),
-      km: Number(column(fields, "Kilometer")),
-      billedTime: cents(column(fields, "Betrag Zeit")),
-      billedKm: cents(column(fields, "Betrag Kilometer")),
-      tariff: column(fields, "Tarif") as TariffId,
-    };
-  });
+async function readTrips(name: string): Promise<Trip[]> {
+  const file = new File([readFileSync(resolve(FIXTURES, name))], name);
+  const table = await readTable(file);
+  const { trips, problems } = normalizeRows(
+    table,
+    detectColumns(table.headers).mapping,
+    PRICE_DATA,
+  );
+  if (problems.length > 0) throw new Error(`Problems in ${name}: ${JSON.stringify(problems)}`);
+  return trips;
 }
 
-const trips = [...readTrips("trips-2025.csv"), ...readTrips("trips-2026.csv")];
+const trips = [...(await readTrips("trips-2025.csv")), ...(await readTrips("trips-2026.csv"))];
 const results: { trip: Trip; r: Reconstruction }[] = trips.map((trip) => ({
   trip,
   r: reconstructBooking(trip, PRICE_DATA),
