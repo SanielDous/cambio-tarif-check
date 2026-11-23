@@ -1,17 +1,19 @@
 // @vitest-environment jsdom
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
-import { cleanup, render, screen, waitFor, within } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import { createStore, Provider, useAtomValue } from "jotai";
 import { afterEach, describe, expect, it } from "vitest";
 import "@/i18n/bootstrap";
 import {
+  autoDriversAtom,
   importFilesAtom,
   importReportAtom,
   pendingMappingsAtom,
   resetAtom,
+  setAdditionalDriversAtom,
   settingsAtom,
   tripsAtom,
 } from "@/state/atoms";
@@ -155,6 +157,35 @@ describe("import", () => {
     await user.upload(input(), csvFile());
 
     expect(await screen.findByText(/weitere fahrende Person/)).toBeInTheDocument();
+    expect(store.get(settingsAtom).additionalDrivers).toBe(1);
+  });
+
+  it("suggests the drivers again after each import until the user sets them", async () => {
+    const { store, user, input } = setup();
+    await user.upload(input(), csvFile(fixture2026, "2026.csv"));
+    await screen.findByTestId("trip-count");
+    expect(store.get(settingsAtom).additionalDrivers).toBe(0);
+
+    // The second file brings a second driver: the suggestion follows.
+    await user.upload(input(), csvFile());
+    await waitFor(() => expect(store.get(settingsAtom).additionalDrivers).toBe(1));
+    expect(store.get(autoDriversAtom)).toBe(1);
+    expect(screen.getByText(/weitere fahrende Person/)).toBeInTheDocument();
+  });
+
+  it("never overwrites drivers the user set by hand, until a reset", async () => {
+    const { store, user, input } = setup();
+    await user.upload(input(), csvFile(fixture2026, "2026.csv"));
+    await screen.findByTestId("trip-count");
+    act(() => store.set(setAdditionalDriversAtom, 3));
+
+    await user.upload(input(), csvFile());
+    await screen.findByText("export.csv");
+    expect(store.get(settingsAtom).additionalDrivers).toBe(3);
+
+    act(() => store.set(resetAtom));
+    await user.upload(input(), csvFile());
+    await screen.findByTestId("trip-count");
     expect(store.get(settingsAtom).additionalDrivers).toBe(1);
   });
 

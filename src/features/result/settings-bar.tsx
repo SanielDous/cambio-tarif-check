@@ -1,5 +1,5 @@
 import { useId, useMemo } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ArrowRight, Minus, Plus, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { monthRange } from "@/domain/analysis/months";
 import { monthKey } from "@/domain/pricing/local-time";
 import { formatMonth } from "@/lib/format";
-import { autoDriversAtom, settingsAtom, tripsAtom } from "@/state/atoms";
+import { autoDriversAtom, setAdditionalDriversAtom, settingsAtom, tripsAtom } from "@/state/atoms";
 
 const MAX_DRIVERS = 9;
 
@@ -25,11 +25,10 @@ export function useAvailableMonths(): string[] {
 
 function DriversStepper() {
   const { t } = useTranslation("common");
-  const [settings, setSettings] = useAtom(settingsAtom);
+  const n = useAtomValue(settingsAtom).additionalDrivers;
+  const set = useSetAtom(setAdditionalDriversAtom);
   const autoDrivers = useAtomValue(autoDriversAtom);
   const id = useId();
-  const n = settings.additionalDrivers;
-  const set = (value: number) => setSettings({ ...settings, additionalDrivers: value });
   return (
     <div className="flex flex-col gap-1.5">
       <span id={id} className="text-sm font-medium">

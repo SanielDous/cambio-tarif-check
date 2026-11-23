@@ -1,5 +1,10 @@
 import { atom } from "jotai";
-import { analyze, type Analysis, type Settings } from "@/domain/analysis/analyze";
+import {
+  analyze,
+  countAdditionalDrivers,
+  type Analysis,
+  type Settings,
+} from "@/domain/analysis/analyze";
 import { dedupeTrips } from "@/domain/import/dedupe";
 import { detectColumns } from "@/domain/import/detect-columns";
 import {
@@ -62,8 +67,16 @@ export const pendingMappingsAtom = atom<PendingMapping[]>([]);
 const generationAtom = atom(0);
 /** Number of files currently being read. */
 export const importBusyAtom = atom(0);
-/** Number of additional drivers set automatically on the first import, 0 if none. */
+/** Number of additional drivers suggested by the last import, 0 if none. */
 export const autoDriversAtom = atom(0);
+/** The user set the number of additional drivers by hand; imports no longer change it. */
+const driversSetByHandAtom = atom(false);
+
+/** Sets the number of additional drivers by hand. */
+export const setAdditionalDriversAtom = atom(null, (get, set, value: number) => {
+  set(settingsAtom, { ...get(settingsAtom), additionalDrivers: value });
+  set(driversSetByHandAtom, true);
+});
 
 /** Months of rows that are not billed yet, over all imported files. */
 const unbilledMonthsAtom = atom((get) =>
@@ -92,11 +105,10 @@ const addResultAtom = atom(null, (get, set, result: { trips: Trip[]; report: Fil
     files: [...report.files, result.report],
     duplicates: report.duplicates + merged.duplicates,
   });
-  if (before.length === 0 && merged.trips.length > 0) {
-    // First trips of this session: take over the number of other drivers found in the export.
-    const settings = get(settingsAtom);
-    const suggested = analyze(merged.trips, settings, PRICE_DATA)?.suggestedAdditionalDrivers ?? 0;
-    set(settingsAtom, { ...settings, additionalDrivers: suggested });
+  if (!get(driversSetByHandAtom) && merged.trips.length > 0) {
+    // Take over the number of other drivers found in all trips, until the user sets it.
+    const suggested = countAdditionalDrivers(merged.trips);
+    set(settingsAtom, { ...get(settingsAtom), additionalDrivers: suggested });
     set(autoDriversAtom, suggested);
   }
 });
@@ -204,4 +216,5 @@ export const resetAtom = atom(null, (_get, set) => {
   set(settingsAtom, DEFAULT_SETTINGS);
   set(pendingMappingsAtom, []);
   set(autoDriversAtom, 0);
+  set(driversSetByHandAtom, false);
 });
