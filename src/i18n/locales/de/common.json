@@ -1,0 +1,33 @@
+{
+  "app": {
+    "title": "cambio Tarif-Check",
+    "subtitle": "Finde heraus, welcher cambio-Tarif für deine Fahrten am günstigsten gewesen wäre."
+  },
+  "nav": {
+    "home": "Start",
+    "howItWorks": "So funktioniert’s"
+  },
+  "language": {
+    "label": "Sprache",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "theme": {
+    "label": "Darstellung",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
+  "home": {
+    "placeholder": "Hier kannst du bald deinen Fahrten-Export ablegen."
+  },
+  "howItWorks": {
+    "title": "So funktioniert’s",
+    "placeholder": "Die Erklärung folgt."
+  },
+  "footer": {
+    "version": "Version {{version}}",
+    "disclaimer": "Kein offizielles Angebot von cambio",
+    "repository": "Quellcode auf GitHub"
+  }
+}
