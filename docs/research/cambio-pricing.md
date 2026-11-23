@@ -95,18 +95,30 @@ Effective km price = base price + surcharge, applied to **both** km tiers and id
 tariffs. (documented; timeline reconstructed from the dated note on the tariff page in archived
 snapshots)
 
-| From       | Surcharge per km | Notes                                   |
-| ---------- | ---------------- | --------------------------------------- |
-| 2024-07-01 | +0.01            | Confirmed by snapshots throughout 2025  |
-| 2026-01-15 | +0.01            | New price list                          |
-| 2026-03-07 | +0.03            |                                         |
-| 2026-04-23 | +0.03            |                                         |
-| 2026-09-17 | +0.05            |                                         |
-| 2026-10-01 | +0.04            |                                         |
-| 2026-11-06 | +0.03            | Current at research date                |
+| From       | Surcharge per km | Evidence                                                        |
+| ---------- | ---------------- | --------------------------------------------------------------- |
+| 2023-12-15 | +0.01            | On the previous price list (2023-06-01); not used by the app    |
+| 2024-05-02 | +0.02            | One German snapshot (2024-05-29), confirmed by the price table  |
+| 2024-07-01 | +0.01            | Many snapshots until 2025-12-11; 84 of 84 billed km amounts     |
+| 2026-01-15 | +0.01            | New price list, note re-dated                                   |
+| 2026-03-07 | +0.03            | Snapshots 2026-03-08 and 03-11                                  |
+| 2026-04-02 | +0.04            | One snapshot (2026-04-19)                                       |
+| 2026-04-23 | +0.03            | Eight snapshots 2026-05-12 to 07-15; one billed trip in May     |
+| 2026-07-21 | +0.04            | Snapshots 2026-08-10 and 08-13                                  |
+| 2026-09-17 | +0.05            | Snapshot 2026-09-24                                             |
+| 2026-10-01 | +0.04            | Snapshot 2026-10-27                                             |
+| 2026-11-06 | +0.03            | Live site on 2026-11-23                                         |
 
-- 2025-12-12 to 2026-01-14 has no snapshot; +0.01 is inferred because both neighbours say +0.01.
-- Changes during 2026 that fell between two snapshots may be missing.
+The timeline comes from every archived capture (about 150) of the pages that carry the dated note:
+the tariff page, the business tariff pages, the English price page and the FAQ entry
+"Anpassungsvorbehalt". Remaining uncertainty:
+
+- 2025-12-12 to 2026-01-14 has no capture; +0.01 is inferred because both neighbours say +0.01.
+- A note only names the start of the current value. A value that came and went between two
+  captures would be invisible. Unobserved windows in 2026: 03-01 to 03-06, 03-11 to 04-01,
+  04-19 to 04-22, 07-15 to 07-20, 08-13 to 09-16, 09-24 to 09-30, 10-27 to 11-05.
+- English pages lag behind and once showed a wrong value (1 instead of 2 cents in May 2024,
+  contradicted by the table on the same page). German pages are the reference.
 - Rule printed in the price list: the base price holds for a petrol (E5) price of 1.55–1.69 EUR/l;
   +1 ct from 1.70, +2 ct from 1.85, +3 ct from 2.00, +4 ct from 2.15, based on a 14-day average.
 
@@ -199,6 +211,87 @@ Sources: tariff page, FAQ "Tarifwechsel", terms and conditions. (documented)
   Easter Monday 2027-03-29 and Ascension Day 2027-05-06 returned weekend prices. Corpus Christi
   2027-05-27 (regional) and 12-24 returned weekday prices. This is not in the price list.
 
+### Public holidays (recorded calculator responses, 2026-11-23)
+
+166 calculator responses were recorded as test fixtures. For bookings 10:00–12:00 in BASIS, class S
+(weekday 6.60, weekend 8.30):
+
+- Weekend price: 2027-01-01, Good Friday 2027-03-26, Easter Monday 2027-03-29, Ascension Day
+  2027-05-06, Whit Monday 2027-05-17 and **All Saints 2027-11-01** (a Monday).
+- Weekday price: Epiphany 2027-01-06, Corpus Christi 2027-05-27, 2027-12-24, 2027-12-31,
+  Reformation Day 2028-10-31.
+- Weekday price also for 2028-05-01, 2028-10-03, 2028-12-25 and 2028-12-26, although these are
+  nationwide holidays. The holiday calendar seems to be maintained by hand and not yet filled
+  for 2028. (In 2027 these four fall on a weekend, so they could not be tested there.)
+
+So the calendar is not simply "nationwide holidays": All Saints counts, Corpus Christi does not,
+although both are holidays in North Rhine-Westphalia. Whether the calendar differs by city was not
+tested (all holiday requests used Aachen). Holidays in past years cannot be queried.
+
+### Billing details confirmed by 166 recorded calculator responses (2026-11-23)
+
+The local implementation (`src/domain/pricing/`) reproduces all 166 recorded responses
+(673 tariff results): every km amount exactly, every time amount to within 1 cent
+(656 of 665 compared time amounts exactly; 8 BASIS/CAMPUS results on 2028 holidays excluded).
+
+- **Holiday hours:** a holiday is the calendar day 00:00–24:00 at the weekend price; 00:00–06:00
+  stays at the night price 0.50. Ascension Day 2027: 22:00 the day before to 02:00 = 2 h weekday +
+  2 h night; 06:00–18:00 is capped at the weekday day price; 22:00 to 02:00 the next day =
+  2 h weekend + 2 h night. (calculator)
+- **BASIS L day cap is 85.50, not 12 × 7.15 = 85.80.** BASIS L 26 h from 06:00 = 99.80
+  (85.50 + 2 × 7.15); 8 days = 600.30 (week 514.80 + day 85.50). The week cap stays
+  514.80 = 6 × 85.80. The hour price 7.15 is confirmed (15 min = 1.79, 3 h = 21.45). All other
+  tested classes cap the day at exactly 12 × the weekday hour price. (calculator)
+
+### Rounding of the time amount in the calculator
+
+- Only amounts of exactly half a cent are affected; all other amounts are rounded to the nearest
+  cent. 58 of 665 recorded time amounts are exact half cents. (calculator)
+- The direction for half cents is **not a function of the amount**: 5.775 is shown as 5.77 for
+  BASIS S 105 min (3.30/h) and as 5.78 for AKTIV S 165 min (2.10/h). (calculator)
+- "Round the net amount (price / 1.19) to cents, add VAT, round again" is ruled out: it turns
+  whole-cent amounts such as 2.10 into 2.09 (550 of 665 match; plain half-up: 642). (calculator)
+- Best rule depending on the amount only: hold the euro amount as a single-precision float
+  (float32) and round half-up – 656 of 665 exact (49 of 58 half cents), used as
+  `roundCalculator`. It gives 0.525 → 0.52 and 2.625 → 2.63, but 1.575 → 1.58 (shown: 1.57).
+  (inferred)
+- Best rule depending on price and duration: hour price in euros as float32 × hours, result as
+  float32, then half-up – 54 of 58 half cents. The four misses are cases where double precision
+  would give the shown value, so this is not the exact rule either. About 4,000 other variants
+  (double precision in every operation order, net prices rounded to 2–8 decimals, per-minute
+  prices, per-segment rounding, per-minute summation, day-based durations, half-even) fit worse.
+  The exact rule is **open**. (inferred)
+
+### Holiday pricing differs by regional company (calculator, 2026-11-23)
+
+cambio consists of regional companies; the vehicle options of the calculator carry their number
+("Mandant") as prefix. For every Mandant, BASIS class S was queried for 10:00–12:00 on a normal
+Tuesday (2027-03-02) and on New Year (08:00–10:00, a Friday), Good Friday, Easter Monday,
+Ascension Day, Whit Monday, Corpus Christi and All Saints 2027.
+
+| Mandant | Cities                                                                                                                              | Holidays at the weekend price                                    |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 15      | Aachen, Düren, Herzogenrath, Jülich, Würselen                                                                                       | yes, incl. All Saints; Corpus Christi no                         |
+| 12      | Bonn, Brühl, Düsseldorf, Erftstadt, Frechen, Hürth, Köln, Sankt Augustin, Siegburg, Euskirchen, Pulheim, Troisdorf, Kerpen          | yes, incl. All Saints; Corpus Christi no                         |
+| 16      | Saarbrücken                                                                                                                         | yes, incl. All Saints; Corpus Christi no                         |
+| 1       | Achim, Bremen, Bremerhaven, Leer, Lilienthal, Verden, Wilhelmshaven, Delmenhorst, Worpswede, Emden, Stuhr, Weyhe, Ganderkesee, Wildeshausen, Aurich | none of the queried days                         |
+| 35      | Berlin                                                                                                                              | none                                                             |
+| 19      | Bielefeld                                                                                                                           | none                                                             |
+| 55      | Flensburg                                                                                                                           | none                                                             |
+| 31      | Hamburg                                                                                                                             | none                                                             |
+| 36      | Lüneburg, Uelzen, Winsen                                                                                                            | none                                                             |
+| 27      | Oldenburg, Bad Zwischenahn                                                                                                          | none                                                             |
+| 37      | Wuppertal                                                                                                                           | none                                                             |
+| 64      | Dortmund                                                                                                                            | not applicable (neither BASIS nor CAMPUS)                        |
+
+- Dormagen, Eschweiler and Bergheim could not be queried (no suitable vehicle option). The app
+  assumes Eschweiler like Aachen, Dormagen and Bergheim like Köln.
+- Eight companies answering "none" consistently, on every holiday, points to a real regional rule
+  rather than unmaintained calendars – but only Aachen is confirmed by an invoice (3 October 2023
+  at the weekend rate).
+- Holidays that fall on a weekend in 2027 (1 May, 3 October, 25/26 December) could not be queried.
+  The app applies all nine nationwide holidays plus All Saints in the holiday cities.
+
 ### Derived from the trip export
 
 Export format (CSV from the customer portal; an XLSX with the same columns exists):
@@ -229,7 +322,16 @@ Findings from recomputing all 84 trips:
   match with a different rounding (parts summed before rounding, or the full-price part rounded
   down). 2.625 is billed as 2.62 and 4.725 as 4.72 in some trips. The exact rule still has to be
   derived (candidates: rounding on net amounts before VAT, half-even, per quarter-hour slot).
-- **Unexplained trips** (open):
+- Further rounding tests (16 decimal schemes, several floating-point formulas, several
+  net-before-VAT schemes) found no single rule for the billed amounts. The calculator samples
+  above (0.525 → 0.52, 1.575 → 1.57, 2.625 → 2.63) are all explained by "round the net amount
+  (price / 1.19) to cents, add 19 % VAT, round again", but that rule fits the billed trips worse
+  than separate half-up rounding. Calculator and invoicing seem to round differently.
+- The two 0 km rows below were explained by the account owner: a booking cancelled less than 24 h
+  before start is billed at 50 % of the time price, a booking neither cancelled nor used at 100 %.
+- Monthly fees (11.00 / 27.00), the additional-driver fee (3.00) and the switching fee (5.00) are
+  the same in the price lists of 2024-05, 2025-03 and 2026.
+- **Unexplained trips** (one remains open):
   - Class L, 7 hours, 0 km, billed 17.85 = exactly 50 % of the full price 35.70. Probably a
     cancelled or unused booking; cancellations therefore seem to appear as ordinary rows with 0 km.
   - Class XL, 9 hours, 0 km, billed 55.08 = the full price.
@@ -247,7 +349,133 @@ A second export covering 2026 contains a single trip (BASIS, class L, a Tuesday 
 Open questions:
 
 - How the 50 % charge interacts with day/week caps and night hours.
+- (answered: the invoice shows the booked period, see "Findings from invoices")
+
+Booking reconstruction in the app (`src/domain/analysis/reconstruct-booking.ts`), 85 trips of
+both exports (2026-11-23):
+
+- **Km amount: 85 of 85 exact** with the surcharge table (no derived surcharge needed).
+- **Time amount: 84 of 85 within 1 cent, 75 exact.** Model: full price up to the return rounded up
+  to the quarter hour, 50 % of the capped cost of the remaining booked time
+  (`timeCost(start, bookedEnd) − timeCost(start, chargedUntil)`), both parts rounded half-up.
+  Classified: 73 verified, 9 within 1 cent, 1 cancelled, 1 unused, 1 not reproducible (the
+  class S trip at 11.41). No trip has more than one matching booked end.
+- All 9 one-cent trips are AKTIV S and billed 1 cent **below** the model (a half cent rounded
+  down). Hit counts (exact / 1 cent off, 83 trips): both parts half-up 73/9; parts summed 66/16;
+  full part rounded down 46/36; 50 % part rounded down 63/19; float32 rule of the calculator per
+  part 74/8 (breaks 7 otherwise exact trips); float32 on the sum 64/18. No single rule fits all.
+  (inferred)
+
+Open questions:
+
+- **How the 50 % charge interacts with day/week caps:** still open. "50 % of the capped remainder"
+  and "50 % of the uncapped unused span" explain exactly the same 73 + 9 trips. The 8-day trip
+  (1495 km) returned 1.75 h early within an uncapped part of its last day block, so both readings
+  agree there. One class XL trip (Saturday 08:30–14:36, 47.94) fits both, but with different booked
+  ends (capped: next day 09:30; uncapped: 21:30), because both unused amounts are 33.615.
+  Night hours in the unused part (one trip, 00:11 → 01:15) are charged at 50 % of 0.50/h.
 - Whether the portal or the invoice PDF shows the originally booked period.
+- The exact rounding rule of invoiced time amounts (see above).
+
+## Findings from invoices
+
+The account owner provided 37 invoices (2023-09 to 2026-05) covering 108 trips; they stay local
+and are not part of the repository. All 85 trips of the two exports appear on them with exactly
+the same total. An invoice lists every trip with separate line items, each with
+net amount, VAT and gross amount. (invoice)
+
+### Line items of a trip
+
+- **"Normalfahrt Zeit"** from booking start to the return time **rounded up to the quarter hour**,
+  at the full time price.
+- **"kurzfristig stornierte Zeit"** from that point to the booked end, at 50 % of the time price.
+  This confirms the reconstruction model and shows that the booked end is printed on the invoice.
+- **"Normalfahrt Kilometer"** with the km driven. Electric cars additionally show the booked range
+  ("eMobil: Km in Reichweite x Km von y Km gebuchte Reichweite"); the amount is the normal km price.
+- The export column "Betrag Zeit" is the sum of all time-related line items of the trip.
+- Night hours are charged at 0.50 in both kinds of line item (cancelled night time at 0.25/h).
+- A booking cancelled less than 24 h before start appears as a single "kurzfristig stornierte
+  Zeit" item over the whole booking; a booking neither cancelled nor used as "Normalfahrt Zeit"
+  over the whole booking plus "Normalfahrt Kilometer 0 Kilometer".
+
+### Late return
+
+Two different line items exist, each seen once:
+
+- **"Verspätung"**: return 3 minutes after the booked end → one further quarter hour at the
+  **regular** time price (AKTIV S: 15 min = 0.52). No flat fee was charged.
+- **"Überziehung"**: return 13 minutes after the booked end → the 13 minutes **per minute at
+  double the time price** (AKTIV S: 13 × 2.10 / 60 × 2 = 0.91). No flat fee was charged either,
+  only a service note on the invoice asking to keep to the booked time. This explains the one trip
+  that was "billed above the full price of its booking".
+
+When which of the two applies is not known (possibly: whether a following booking was affected,
+or a tolerance of a few minutes).
+
+### Rounding
+
+- Every line item is rounded to cents on its own; the trip total is the sum of the rounded items.
+- The net amount is always round(gross / 1.19), VAT = gross − net (130 of 130 time items, 70 of
+  70 km items). So the gross amount is computed first.
+- Only gross amounts that are **exactly half a cent** are affected by the open question. 40 of 130
+  time items are such amounts: 29 were rounded up, 11 down. The direction is a fixed function of
+  hour price and duration (e.g. AKTIV S: 75 min up, 105 min down, 135 min down, 165 min up,
+  555 min down; a 30-minute cancelled item 0.525 always down). All other amounts follow ordinary
+  rounding. This is the signature of binary floating-point arithmetic.
+- No formula tried reproduces all of them (best: 2 misses out of the 25 distinct full-price
+  observations below; about 200 combinations of double and single precision formulas, net and
+  gross computation, summation per minute or quarter hour and several rounding functions). Plain
+  half-up rounding misses 4 of the 25. The exact formula stays **open**; the tolerance of one cent
+  stays.
+- All distinct half-cent observations for full-price items (hour price in cents, minutes,
+  direction), for anyone who wants to try:
+  185: 90 up, 150 up, 210 up, 330 up, 390 up, 450 up · 190: 135 up ·
+  210: 75 up, 105 down, 135 down, 165 up, 195 up, 225 up, 255 up, 315 up, 345 up, 435 up,
+  555 down · 235: 210 up, 270 up, 330 up · 335: 150 up · 498: 375 up · 510: 255 down ·
+  715: 150 up. The same (price, minutes) pair always rounds the same way (62 distinct pairs,
+  none inconsistent). 50 % items: 210 for 30 min (0.525) down three times; 210 for 450 min
+  (7.875) up.
+
+### Day and week caps
+
+- 34 h 15 min in COMFORT M: 28.20 (first 24 hours, capped) + 10.25 h × 2.35 = 52.29. Matches the
+  model.
+- 8 days 45 min in COMFORT M (returned 3 h 15 min early): "Normalfahrt Zeit" 197.40 = week price
+  169.20 + one day 28.20; the 45 minutes after the eighth 24-hour block were **not charged**. The
+  cancelled 3 h 15 min were charged at 50 % of the price of exactly those hours (3.82), i.e. the
+  cancelled item is priced on its own span.
+- **Explained by a rule the calculator shows as well: a remainder of less than one hour after
+  full 24-hour blocks is free.** Calculator, COMFORT M from a Friday 17:00 (2026-11-23): 1 day
+  + 15, 30, 45, 59 min = 28.20; + 60 min = 30.55; + 75 min = 31.14; 2, 3 and 6 days + 45 min =
+  the plain day prices. Class S from a Tuesday 06:00 behaves the same (1 day + 1 min = day
+  price).
+- **Calculator and invoicing differ from 7 days on:** the calculator charges such a remainder
+  again (7 days + 45 min = 170.96, 8 days + 45 min = 199.16, also after 14 and 15 days), while
+  the invoice for 8 days + 45 min did not. The app follows the invoice.
+
+### Older invoices (before 2024-05-02)
+
+Not used by the app, recorded for completeness:
+
+- Prices of the previous price list as far as they occur: AKTIV S 1.90 per hour, AKTIV L 5.10,
+  BASIS S 3.35 on weekdays and 3.95 at the weekend rate; km incl. surcharge: AKTIV S 0.26,
+  AKTIV L 0.38, BASIS S 0.30.
+- **3 October 2023 (a Tuesday) was charged at the weekend rate in BASIS.** This is direct evidence
+  that nationwide holidays count, and supports the reading that the calculator answers for 2028
+  holidays only reflect a calendar that is not maintained that far ahead.
+- Unused booked range of an electric car is listed ("x Km Reichweite nicht genutzt") without a
+  charge.
+- One-off items seen: sign-up fee 30.00 (once per authorised driver), booking fee 1.00 for a
+  booking by phone.
+
+### Fees
+
+- Monthly fee lines confirm 11.00 (AKTIV) and 27.00 (COMFORT) plus 3.00 for one additional
+  authorised driver ("2 Fahrberechtigte"), charged around the 15th for the current month.
+- "Tarifwechselgebühr" 5.00, dated on the 1st of the month of the change. A change to BASIS is
+  charged as well.
+- Trip costs can be offset by a credit balance ("Fahrtguthaben - Gutschrift"); this is independent
+  of the tariff and not modelled.
 
 ## Price calculator
 
