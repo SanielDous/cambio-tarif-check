@@ -71,3 +71,14 @@ to GitHub Pages. To go live:
 
 1. In the repository settings, enable GitHub Pages with the source "GitHub Actions".
 2. Set the repository variable `PAGES_ENABLED` to `true`.
+
+## Documentation
+
+- `docs/design/` – what the app is meant to do and why, including the changes made during implementation.
+- `docs/research/cambio-pricing.md` – everything known about the billing rules, with the evidence for each statement.
+- `docs/plans/` – the implementation plan the core was built from.
+
+## License
+
+[MIT](LICENSE). The price data and billing rules were collected from public sources and from the
+author's own invoices; they come without any guarantee of correctness.
