@@ -1,36 +1,24 @@
-import { lazy, Suspense, useEffect } from "react";
+import { useEffect } from "react";
 import { createRoute } from "@tanstack/react-router";
 import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
 import { ImportSummary } from "@/features/import/import-summary";
 import { ImportView } from "@/features/import/import-view";
+import { LazyView, whenIdle, type ViewLoader } from "@/lib/lazy-view";
 import { tripsAtom } from "@/state/atoms";
 import { rootRoute } from "./__root";
 
 // The result view (matrix, trip list, settings) is only needed once trips are loaded. Its chunk
-// is requested as soon as the start page is idle, so it is usually there before a file is read.
-const loadResultView = () =>
+// is requested as soon as the browser is idle, so it is usually there before a file is read. A
+// failed preload is ignored here; showing the result retries and reports the failure.
+const loadResultView: ViewLoader = () =>
   import("@/features/result/result-view").then((m) => ({ default: m.ResultView }));
-const ResultView = lazy(loadResultView);
 
-function ResultFallback() {
-  const { t } = useTranslation("common");
-  return (
-    <div
-      role="status"
-      className="rounded-xl border bg-card p-6 text-sm text-muted-foreground motion-safe:animate-pulse"
-    >
-      {t("result.loading")}
-    </div>
-  );
-}
-
-function IndexPage() {
+export function IndexPage() {
   const { t } = useTranslation("common");
   const hasTrips = useAtomValue(tripsAtom).length > 0;
   useEffect(() => {
-    const id = window.setTimeout(() => void loadResultView(), 300);
-    return () => window.clearTimeout(id);
+    return whenIdle(() => void loadResultView().catch(() => undefined));
   }, []);
   return (
     <div className="space-y-8 pb-8">
@@ -40,9 +28,7 @@ function IndexPage() {
       </header>
       {hasTrips ? (
         <>
-          <Suspense fallback={<ResultFallback />}>
-            <ResultView />
-          </Suspense>
+          <LazyView load={loadResultView} />
           <ImportSummary />
         </>
       ) : (

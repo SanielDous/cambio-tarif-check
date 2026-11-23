@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { ReconstructionKind } from "@/domain/analysis/reconstruct-booking";
 import { PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
-import type { PriceData } from "@/domain/pricing/types";
+import type { PriceData, TariffId } from "@/domain/pricing/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { REPOSITORY_URL } from "@/lib/links";
 import { PriceTables } from "./price-table";
@@ -24,6 +24,13 @@ const hourLabel = (hour: number) => `${String(hour).padStart(2, "0")}:00`;
 function weekdayName(weekday: number, language: string): string {
   return new Intl.DateTimeFormat(language, { weekday: "long", timeZone: "UTC" }).format(
     new Date(Date.UTC(2024, 0, weekday)),
+  );
+}
+
+/** Tariffs that have a separate weekend price for at least one class. */
+function weekendTariffs(data: PriceData): TariffId[] {
+  return (Object.keys(data.tariffs) as TariffId[]).filter((id) =>
+    Object.values(data.tariffs[id].prices).some((price) => price.hourWeekend !== price.hourWeekday),
   );
 }
 
@@ -50,6 +57,9 @@ export function HowItWorksView({ data = PRICE_DATA }: { data?: PriceData }) {
   const lang = i18n.language;
   const date = (iso: string) => formatDate(parseIsoDate(iso), lang);
   const tripParams = {
+    weekendTariffs: new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(
+      weekendTariffs(data).map((id) => t(`tariffs.${id}`)),
+    ),
     nightFrom: hourLabel(data.nightStartHour),
     nightTo: hourLabel(data.nightEndHour),
     nightPrice: formatCurrency(data.nightHourPrice, lang),

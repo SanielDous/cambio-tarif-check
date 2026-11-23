@@ -36,8 +36,8 @@
       "intro": "Every trip is priced to the minute with the stored prices:",
       "time": "Time: each minute costs one sixtieth of the hourly price of the vehicle class in that tariff.",
       "night": "Night: from {{nightFrom}} to {{nightTo}} the hour costs {{nightPrice}} in every tariff.",
-      "weekend": "Weekend: from {{weekendFromDay}} {{weekendFromTime}} until {{weekendToDay}} {{weekendToTime}} and on public holidays the weekend price applies. It exists only in Basis and Campus; in the other tariffs the hourly price is always the same.",
-      "caps": "Caps: a day (24 hours) costs at most the price of {{dayCapHours}} hours, a week at most the price of {{weekCapDays}} full days.",
+      "weekend": "Weekend: from {{weekendFromDay}} {{weekendFromTime}} until {{weekendToDay}} {{weekendToTime}} and on public holidays the weekend price applies. It exists only in {{weekendTariffs}}; in the other tariffs the hourly price is always the same. The hours from {{nightFrom}} to {{nightTo}} cost the night price on weekends and public holidays too.",
+      "caps": "Caps: each 24-hour block counted from the start of the booking costs at most the price of {{dayCapHours}} hours, each 7-day block at most the price of {{weekCapDays}} full days.",
       "km": "Kilometres: the first {{kmBoundary}} km cost the higher price, every further kilometre the cheaper one. A fuel surcharge per kilometre is added, and it changes over time."
     },
     "earlyReturn": {
@@ -420,8 +420,7 @@
       "period": "There are no trips in the chosen period.",
       "tariffs": "No tariff can price all of your trips.",
       "reset": "Show the whole period"
-    },
-    "loading": "Loading the analysis …"
+    }
   },
   "tariffs": {
     "CAMPUS": "Campus",
@@ -433,5 +432,20 @@
   "units": {
     "hour": "h",
     "minute": "min"
+  },
+  "lazy": {
+    "loading": "Loading …",
+    "failed": "This part of the page could not be loaded. Check your internet connection.",
+    "retry": "Try again"
+  },
+  "router": {
+    "error": {
+      "title": "Something went wrong",
+      "text": "The page could not be displayed. Your trips stay in the browser’s memory."
+    },
+    "notFound": {
+      "title": "This page does not exist.",
+      "home": "Back to the start page"
+    }
   }
 }

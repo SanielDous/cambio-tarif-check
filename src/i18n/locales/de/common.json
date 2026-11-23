@@ -36,8 +36,8 @@
       "intro": "Jede Fahrt wird minutengenau mit den hinterlegten Preisen berechnet:",
       "time": "Zeit: Jede Minute kostet ein Sechzigstel des Stundenpreises der Wagenklasse im jeweiligen Tarif.",
       "night": "Nacht: Von {{nightFrom}} bis {{nightTo}} Uhr kostet die Stunde in jedem Tarif {{nightPrice}}.",
-      "weekend": "Wochenende: Von {{weekendFromDay}} {{weekendFromTime}} Uhr bis {{weekendToDay}} {{weekendToTime}} Uhr und an Feiertagen gilt der Wochenendpreis. Den gibt es nur in Basis und Campus; in den anderen Tarifen ist der Stundenpreis immer gleich.",
-      "caps": "Deckel: Ein Tag (24 Stunden) kostet höchstens den Preis für {{dayCapHours}} Stunden, eine Woche höchstens den Preis für {{weekCapDays}} volle Tage.",
+      "weekend": "Wochenende: Von {{weekendFromDay}} {{weekendFromTime}} Uhr bis {{weekendToDay}} {{weekendToTime}} Uhr und an Feiertagen gilt der Wochenendpreis. Den gibt es nur in {{weekendTariffs}}; in den anderen Tarifen ist der Stundenpreis immer gleich. Die Stunden von {{nightFrom}} bis {{nightTo}} Uhr kosten auch am Wochenende und an Feiertagen den Nachtpreis.",
+      "caps": "Deckel: Jeder 24-Stunden-Block ab Buchungsbeginn kostet höchstens den Preis für {{dayCapHours}} Stunden, jeder 7-Tage-Block höchstens den Preis für {{weekCapDays}} volle Tage.",
       "km": "Kilometer: Die ersten {{kmBoundary}} km kosten den höheren Preis, jeder weitere Kilometer den günstigeren. Dazu kommt ein Kraftstoffzuschlag je Kilometer, der sich im Lauf der Zeit ändert."
     },
     "earlyReturn": {
@@ -420,8 +420,7 @@
       "period": "Im gewählten Zeitraum gibt es keine Fahrten.",
       "tariffs": "Für deine Fahrten lässt sich kein Tarif vollständig berechnen.",
       "reset": "Gesamten Zeitraum anzeigen"
-    },
-    "loading": "Auswertung wird geladen …"
+    }
   },
   "tariffs": {
     "CAMPUS": "Campus",
@@ -433,5 +432,20 @@
   "units": {
     "hour": "h",
     "minute": "min"
+  },
+  "lazy": {
+    "loading": "Wird geladen …",
+    "failed": "Dieser Teil der Seite konnte nicht geladen werden. Prüfe deine Internetverbindung.",
+    "retry": "Erneut versuchen"
+  },
+  "router": {
+    "error": {
+      "title": "Etwas ist schiefgelaufen",
+      "text": "Die Seite konnte nicht angezeigt werden. Deine Fahrten bleiben dabei im Speicher des Browsers."
+    },
+    "notFound": {
+      "title": "Diese Seite gibt es nicht.",
+      "home": "Zur Startseite"
+    }
   }
 }

@@ -150,9 +150,15 @@ test.describe("keyboard", () => {
       "aria-expanded",
       "false",
     );
-    await page.keyboard.press("Enter");
-    await expect(page.locator("button[data-month]:focus")).toHaveAttribute("aria-expanded", "true");
+    // Space opens, Enter closes and opens again.
+    const toggle = page.locator("button[data-month]:focus");
+    await page.keyboard.press("Space");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
     await expect(page.getByTestId("trip-row").first()).toBeVisible();
+    await page.keyboard.press("Enter");
+    await expect(toggle).toHaveAttribute("aria-expanded", "false");
+    await page.keyboard.press("Enter");
+    await expect(toggle).toHaveAttribute("aria-expanded", "true");
   });
 
   test("keeps the outline of the start page and the result in order", async ({ page }) => {
@@ -162,4 +168,47 @@ test.describe("keyboard", () => {
     await expect(page.getByTestId("headline")).toBeVisible();
     expectOrderedOutline(await headingLevels(page));
   });
+});
+
+test("a blocked chunk shows an error; retry loads it without reloading or losing the trips", async ({
+  page,
+}) => {
+  const chunk = "**/assets/result-view-*.js";
+  await page.route(chunk, (route) => route.abort());
+  await page.goto("./");
+  await page.evaluate(() => {
+    (window as unknown as { __noReload: boolean }).__noReload = true;
+  });
+  await page.locator('input[type="file"]').setInputFiles("tests/fixtures/trips-2025.csv");
+
+  const alert = page.getByRole("alert");
+  await expect(alert).toContainText("Dieser Teil der Seite konnte nicht geladen werden");
+  await expect(page.getByTestId("trip-count")).toHaveText("84 Fahrten");
+
+  await page.unroute(chunk);
+  await page.getByRole("button", { name: "Erneut versuchen" }).click();
+  await expect(page.getByTestId("headline")).toBeVisible();
+  await expect(alert).toHaveCount(0);
+  expect(
+    await page.evaluate(() => (window as unknown as { __noReload?: boolean }).__noReload),
+  ).toBe(true);
+  expect(await page.evaluate(() => sessionStorage.length + localStorage.length)).toBe(0);
+});
+
+test("writes nothing to browser storage and sets no cookies", async ({ page }) => {
+  await page.goto("./");
+  await page.locator('input[type="file"]').setInputFiles("tests/fixtures/trips-2025.csv");
+  await expect(page.getByTestId("headline")).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 600));
+  await page.goto("./#/how-it-works");
+  await expect(page.getByTestId("price-tables")).toBeVisible();
+  await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
+  const state = await page.evaluate(async () => ({
+    keys: [...Object.keys(sessionStorage), ...Object.keys(localStorage)],
+    cookie: document.cookie,
+    databases: "databases" in indexedDB ? await indexedDB.databases() : [],
+  }));
+  expect(state.keys).toEqual([]);
+  expect(state.cookie).toBe("");
+  expect(state.databases).toEqual([]);
 });

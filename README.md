@@ -18,8 +18,10 @@ tariff would have cost for the same trips, using the prices that were valid at t
 
 ## Privacy
 
-Everything is calculated in the browser. Trip data is never uploaded and never stored (no cookies,
-no local storage, no network requests at runtime). Reloading the page discards it.
+Everything is calculated in the browser. Trip data is never uploaded and never stored. The app only
+downloads its own static files (and loads further parts of itself on demand); it sets no cookies and
+writes nothing to browser storage (no local storage, session storage or IndexedDB). Reloading the
+page discards the imported trips.
 
 ## Development
 

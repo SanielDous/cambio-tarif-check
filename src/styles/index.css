@@ -34,9 +34,10 @@
   --tariff-comfort: #139a69;
   /* The user's own costs: neutral ink, drawn dashed in the chart. */
   --tariff-actual: oklch(0.3 0 0);
-  /* The one accent: the cheapest option. */
-  --best: oklch(0.46 0.13 150);
-  --best-surface: oklch(0.95 0.045 150);
+  /* The cheapest option: ink with a neutral tint (and a check icon), deliberately not a hue, so
+     it cannot be mistaken for a tariff colour such as Comfort's green. */
+  --best: oklch(0.25 0 0);
+  --best-surface: oklch(0.92 0 0);
   --chart-grid: oklch(0.92 0 0);
   --chart-axis: oklch(0.5 0 0);
 }
@@ -67,8 +68,8 @@
   --tariff-aktiv: #d95926;
   --tariff-comfort: #199e70;
   --tariff-actual: oklch(0.93 0 0);
-  --best: oklch(0.8 0.15 150);
-  --best-surface: oklch(0.32 0.06 150);
+  --best: oklch(0.95 0 0);
+  --best-surface: oklch(0.34 0 0);
   --chart-grid: oklch(0.3 0 0);
   --chart-axis: oklch(0.72 0 0);
 }
