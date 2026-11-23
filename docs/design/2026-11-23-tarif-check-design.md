@@ -33,6 +33,9 @@ immediately sees the cost per month in the tariff they had and in every other ta
 - Business tariffs, sign-up fee, SiPack.
 - Filtering by driver. The export must be complete for the statement to hold.
 - Exporting the result (first version).
+- Recomputing past trips with today's prices. Trips are always priced with the prices valid at
+  the time.
+- Prices before 2024-05-02 (the portal only exports about one year back).
 - Calling cambio's price calculator at runtime.
 
 ## Anti-goals
@@ -110,7 +113,7 @@ A versioned data file in the repository, taken from `docs/research/cambio-pricin
 - Fuel surcharge per km as a list of validity periods. The list has known gaps. If the billed km
   amount of a trip is explained exactly by a different surcharge (whole cents, same for both km
   tiers), that surcharge is used for the trip in all tariffs and the result page reports that the
-  table is out of date _(assumption)_.
+  table is out of date.
 - Monthly fees, additional-driver fee and switching fee are identical in the price lists of
   2024-05, 2025-03 and 2026 (checked), so one value each is enough for now.
 - Nationwide public holidays are computed (New Year, Good Friday, Easter Monday, 1 May, Ascension
@@ -120,9 +123,26 @@ A versioned data file in the repository, taken from `docs/research/cambio-pricin
 - A "prices as of" date. Each price entry has a validity period so later price changes can be
   added without touching code.
 
-Trips before 2024-05-02 have no verified prices: they are excluded with a notice _(assumption)_.
-Trips newer than the "prices as of" date are evaluated with the latest known prices and a warning
-_(assumption)_.
+Trips before 2024-05-02 have no verified prices: they are excluded with a notice. Trips newer than
+the "prices as of" date are evaluated with the latest known prices and a warning.
+
+### 2a. Keeping prices current
+
+Prices will go out of date. Three mechanisms deal with that:
+
+- **Editable prices in the app.** A "Prices" page reachable from the menu shows the complete price
+  data in use (monthly fees, hourly and km prices per tariff and class, fuel surcharge periods,
+  switching fee) and lets the user change any value or add a surcharge period. The result is
+  recomputed immediately; changed values are marked and can be reset individually or all at once.
+  Overrides are kept in the browser's local storage so they survive a reload – they are not
+  personal data; trips are still never stored _(my call)_.
+- **"Report a price change".** A link on the same page opens a prefilled GitHub issue form asking
+  for tariff, class, old and new value, effective date and source link.
+- **Weekly automated check.** A scheduled GitHub Action fetches cambio's tariff page for a few
+  cities that together cover all classes and tariffs, extracts the price table and the dated
+  surcharge note, and compares them with the data file. On a difference it opens a pull request
+  that updates the data file and links the source page, to be verified and merged by a human. If
+  the page can no longer be parsed, it opens an issue instead of failing silently.
 
 ### 3. Price calculation
 
@@ -233,11 +253,9 @@ Desktop first, usable on a phone, light and dark mode. Sketch:
 (Numbers are placeholders.)
 
 - Settings next to the result: number of additional drivers, "I am under 26" (shows Campus),
-  period filter, and "use today's prices" _(assumption)_. With today's prices every tariff row is
-  computed with the latest prices and surcharge; the actual cost stays what was billed, and the
-  page says that the two are no longer directly comparable.
+  period filter. A link leads to the price page.
 - Notices: unofficial tool, prices as of date, data stays in the browser, export must be complete.
-- A second route explains how the calculation works and lists the price table in use.
+- Further routes: the price page (see 2a) and a page explaining how the calculation works.
 
 ## Technology
 
@@ -277,6 +295,15 @@ holds most of the tests; `features/` contains the UI per area; `routes/` the pag
   GitHub release; the same workflow builds and deploys to Pages. The version is shown in the
   footer. The deploy job only runs when a repository variable switches it on, so the workflow
   stays green while Pages is not yet available.
+
+## Order of delivery
+
+1. Core: import, price data, calculation, booking reconstruction, monthly comparison, result page,
+   i18n, CI and deployment workflow.
+2. Editable prices and "report a price change".
+3. Weekly automated price check.
+
+Each step is usable on its own and delivered through its own pull requests.
 
 ## Left to the builder
 
