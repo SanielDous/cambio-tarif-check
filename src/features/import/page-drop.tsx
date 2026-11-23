@@ -3,6 +3,12 @@ import { FileSpreadsheet } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useImportFiles } from "./use-import-files";
 
+/**
+ * While files are dragged over the page, dragover fires every few dozen milliseconds even if the
+ * pointer rests. Silence this long means the drag is over, whether or not an event said so.
+ */
+const DRAG_WATCHDOG_MS = 400;
+
 const carriesFiles = (event: DragEvent) =>
   Array.from(event.dataTransfer?.types ?? []).includes("Files");
 
@@ -18,26 +24,43 @@ export function PageDrop({ onFiles }: { onFiles?: () => void }) {
 
   useEffect(() => {
     // dragenter and dragleave fire for every element crossed; the depth tells when the drag
-    // has really left the window.
+    // has really left the window. Browsers do not always balance them, so several other signals
+    // hide the overlay too, and a watchdog ends it when the steady stream of dragover stops.
     let depth = 0;
+    let watchdog: ReturnType<typeof setTimeout> | undefined;
+    const hide = () => {
+      depth = 0;
+      clearTimeout(watchdog);
+      watchdog = undefined;
+      setDragging(false);
+    };
+    const keepAlive = () => {
+      clearTimeout(watchdog);
+      watchdog = setTimeout(hide, DRAG_WATCHDOG_MS);
+    };
     const onEnter = (event: DragEvent) => {
       if (!carriesFiles(event)) return;
       depth++;
       setDragging(true);
+      keepAlive();
     };
     const onLeave = (event: DragEvent) => {
       if (!carriesFiles(event)) return;
       depth = Math.max(0, depth - 1);
-      if (depth === 0) setDragging(false);
+      // No related target: the drag has left the window, whatever the depth says.
+      if (depth === 0 || event.relatedTarget === null) hide();
     };
     const onOver = (event: DragEvent) => {
       if (!carriesFiles(event)) return;
       event.preventDefault();
       if (event.dataTransfer) event.dataTransfer.dropEffect = "copy";
+      keepAlive();
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") hide();
     };
     const onDrop = (event: DragEvent) => {
-      depth = 0;
-      setDragging(false);
+      hide();
       if (!carriesFiles(event)) return;
       // The drop zone has already taken these files.
       if (event.defaultPrevented) return;
@@ -48,15 +71,23 @@ export function PageDrop({ onFiles }: { onFiles?: () => void }) {
         onFiles?.();
       }
     };
-    window.addEventListener("dragenter", onEnter);
-    window.addEventListener("dragleave", onLeave);
-    window.addEventListener("dragover", onOver);
-    window.addEventListener("drop", onDrop);
+    const listeners = [
+      ["dragenter", onEnter],
+      ["dragleave", onLeave],
+      ["dragover", onOver],
+      ["drop", onDrop],
+      ["dragend", hide],
+      ["blur", hide],
+      ["keydown", onKey],
+    ] as const;
+    for (const [type, listener] of listeners) {
+      window.addEventListener(type, listener as EventListener);
+    }
     return () => {
-      window.removeEventListener("dragenter", onEnter);
-      window.removeEventListener("dragleave", onLeave);
-      window.removeEventListener("dragover", onOver);
-      window.removeEventListener("drop", onDrop);
+      for (const [type, listener] of listeners) {
+        window.removeEventListener(type, listener as EventListener);
+      }
+      clearTimeout(watchdog);
     };
   }, [importFiles, onFiles]);
 

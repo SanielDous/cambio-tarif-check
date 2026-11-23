@@ -30,19 +30,31 @@ export interface Tariff {
   prices: Partial<Record<PriceClass, ClassPrice>>;
 }
 
-export interface PriceData {
-  /** First day the time and base km prices are valid ("YYYY-MM-DD"). */
+/**
+ * One price list: every price that can change from one list to the next. A later list is added
+ * as a further version; no code changes.
+ */
+export interface PriceVersion {
+  /** First day this version is valid ("YYYY-MM-DD"). */
+  from: string;
+  tariffs: Record<TariffId, Tariff>;
+  /** Hour price in the night window, in cents, in every tariff and class. */
+  nightHourPrice: number;
+  /** Fee per change of tariff, in cents. */
+  switchingFee: number;
+}
+
+/** The rules that are not prices; they hold for every version. */
+export interface PriceRules {
+  /** First day the time and base km prices are valid ("YYYY-MM-DD"); `from` of the first version. */
   validFrom: string;
   /** Date of the research the prices were taken from ("YYYY-MM-DD"). */
   pricesAsOf: string;
-  tariffs: Record<TariffId, Tariff>;
-  nightHourPrice: 50;
   nightStartHour: 0;
   nightEndHour: 6;
   weekendStart: { weekday: 5; hour: 12 };
   weekendEnd: { weekday: 1; hour: 6 };
   kmTierBoundary: 100;
-  switchingFee: 500;
   dayCapHours: 12;
   weekCapDays: 6;
   /**
@@ -53,3 +65,14 @@ export interface PriceData {
   /** Fuel surcharge in cents per km, by start date ("YYYY-MM-DD"), ascending. */
   fuelSurcharges: { from: string; cents: number }[];
 }
+
+export interface PriceData extends PriceRules {
+  /** Price lists by validity, ascending; at least one, the first from `validFrom`. */
+  versions: PriceVersion[];
+}
+
+/**
+ * One version together with the rules: everything a trip or a month is priced with. Resolved by
+ * `pricesAt`.
+ */
+export interface PriceVersionView extends PriceRules, PriceVersion {}

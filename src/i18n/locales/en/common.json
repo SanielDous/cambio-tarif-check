@@ -107,7 +107,8 @@
         "cents_one": "{{count, number}} cent",
         "cents_other": "{{count, number}} cents"
       },
-      "switching": "A tariff change costs {{fee}}."
+      "switching": "A tariff change costs {{fee}}.",
+      "validFrom": "Valid from {{date}}"
     },
     "disclaimer": {
       "title": "Not an official offer",
@@ -173,6 +174,8 @@
       "too-large": "The file is larger than 5 MB and was not read."
     },
     "skipped": "Skipped – the columns were not mapped.",
+    "unknownStatus_one": "Unknown status “{{value}}” in {{count, number}} row – it was evaluated by its amounts.",
+    "unknownStatus_other": "Unknown status “{{value}}” in {{count, number}} rows – they were evaluated by their amounts.",
     "noTrips": {
       "title": "This file contains no trips that can be analysed.",
       "headerOnly": "It contains only the header row and no rows below it."

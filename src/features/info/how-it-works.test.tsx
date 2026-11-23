@@ -1,10 +1,11 @@
 // @vitest-environment jsdom
 import { act, cleanup, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom/vitest";
 import { afterEach, describe, expect, it } from "vitest";
 import i18n from "@/i18n/bootstrap";
-import { PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
-import type { PriceClass, TariffId } from "@/domain/pricing/types";
+import { latestPrices, PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
+import type { PriceClass, PriceData, PriceVersion, TariffId } from "@/domain/pricing/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { REPOSITORY_URL } from "@/lib/links";
 import { HowItWorksView } from "./how-it-works-view";
@@ -17,7 +18,8 @@ afterEach(async () => {
 /** Intl output uses non-breaking spaces; jest-dom normalizes the element, not the expectation. */
 const spaced = (text: string | null) => (text ?? "").replace(/\s+/g, " ");
 
-const TARIFFS = Object.keys(PRICE_DATA.tariffs) as TariffId[];
+const PRICES = latestPrices(PRICE_DATA);
+const TARIFFS = Object.keys(PRICES.tariffs) as TariffId[];
 
 describe.each(["de", "en"])("how it works page in %s", (lang) => {
   const setup = async () => {
@@ -31,7 +33,7 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
     const tables = await setup();
     const page = document.body;
     for (const id of TARIFFS) {
-      const tariff = PRICE_DATA.tariffs[id];
+      const tariff = PRICES.tariffs[id];
       const row = tables.querySelector<HTMLElement>(`tr[data-tariff="${id}"]`);
       expect(row, id).not.toBeNull();
       expect(within(row as HTMLElement).getByText(i18n.t(`tariffs.${id}`))).toBeInTheDocument();
@@ -68,7 +70,7 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
       expect(row?.textContent).toContain(String(period.cents));
     }
     expect(page).toHaveTextContent(
-      i18n.t("howItWorks.prices.switching", { fee: money(PRICE_DATA.switchingFee) }),
+      i18n.t("howItWorks.prices.switching", { fee: money(PRICES.switchingFee) }),
     );
     expect(page).toHaveTextContent(formatDate(parseIsoDate(PRICE_DATA.pricesAsOf), lang));
     expect(screen.getByRole("link", { name: i18n.t("footer.repository") })).toHaveAttribute(
@@ -80,10 +82,10 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
   it("interpolates the numbers from the price data", async () => {
     await setup();
     const trip = screen.getByText(/^(Nacht|Night)/);
-    expect(spaced(trip.textContent)).toContain(money(PRICE_DATA.nightHourPrice));
+    expect(spaced(trip.textContent)).toContain(money(PRICES.nightHourPrice));
     expect(trip).toHaveTextContent("00:00");
     expect(trip).toHaveTextContent("06:00");
-    expect(document.body).toHaveTextContent(money(PRICE_DATA.switchingFee));
+    expect(document.body).toHaveTextContent(money(PRICES.switchingFee));
     expect(screen.getByText(/^(Deckel|Caps)/)).toHaveTextContent(`${PRICE_DATA.dayCapHours}`);
     expect(document.body.textContent).not.toMatch(/\{\{|undefined|NaN/);
   });
@@ -137,6 +139,48 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
     }
     expect(list).toHaveTextContent(i18n.t("result.kinds.overrun.label"));
     expect(list).toHaveTextContent(i18n.t("result.kinds.overrun.general"));
+  });
+
+  it("lists every price version by its first day, the latest open and the others collapsed", async () => {
+    await act(() => i18n.changeLanguage(lang));
+    const [v1] = PRICE_DATA.versions as [PriceVersion];
+    const v2: PriceVersion = structuredClone({ ...v1, from: "2026-03-15" });
+    v2.tariffs.AKTIV.monthlyFee = 1234;
+    v2.switchingFee = 900;
+    v2.nightHourPrice = 70;
+    const data: PriceData = { ...PRICE_DATA, versions: [v1, v2] };
+    render(<HowItWorksView data={data} />);
+    const tables = screen.getByTestId("price-tables");
+    const user = userEvent.setup();
+
+    const validFrom = (iso: string) =>
+      i18n.t("howItWorks.prices.validFrom", { date: formatDate(parseIsoDate(iso), lang) });
+    const latest = within(tables).getByRole("button", { name: validFrom("2026-03-15") });
+    const first = within(tables).getByRole("button", { name: validFrom(PRICE_DATA.validFrom) });
+    expect(latest).toHaveAttribute("aria-expanded", "true");
+    expect(first).toHaveAttribute("aria-expanded", "false");
+    // The open version's tables and the surcharge table.
+    expect(within(tables).getAllByRole("table")).toHaveLength(3);
+    const aktiv = () => tables.querySelectorAll<HTMLElement>('tr[data-tariff="AKTIV"]');
+    expect(aktiv()).toHaveLength(1);
+    expect(aktiv()[0]).toHaveTextContent(money(1234));
+    // The text around the tables states today's prices.
+    expect(document.body).toHaveTextContent(money(900));
+    expect(spaced(screen.getByText(/^(Nacht|Night)/).textContent)).toContain(money(70));
+
+    await user.click(first);
+    expect(first).toHaveAttribute("aria-expanded", "true");
+    expect(within(tables).getAllByRole("table")).toHaveLength(5);
+    expect(aktiv()[1]).toHaveTextContent(money(v1.tariffs.AKTIV.monthlyFee));
+    const levels = screen.getAllByRole("heading").map((h) => Number(h.tagName.slice(1)));
+    levels.forEach((level, i) => {
+      if (i > 0) expect(level - (levels[i - 1] ?? 0)).toBeLessThanOrEqual(1);
+    });
+  });
+
+  it("shows a single price version without a collapsible section", async () => {
+    const tables = await setup();
+    expect(within(tables).queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("explains late returns and what is left out about them", async () => {

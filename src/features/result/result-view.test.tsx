@@ -519,6 +519,9 @@ describe("incomplete and partial months", () => {
     const text = readFileSync(resolve(FIXTURES, "trips-2025.csv"), "utf8");
     const [header, first] = text.split("\r\n");
     const cells = (first ?? "").split(";");
+    // A booking of its own: a copy of a billed trip would count as billed by now.
+    cells[7] = "20.12.2025 10:00:00";
+    cells[8] = "20.12.2025 12:00:00";
     cells[15] = "";
     cells[16] = "";
     const csv = `${header}\r\n${cells.join(";")}\r\n`;

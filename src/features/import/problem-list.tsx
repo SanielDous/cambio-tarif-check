@@ -33,6 +33,22 @@ export function groupProblems(reports: FileReport[]): ProblemGroup[] {
   }));
 }
 
+/** One line per unknown status value of the given files, with its number of rows. */
+export function UnknownStatusList({ files }: { files: FileReport[] }) {
+  const { t } = useTranslation("common");
+  const entries = files.flatMap((file) =>
+    file.unknownStatuses.map((status) => ({ id: file.id, ...status })),
+  );
+  if (entries.length === 0) return null;
+  return (
+    <ul className="grid gap-1 text-sm" data-testid="unknown-statuses">
+      {entries.map(({ id, value, rows }) => (
+        <li key={`${id}:${value}`}>{t("import.unknownStatus", { value, count: rows })}</li>
+      ))}
+    </ul>
+  );
+}
+
 /**
  * Rejected rows by reason with their row numbers. `showFileName` is off where the list belongs
  * to a single file that is already named.

@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 import { ArrowLeftRight, Check, UserRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Analysis, MonthRow } from "@/domain/analysis/analyze";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
 import type { TariffId } from "@/domain/pricing/types";
 import { formatCurrency, formatHours, formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -173,7 +172,7 @@ export function ActualRows({ analysis }: { analysis: Analysis }) {
                   <ArrowLeftRight className="size-3 text-muted-foreground" aria-hidden="true" />
                   <span className="sr-only">
                     {t("result.matrix.switchFee", {
-                      amount: exact(PRICE_DATA.switchingFee),
+                      amount: exact(m.actualBreakdown.switchFee),
                     })}
                     ,{" "}
                   </span>

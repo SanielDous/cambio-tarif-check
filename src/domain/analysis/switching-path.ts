@@ -1,12 +1,14 @@
 /**
  * Exact minimum over all month-by-month tariff sequences (dynamic programming). `costs[m][t]` is
  * the cost of month m in tariff t; every change between consecutive months adds `switchFee`, the
- * first month is free to choose. On equal cost the path with fewer switches wins.
+ * first month is free to choose. On equal cost the path with fewer switches wins. `switchFee` is
+ * one fee for all months, or one per month: `switchFee[m]` for a change into month m.
  */
 export function optimalPath(
   costs: number[][],
-  switchFee: number,
+  switchFee: number | readonly number[],
 ): { path: number[]; total: number } {
+  const feeOf = (m: number) => (typeof switchFee === "number" ? switchFee : (switchFee[m] ?? 0));
   const months = costs.length;
   const tariffs = costs[0]?.length ?? 0;
   if (months === 0 || tariffs === 0) return { path: [], total: 0 };
@@ -23,13 +25,14 @@ export function optimalPath(
   const history: Cell[][] = [layer];
   for (let m = 1; m < months; m++) {
     const row = costs[m] ?? [];
+    const fee = feeOf(m);
     const next: Cell[] = [];
     for (let t = 0; t < tariffs; t++) {
       let best: Cell | undefined;
       layer.forEach((from, p) => {
         const change = p !== t;
         const cand: Cell = {
-          cost: from.cost + (row[t] ?? 0) + (change ? switchFee : 0),
+          cost: from.cost + (row[t] ?? 0) + (change ? fee : 0),
           switches: from.switches + (change ? 1 : 0),
           prev: p,
         };

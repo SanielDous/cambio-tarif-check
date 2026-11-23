@@ -3,7 +3,7 @@ import { kmCost } from "@/domain/pricing/km-cost";
 import { surchargeAt } from "@/domain/pricing/price-data";
 import { roundHalfUp } from "@/domain/pricing/rounding";
 import { overrunCost, timeCost } from "@/domain/pricing/time-cost";
-import type { LocalMinute, PriceClass, PriceData, TariffId } from "@/domain/pricing/types";
+import type { LocalMinute, PriceClass, PriceVersionView, TariffId } from "@/domain/pricing/types";
 
 export type ReconstructionKind =
   | "verified"
@@ -60,7 +60,7 @@ export function unusedTimeCost(
   bookedEnd: LocalMinute,
   tariff: TariffId,
   cls: PriceClass,
-  data: PriceData,
+  data: PriceVersionView,
   city: string | undefined,
 ): number {
   if (bookedEnd <= chargedUntil) return 0;
@@ -79,7 +79,7 @@ export function bookingTimeCost(
   share: 1 | 0.5,
   tariff: TariffId,
   cls: PriceClass,
-  data: PriceData,
+  data: PriceVersionView,
   city: string | undefined,
 ): number {
   const used = timeCost(start, chargedUntil, tariff, cls, data, city);
@@ -96,7 +96,7 @@ export function reconstructedTimeCost(
   trip: Trip,
   r: Pick<Reconstruction, "chargedUntil" | "bookedEnd" | "share" | "overrunMinutes">,
   tariff: TariffId,
-  data: PriceData,
+  data: PriceVersionView,
 ): number {
   const cls = trip.priceClass;
   const booking = bookingTimeCost(
@@ -131,7 +131,7 @@ interface Overrun {
  *    fitted, 1 to `MAX_OVERRUN_MINUTES` minutes later, and the result is only inferred. Matches
  *    count only exactly here, since a free minute count fits almost any amount within 1 cent.
  */
-function findOverrun(trip: Trip, data: PriceData): Overrun | undefined {
+function findOverrun(trip: Trip, data: PriceVersionView): Overrun | undefined {
   const { start, end, tariff, priceClass: cls } = trip;
   const deviation = (bookedEnd: LocalMinute, minutes: number) =>
     roundHalfUp(timeCost(start, bookedEnd, tariff, cls, data, trip.city)) +
@@ -165,7 +165,7 @@ function findOverrun(trip: Trip, data: PriceData): Overrun | undefined {
 
 function kmCheck(
   trip: Trip,
-  data: PriceData,
+  data: PriceVersionView,
 ): Pick<Reconstruction, "surchargeCents" | "surchargeDerived" | "kmDeviation"> {
   const cost = (surcharge: number) =>
     kmCost(trip.km, trip.tariff, trip.priceClass, data, surcharge);
@@ -189,7 +189,7 @@ function sameInAllTariffs(
   trip: Trip,
   chargedUntil: LocalMinute,
   ends: LocalMinute[],
-  data: PriceData,
+  data: PriceVersionView,
 ) {
   const [first, ...rest] = ends;
   if (first === undefined) return true;
@@ -205,10 +205,12 @@ function sameInAllTariffs(
 /**
  * Reconstructs the booking behind a billed trip. The export only holds the actual return, so the
  * booked end is searched: the earliest quarter hour whose booking cost matches the billed amount.
+ * `data` is the price list valid at the trip's return, `pricesAt(priceData, trip.end)`: it prices
+ * the whole trip.
  */
 export function reconstructBooking(
   trip: Trip,
-  data: PriceData,
+  data: PriceVersionView,
   manualBookedEnd?: LocalMinute,
 ): Reconstruction {
   const { start, tariff, priceClass: cls } = trip;

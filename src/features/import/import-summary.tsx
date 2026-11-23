@@ -25,7 +25,7 @@ import {
 } from "@/state/atoms";
 import { FileMessages } from "./file-messages";
 import { MappingDialog } from "./mapping-dialog";
-import { groupProblems, ProblemList } from "./problem-list";
+import { groupProblems, ProblemList, UnknownStatusList } from "./problem-list";
 import { useImportFiles } from "./use-import-files";
 
 function ResetButton() {
@@ -119,6 +119,8 @@ export function ImportSummary() {
     [report],
   );
   const readFiles = report.files.filter((file) => file.error === undefined && !file.skipped);
+  const withTrips = report.files.filter((file) => file.tripCount > 0);
+  const hasUnknownStatus = withTrips.some((file) => file.unknownStatuses.length > 0);
 
   return (
     <section
@@ -183,6 +185,15 @@ export function ImportSummary() {
             <AlertDescription className="gap-3">
               <p className="font-medium text-foreground">{t("import.summary.problems")}</p>
               <ProblemList groups={problems} />
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {hasUnknownStatus && (
+          <Alert>
+            <Info aria-hidden="true" />
+            <AlertDescription>
+              <UnknownStatusList files={withTrips} />
             </AlertDescription>
           </Alert>
         )}

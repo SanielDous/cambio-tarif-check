@@ -3,10 +3,12 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { kmCost } from "./km-cost";
 import { parseLocal } from "./local-time";
-import { PRICE_DATA } from "./price-data";
+import { latestPrices, PRICE_DATA } from "./price-data";
 import { roundCalculator, roundHalfUp } from "./rounding";
 import { timeCost } from "./time-cost";
 import type { PriceClass, TariffId } from "./types";
+
+const PRICES = latestPrices(PRICE_DATA);
 
 interface Fixture {
   group: string;
@@ -75,7 +77,7 @@ const cityOf = (f: Fixture) => {
 
 const toCents = (euros: number) => Math.round(euros * 100);
 const tariffsOf = (f: Fixture) =>
-  Object.keys(f.costs).filter((t): t is TariffId => t in PRICE_DATA.tariffs);
+  Object.keys(f.costs).filter((t): t is TariffId => t in PRICES.tariffs);
 
 const exactMatches: Record<string, number> = {};
 let compared = 0;
@@ -103,7 +105,7 @@ describe("calculator fixtures", () => {
 
       it("km cost matches exactly", () => {
         for (const tariff of tariffsOf(f)) {
-          const km = kmCost(f.km, tariff, f.priceClass, PRICE_DATA, f.surchargeCents);
+          const km = kmCost(f.km, tariff, f.priceClass, PRICES, f.surchargeCents);
           expect(km, tariff).toBe(toCents(f.costs[tariff]!.km));
         }
       });
@@ -112,7 +114,7 @@ describe("calculator fixtures", () => {
         for (const tariff of tariffsOf(f)) {
           if (isExcluded(f, tariff)) continue;
           const expected = toCents(f.costs[tariff]!.time);
-          const raw = timeCost(start, end, tariff, f.priceClass, PRICE_DATA, cityOf(f));
+          const raw = timeCost(start, end, tariff, f.priceClass, PRICES, cityOf(f));
           compared++;
           for (const [name, round] of Object.entries(ROUNDINGS)) {
             if (round(raw) === expected) exactMatches[name] = (exactMatches[name] ?? 0) + 1;

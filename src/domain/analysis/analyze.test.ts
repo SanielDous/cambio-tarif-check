@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Trip } from "@/domain/import/fields";
 import { toLocalMinute } from "@/domain/pricing/local-time";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
+import { latestPrices, PRICE_DATA } from "@/domain/pricing/price-data";
 import type { PriceData, TariffId } from "@/domain/pricing/types";
 import { analyze, comparedTariffs, type Settings } from "./analyze";
 import { breakEven } from "./break-even";
@@ -38,7 +38,8 @@ function trip(
   };
 }
 
-const fee = (t: TariffId) => PRICE_DATA.tariffs[t].monthlyFee;
+const PRICES = latestPrices(PRICE_DATA);
+const fee = (t: TariffId) => PRICES.tariffs[t].monthlyFee;
 
 describe("analyze", () => {
   it("returns null without trips", () => {
@@ -103,7 +104,7 @@ describe("analyze", () => {
     for (const t of a?.tariffs ?? []) {
       const b = feb?.breakdown[t];
       expect(b?.fee).toBe(fee(t));
-      expect(b?.driverFee).toBe(2 * (PRICE_DATA.tariffs[t].additionalDriverFee ?? 0));
+      expect(b?.driverFee).toBe(2 * (PRICES.tariffs[t].additionalDriverFee ?? 0));
       expect((b?.time ?? 0) + (b?.km ?? 0) + (b?.fee ?? 0) + (b?.driverFee ?? 0)).toBe(
         feb?.costs[t],
       );
@@ -201,11 +202,11 @@ describe("analyze", () => {
 describe("comparedTariffs", () => {
   const t = trip(2025, 1, 1);
   it("always has Basis, Aktiv and Comfort ordered by fee", () => {
-    expect(comparedTariffs([t], SETTINGS, PRICE_DATA)).toEqual(["BASIS", "AKTIV", "COMFORT"]);
+    expect(comparedTariffs([t], SETTINGS, PRICES)).toEqual(["BASIS", "AKTIV", "COMFORT"]);
   });
   it("adds Start only for a trip in one of its cities", () => {
     const city = trip(2025, 1, 1, "AKTIV", { city: "  hamburg " });
-    expect(comparedTariffs([city], SETTINGS, PRICE_DATA)).toEqual([
+    expect(comparedTariffs([city], SETTINGS, PRICES)).toEqual([
       "BASIS",
       "START",
       "AKTIV",
@@ -214,16 +215,11 @@ describe("comparedTariffs", () => {
   });
   it("adds Campus for under 26 or Campus trips, never with additional drivers", () => {
     const under = { ...SETTINGS, under26: true };
-    expect(comparedTariffs([t], under, PRICE_DATA)).toEqual([
-      "CAMPUS",
-      "BASIS",
-      "AKTIV",
-      "COMFORT",
-    ]);
+    expect(comparedTariffs([t], under, PRICES)).toEqual(["CAMPUS", "BASIS", "AKTIV", "COMFORT"]);
     const campusTrip = trip(2025, 1, 1, "CAMPUS");
-    expect(comparedTariffs([campusTrip], SETTINGS, PRICE_DATA)[0]).toBe("CAMPUS");
+    expect(comparedTariffs([campusTrip], SETTINGS, PRICES)[0]).toBe("CAMPUS");
     const withDrivers = { ...under, additionalDrivers: 1 };
-    expect(comparedTariffs([campusTrip], withDrivers, PRICE_DATA)).not.toContain("CAMPUS");
+    expect(comparedTariffs([campusTrip], withDrivers, PRICES)).not.toContain("CAMPUS");
   });
   it("still analyses Campus trips when Campus is not compared", () => {
     const a = analyze(
@@ -548,7 +544,7 @@ describe("analyze: hand-derived figures", () => {
 
   it("drops a compared tariff that has no price for a trip's class", () => {
     const data: PriceData = structuredClone(PRICE_DATA);
-    delete data.tariffs.COMFORT.prices.S;
+    delete data.versions[0]?.tariffs.COMFORT.prices.S;
     const a = analyze([wednesday(1)], SETTINGS, data);
     expect(a?.tariffs).toEqual(["BASIS", "AKTIV"]);
     expect(a?.months[0]?.costs).not.toHaveProperty("COMFORT");
@@ -557,13 +553,15 @@ describe("analyze: hand-derived figures", () => {
   it("prefers the lower fee when two tariffs cost the same in total", () => {
     // Trips: BASIS 6.20, AKTIV 4.70. An AKTIV fee of 1.50 makes both 6.20.
     const tie: PriceData = structuredClone(PRICE_DATA);
-    tie.tariffs.AKTIV.monthlyFee = 150;
+    const aktiv = tie.versions[0]?.tariffs.AKTIV;
+    if (!aktiv) throw new Error("no version");
+    aktiv.monthlyFee = 150;
     const a = analyze([wednesday(1)], SETTINGS, tie);
     expect(a?.totals.BASIS).toBe(620);
     expect(a?.totals.AKTIV).toBe(620);
     expect(a?.bestSingle.tariff).toBe("BASIS");
     expect(a?.months[0]?.cheapest).toBe("BASIS");
-    tie.tariffs.AKTIV.monthlyFee = 149;
+    aktiv.monthlyFee = 149;
     expect(analyze([wednesday(1)], SETTINGS, tie)?.bestSingle).toMatchObject({
       tariff: "AKTIV",
       total: 619,

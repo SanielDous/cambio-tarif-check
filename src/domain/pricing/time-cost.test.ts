@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { toLocalMinute } from "./local-time";
-import { PRICE_DATA } from "./price-data";
+import { latestPrices, PRICE_DATA } from "./price-data";
 import { roundHalfUp } from "./rounding";
 import { chargesHolidays, hourPriceAt, overrunCost, timeCost } from "./time-cost";
+
+const PRICES = latestPrices(PRICE_DATA);
 
 const HOUR = 60;
 const DAY = 24 * HOUR;
@@ -10,9 +12,9 @@ const DAY = 24 * HOUR;
 const tue = (hh: number, mm = 0) => toLocalMinute(2027, 3, 2, hh, mm);
 
 const aktivS = (start: number, end: number) =>
-  timeCost(start, end, "AKTIV", "S", PRICE_DATA, undefined);
+  timeCost(start, end, "AKTIV", "S", PRICES, undefined);
 const basisS = (start: number, end: number) =>
-  timeCost(start, end, "BASIS", "S", PRICE_DATA, undefined);
+  timeCost(start, end, "BASIS", "S", PRICES, undefined);
 
 describe("timeCost (literal values from the research document)", () => {
   it("prices night hours at 0.50: AKTIV S 22:00–08:00 = 1140", () => {
@@ -45,7 +47,7 @@ describe("timeCost (literal values from the research document)", () => {
 
   it("uses the deviating BASIS L day cap (85.50) but the regular week cap (514.80)", () => {
     const basisL = (start: number, end: number) =>
-      timeCost(start, end, "BASIS", "L", PRICE_DATA, undefined);
+      timeCost(start, end, "BASIS", "L", PRICES, undefined);
     expect(basisL(tue(6), tue(6) + 26 * HOUR)).toBe(9980);
     expect(basisL(tue(10), tue(10) + 8 * DAY)).toBe(60030);
   });
@@ -59,8 +61,8 @@ describe("timeCost (literal values from the research document)", () => {
 
   it("throws for a class the tariff does not have", () => {
     const data = {
-      ...PRICE_DATA,
-      tariffs: { ...PRICE_DATA.tariffs, AKTIV: { ...PRICE_DATA.tariffs.AKTIV, prices: {} } },
+      ...PRICES,
+      tariffs: { ...PRICES.tariffs, AKTIV: { ...PRICES.tariffs.AKTIV, prices: {} } },
     };
     expect(() => timeCost(tue(10), tue(11), "AKTIV", "S", data, undefined)).toThrow(/AKTIV.*S/);
   });
@@ -69,7 +71,7 @@ describe("timeCost (literal values from the research document)", () => {
     // Calculator: COMFORT M (28.20 per day, 2.35 per hour) from Friday 2027-01-22 17:00.
     const fri = toLocalMinute(2027, 1, 22, 17);
     const comfortM = (minutes: number) =>
-      roundHalfUp(timeCost(fri, fri + minutes, "COMFORT", "M", PRICE_DATA, "Aachen"));
+      roundHalfUp(timeCost(fri, fri + minutes, "COMFORT", "M", PRICES, "Aachen"));
 
     it.each([
       [DAY + 15, 2820],
@@ -96,7 +98,7 @@ describe("timeCost (literal values from the research document)", () => {
       expect(roundHalfUp(aktivS(tue(6), tue(6) + DAY + 1))).toBe(day);
       expect(roundHalfUp(aktivS(tue(6), tue(6) + DAY + 60))).toBe(day + 210);
       const comfortS = (minutes: number) =>
-        roundHalfUp(timeCost(tue(6), tue(6) + minutes, "COMFORT", "S", PRICE_DATA, undefined));
+        roundHalfUp(timeCost(tue(6), tue(6) + minutes, "COMFORT", "S", PRICES, undefined));
       expect(comfortS(DAY + 45)).toBe(2220);
       expect(comfortS(DAY + 1)).toBe(2220);
       expect(comfortS(DAY + 60)).toBe(2220 + 185);
@@ -114,7 +116,7 @@ describe("timeCost (literal values from the research document)", () => {
     const t0 = performance.now();
     let sum = 0;
     for (let i = 0; i < 10_000; i++) {
-      sum += timeCost(start, end + (i % 4) * 15, "BASIS", "M", PRICE_DATA, undefined);
+      sum += timeCost(start, end + (i % 4) * 15, "BASIS", "M", PRICES, undefined);
     }
     expect(performance.now() - t0).toBeLessThan(2000);
     expect(sum).toBeGreaterThan(0);
@@ -122,7 +124,7 @@ describe("timeCost (literal values from the research document)", () => {
 });
 
 describe("hourPriceAt", () => {
-  const basis = (t: number) => hourPriceAt(t, "BASIS", "S", PRICE_DATA, undefined);
+  const basis = (t: number) => hourPriceAt(t, "BASIS", "S", PRICES, undefined);
   const fri = (hh: number, mm = 0) => toLocalMinute(2027, 3, 5, hh, mm);
   const mon = (hh: number, mm = 0) => toLocalMinute(2027, 3, 8, hh, mm);
 
@@ -131,7 +133,7 @@ describe("hourPriceAt", () => {
     expect(basis(tue(5, 59))).toBe(50);
     expect(basis(tue(6))).toBe(330);
     expect(basis(toLocalMinute(2027, 3, 6, 3))).toBe(50);
-    expect(hourPriceAt(tue(3), "COMFORT", "XL", PRICE_DATA, undefined)).toBe(50);
+    expect(hourPriceAt(tue(3), "COMFORT", "XL", PRICES, undefined)).toBe(50);
   });
 
   it("uses the weekend price from Friday 12:00 to Monday 06:00", () => {
@@ -143,7 +145,7 @@ describe("hourPriceAt", () => {
   });
 
   const basisIn = (t: number, city: string | undefined) =>
-    hourPriceAt(t, "BASIS", "S", PRICE_DATA, city);
+    hourPriceAt(t, "BASIS", "S", PRICES, city);
 
   it("uses the weekend price on holidays, but the night price at night", () => {
     // Ascension Day 2027-05-06, a Thursday
@@ -189,28 +191,23 @@ describe("hourPriceAt", () => {
   it("does not depend on the city in AKTIV and COMFORT", () => {
     for (const tariff of ["AKTIV", "COMFORT"] as const) {
       const price = (city: string | undefined) =>
-        hourPriceAt(easterMonday, tariff, "S", PRICE_DATA, city);
+        hourPriceAt(easterMonday, tariff, "S", PRICES, city);
       expect(price("Aachen")).toBe(price("Hamburg"));
       expect(price("Aachen")).toBe(price(undefined));
     }
   });
 
   it("has no weekend price in AKTIV", () => {
-    expect(hourPriceAt(toLocalMinute(2027, 3, 6, 10), "AKTIV", "S", PRICE_DATA, undefined)).toBe(
-      210,
-    );
+    expect(hourPriceAt(toLocalMinute(2027, 3, 6, 10), "AKTIV", "S", PRICES, undefined)).toBe(210);
   });
 });
 
 describe("overrunCost", () => {
   it("charges every minute after the booked end at twice its hour price", () => {
     // AKTIV S: 13 min × 2.10 / 60 × 2 = 0.91.
-    expect(overrunCost(tue(20), tue(20, 13), "AKTIV", "S", PRICE_DATA, undefined)).toBeCloseTo(
-      91,
-      9,
-    );
+    expect(overrunCost(tue(20), tue(20, 13), "AKTIV", "S", PRICES, undefined)).toBeCloseTo(91, 9);
     // COMFORT S: 13 min × 1.85 / 60 × 2 = 0.80166…
-    expect(overrunCost(tue(20), tue(20, 13), "COMFORT", "S", PRICE_DATA, undefined)).toBeCloseTo(
+    expect(overrunCost(tue(20), tue(20, 13), "COMFORT", "S", PRICES, undefined)).toBeCloseTo(
       (13 * 185 * 2) / 60,
       9,
     );
@@ -219,17 +216,17 @@ describe("overrunCost", () => {
   it("uses the night and weekend prices of each minute, without caps", () => {
     // BASIS L 23:45–00:10: 15 min at 7.15 and 10 min at the night price 0.50, both doubled.
     const late = toLocalMinute(2027, 3, 2, 23, 45);
-    expect(overrunCost(late, late + 25, "BASIS", "L", PRICE_DATA, undefined)).toBeCloseTo(
+    expect(overrunCost(late, late + 25, "BASIS", "L", PRICES, undefined)).toBeCloseTo(
       (15 * 715 * 2 + 10 * 50 * 2) / 60,
       9,
     );
     // BASIS S on a Friday evening: the weekend price 4.15.
     const friday = toLocalMinute(2027, 3, 5, 20);
-    expect(overrunCost(friday, friday + 13, "BASIS", "S", PRICE_DATA, undefined)).toBeCloseTo(
+    expect(overrunCost(friday, friday + 13, "BASIS", "S", PRICES, undefined)).toBeCloseTo(
       (13 * 415 * 2) / 60,
       9,
     );
-    expect(overrunCost(tue(20), tue(20), "BASIS", "S", PRICE_DATA, undefined)).toBe(0);
+    expect(overrunCost(tue(20), tue(20), "BASIS", "S", PRICES, undefined)).toBe(0);
   });
 });
 
@@ -237,7 +234,7 @@ describe("timeCost on a holiday", () => {
   const easterMonday = (hh: number) => toLocalMinute(2027, 3, 29, hh);
   it("depends on the city: BASIS S 10:00–12:00 on Easter Monday", () => {
     const cost = (city: string) =>
-      timeCost(easterMonday(10), easterMonday(12), "BASIS", "S", PRICE_DATA, city);
+      timeCost(easterMonday(10), easterMonday(12), "BASIS", "S", PRICES, city);
     expect(cost("Aachen")).toBe(830);
     expect(cost("Hamburg")).toBe(660);
   });
@@ -245,10 +242,10 @@ describe("timeCost on a holiday", () => {
 
 describe("chargesHolidays", () => {
   it("ignores case, spaces and diacritics but does not map spelling variants", () => {
-    expect(chargesHolidays("KOLN", PRICE_DATA)).toBe(true);
-    expect(chargesHolidays("koln", PRICE_DATA)).toBe(true);
-    expect(chargesHolidays("Koeln", PRICE_DATA)).toBe(false);
-    expect(chargesHolidays(" SAARBRÜCKEN", PRICE_DATA)).toBe(true);
-    expect(chargesHolidays(undefined, PRICE_DATA)).toBe(false);
+    expect(chargesHolidays("KOLN", PRICES)).toBe(true);
+    expect(chargesHolidays("koln", PRICES)).toBe(true);
+    expect(chargesHolidays("Koeln", PRICES)).toBe(false);
+    expect(chargesHolidays(" SAARBRÜCKEN", PRICES)).toBe(true);
+    expect(chargesHolidays(undefined, PRICES)).toBe(false);
   });
 });

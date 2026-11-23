@@ -312,6 +312,67 @@ describe("files without trips", () => {
   });
 });
 
+describe("unknown status values", () => {
+  const STATUS = 23;
+  const lines = fixtureText.split("\r\n");
+  const header = lines[0] ?? "";
+  const withStatus = (line: string, status: string, clearAmounts = false) => {
+    const cells = line.split(";");
+    cells[STATUS] = status;
+    if (clearAmounts) {
+      cells[15] = "";
+      cells[16] = "";
+    }
+    return cells.join(";");
+  };
+
+  it("lists each unknown status with its row count in the summary", async () => {
+    const { store, user, input } = setup();
+    const text = [
+      header,
+      withStatus(lines[1] ?? "", "ABGERECHNET"),
+      withStatus(lines[2] ?? "", "ABGERECHNET"),
+      withStatus(lines[3] ?? "", "NEU"),
+      ...lines.slice(4),
+    ].join("\r\n");
+    await user.upload(input(), csvFile(text));
+
+    expect(await screen.findByTestId("trip-count")).toHaveTextContent("84 Fahrten");
+    expect(store.get(importReportAtom).files[0]?.unknownStatuses).toEqual([
+      { value: "ABGERECHNET", rows: 2 },
+      { value: "NEU", rows: 1 },
+    ]);
+    expect(
+      screen.getByText(
+        "Unbekannter Status „ABGERECHNET“ bei 2 Zeilen – ausgewertet wurden sie anhand der Beträge.",
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Unbekannter Status „NEU“ bei 1 Zeile – ausgewertet wurde sie anhand der Beträge.",
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it("shows the unknown status in the message of a file without trips", async () => {
+    const { user, input } = setup();
+    const text = [header, withStatus(lines[1] ?? "", "OFFEN", true), ""].join("\r\n");
+    await user.upload(input(), csvFile(text, "open.csv"));
+
+    const message = await screen.findByTestId("file-no-trips");
+    expect(message).toHaveTextContent(
+      "Unbekannter Status „OFFEN“ bei 1 Zeile – ausgewertet wurde sie anhand der Beträge.",
+    );
+  });
+
+  it("shows no notice for the known status", async () => {
+    const { user, input } = setup();
+    await user.upload(input(), csvFile());
+    await screen.findByTestId("trip-count");
+    expect(screen.queryByText(/Unbekannter Status/)).not.toBeInTheDocument();
+  });
+});
+
 describe("start page notice", () => {
   it("states that the tool is unofficial and links the price date to the explanation", () => {
     setup();

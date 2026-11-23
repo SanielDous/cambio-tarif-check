@@ -4,7 +4,8 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: "/cambio-tarif-check/",
+  // Relative: the build works from any path (hash routing needs no server-side base).
+  base: "./",
   plugins: [react(), tailwindcss()],
   resolve: { alias: { "@": path.resolve(import.meta.dirname, "src") } },
   build: {

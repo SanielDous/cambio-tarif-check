@@ -1,6 +1,6 @@
 import { isHolidayDay } from "./holidays";
 import { dayNumber, weekdayOfDay } from "./local-time";
-import type { ClassPrice, LocalMinute, PriceClass, PriceData, TariffId } from "./types";
+import type { ClassPrice, LocalMinute, PriceClass, PriceVersionView, TariffId } from "./types";
 
 const HOUR = 60;
 const DAY = 24 * HOUR;
@@ -9,13 +9,14 @@ const WEEK = 7 * DAY;
 const FREE_REMAINDER = HOUR;
 
 /** Prices of a class in a tariff; throws if the tariff does not offer the class. */
-export function classPrice(tariff: TariffId, cls: PriceClass, data: PriceData): ClassPrice {
+export function classPrice(tariff: TariffId, cls: PriceClass, data: PriceVersionView): ClassPrice {
   const price = data.tariffs[tariff].prices[cls];
   if (!price) throw new Error(`Tariff ${tariff} has no price class ${cls}`);
   return price;
 }
 
-const normalisedCities = new WeakMap<PriceData, Set<string>>();
+/** Normalised holiday cities, per list (shared by every version of a price data). */
+const normalisedCities = new WeakMap<string[], Set<string>>();
 
 /** Trim, lower-case and strip diacritics, so spelling variants of a city name compare equal. */
 function normaliseCity(city: string): string {
@@ -26,17 +27,20 @@ function normaliseCity(city: string): string {
  * Whether public holidays are charged at the weekend price in this city. An unknown city or none
  * means no holiday pricing. Call it once per booking, not per minute.
  */
-export function chargesHolidays(city: string | undefined, data: PriceData): boolean {
+export function chargesHolidays(
+  city: string | undefined,
+  data: Pick<PriceVersionView, "holidayCities">,
+): boolean {
   if (city === undefined) return false;
-  let set = normalisedCities.get(data);
+  let set = normalisedCities.get(data.holidayCities);
   if (!set) {
     set = new Set(data.holidayCities.map(normaliseCity));
-    normalisedCities.set(data, set);
+    normalisedCities.set(data.holidayCities, set);
   }
   return set.has(normaliseCity(city));
 }
 
-function isWeekend(weekday: number, hour: number, data: PriceData): boolean {
+function isWeekend(weekday: number, hour: number, data: PriceVersionView): boolean {
   const { weekendStart: from, weekendEnd: to } = data;
   if (weekday === from.weekday) return hour >= from.hour;
   if (weekday === to.weekday) return hour < to.hour;
@@ -48,7 +52,7 @@ function isWeekend(weekday: number, hour: number, data: PriceData): boolean {
 function priceOfHour(
   hourStart: LocalMinute,
   price: ClassPrice,
-  data: PriceData,
+  data: PriceVersionView,
   holidays: boolean,
 ): number {
   const day = dayNumber(hourStart);
@@ -65,7 +69,7 @@ export function hourPriceAt(
   t: LocalMinute,
   tariff: TariffId,
   cls: PriceClass,
-  data: PriceData,
+  data: PriceVersionView,
   city: string | undefined,
 ): number {
   return priceOfHour(
@@ -86,7 +90,7 @@ export function overrunCost(
   returned: LocalMinute,
   tariff: TariffId,
   cls: PriceClass,
-  data: PriceData,
+  data: PriceVersionView,
   city: string | undefined,
 ): number {
   // cents × 60, as in `uncapped`, divided once at the end.
@@ -108,7 +112,7 @@ function uncapped(
   to: LocalMinute,
   limit: number,
   price: ClassPrice,
-  data: PriceData,
+  data: PriceVersionView,
   holidays: boolean,
 ): number {
   let sum = 0;
@@ -135,7 +139,7 @@ export function timeCost(
   end: LocalMinute,
   tariff: TariffId,
   cls: PriceClass,
-  data: PriceData,
+  data: PriceVersionView,
   city: string | undefined,
 ): number {
   const remainder = (end - start) % DAY;

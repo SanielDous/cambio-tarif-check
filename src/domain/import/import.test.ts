@@ -1,11 +1,12 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { reconstructBooking } from "@/domain/analysis/reconstruct-booking";
 import { dateParts, parseLocal } from "@/domain/pricing/local-time";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
+import { latestPrices, PRICE_DATA } from "@/domain/pricing/price-data";
 import { dedupeTrips } from "./dedupe";
 import { detectColumns } from "./detect-columns";
-import { ImportError, type RawTable, type RowProblem, type Trip } from "./fields";
+import { bookingKey, ImportError, type RawTable, type RowProblem, type Trip } from "./fields";
 import { normalizeRows } from "./normalize-rows";
 import { readTable } from "./read-table";
 
@@ -240,8 +241,26 @@ describe("normalizeRows", () => {
     it("reports both amounts empty with the month of the row's end", () => {
       const { problems } = run(row({ 3: "01.01.2026 01:00:00", 5: "", 6: "" }));
       expect(problems).toEqual([
-        { fileName: "t.csv", rowNumber: 2, reason: "not-billed", month: "2026-01" },
+        {
+          fileName: "t.csv",
+          rowNumber: 2,
+          reason: "not-billed",
+          month: "2026-01",
+          bookingKey: bookingKey(run(good).trips[0] as Trip),
+        },
       ]);
+    });
+
+    it("keys the row by start, class and city, the same as the billed trip", () => {
+      const billed = run(good).trips[0] as Trip;
+      const key = (changes: Record<number, unknown>) =>
+        run(row({ 5: "", 6: "", ...changes })).problems[0]?.bookingKey;
+      // The end differs before and after the trip: booked end, then the actual return.
+      expect(key({ 3: "15.12.2025 20:00:00" })).toBe(bookingKey(billed));
+      expect(key({ 2: "15.12.2025 17:30:00" })).not.toBe(bookingKey(billed));
+      expect(key({ 1: "M Kompakt" })).not.toBe(bookingKey(billed));
+      expect(key({ 0: "Köln" })).not.toBe(bookingKey(billed));
+      expect(billed.id).not.toContain(bookingKey(billed));
     });
 
     it("leaves the month out when the end cannot be read", () => {
@@ -250,24 +269,88 @@ describe("normalizeRows", () => {
       expect(problems[0]).not.toHaveProperty("month");
     });
 
-    it("reports a status other than BILLED regardless of the amounts", () => {
-      const { trips, problems } = runStatus("OPEN");
-      expect(trips).toEqual([]);
-      expect(problems).toEqual([
+    it("leaves the booking key out when the start cannot be read", () => {
+      const { problems } = run(row({ 2: "bald", 5: "", 6: "" }));
+      expect(problems[0]?.reason).toBe("not-billed");
+      expect(problems[0]).not.toHaveProperty("bookingKey");
+    });
+
+    it("decides an unknown status by the amounts and records it", () => {
+      const billed = runStatus("ABGERECHNET");
+      expect(billed.trips).toHaveLength(1);
+      expect(billed.problems).toEqual([]);
+      expect(billed.unknownStatuses).toEqual([{ value: "ABGERECHNET", rows: 1 }]);
+
+      const open = runStatus("OPEN", { 5: "", 6: "" });
+      expect(open.trips).toEqual([]);
+      expect(open.problems).toMatchObject([
         { fileName: "t.csv", rowNumber: 2, reason: "not-billed", month: "2025-12" },
+      ]);
+      expect(open.unknownStatuses).toEqual([{ value: "OPEN", rows: 1 }]);
+    });
+
+    it("counts the rows per unknown status value", () => {
+      const { trips, unknownStatuses } = normalizeRows(
+        {
+          fileName: "t.csv",
+          headers: withStatus,
+          rows: [
+            [...row({}), "NEU"],
+            [...row({ 2: "16.12.2025 10:00:00", 3: "16.12.2025 11:00:00" }), "NEU"],
+            [...row({ 2: "17.12.2025 10:00:00", 3: "17.12.2025 11:00:00" }), "BILLED"],
+            [...row({ 2: "18.12.2025 10:00:00", 3: "18.12.2025 11:00:00" }), "ALT"],
+          ],
+          rowNumbers: [2, 3, 4, 5],
+        },
+        statusMapping,
+        PRICE_DATA,
+      );
+      expect(trips).toHaveLength(4);
+      expect(unknownStatuses).toEqual([
+        { value: "NEU", rows: 2 },
+        { value: "ALT", rows: 1 },
       ]);
     });
 
     it("accepts BILLED in any case and spacing, and an empty status", () => {
       expect(runStatus(" billed ").trips).toHaveLength(1);
+      expect(runStatus(" billed ").unknownStatuses).toEqual([]);
       expect(runStatus("").trips).toHaveLength(1);
       expect(runStatus(null).trips).toHaveLength(1);
+      expect(runStatus(null).unknownStatuses).toEqual([]);
+    });
+
+    it("decides a missing status by the amounts", () => {
+      expect(runStatus("", { 5: "", 6: "" }).problems[0]?.reason).toBe("not-billed");
+      expect(runStatus("", { 5: "0", 6: "0" }).problems[0]?.reason).toBe("not-billed");
+      expect(runStatus("").unknownStatuses).toEqual([]);
+    });
+
+    it("keeps a known billed status with both amounts empty as not billed", () => {
+      const { trips, problems } = runStatus("BILLED", { 5: "", 6: "" });
+      expect(trips).toEqual([]);
+      expect(problems[0]?.reason).toBe("not-billed");
     });
 
     it("reports zero amounts for a trip with km", () => {
       const { trips, problems } = run(row({ 5: "0", 6: "0,00" }));
       expect(trips).toEqual([]);
       expect(problems[0]).toMatchObject({ reason: "not-billed", month: "2025-12" });
+    });
+
+    it("keeps a free trip with km when its status is a known billed status", () => {
+      const { trips, problems } = runStatus("BILLED", { 5: "0", 6: "0,00" });
+      expect(problems).toEqual([]);
+      expect(trips[0]).toMatchObject({ km: 19, billedTime: 0, billedKm: 0 });
+      // Listed, and flagged by the reconstruction, since no price explains it.
+      expect(reconstructBooking(trips[0] as Trip, latestPrices(PRICE_DATA)).kind).toBe(
+        "not-reproducible",
+      );
+    });
+
+    it("reports zero amounts with km as not billed under an unknown or missing status", () => {
+      expect(runStatus("OPEN", { 5: "0", 6: "0" }).problems[0]?.reason).toBe("not-billed");
+      expect(runStatus(null, { 5: "0", 6: "0" }).problems[0]?.reason).toBe("not-billed");
     });
 
     it("keeps zero amounts without km and one zero amount with km", () => {

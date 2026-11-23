@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import type { Analysis, MonthRow } from "@/domain/analysis/analyze";
 import { monthlyFee } from "@/domain/analysis/months";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
+import { latestPrices, PRICE_DATA } from "@/domain/pricing/price-data";
 import { formatCurrency, formatMonth, formatMonthName } from "@/lib/format";
 import { scrollBehavior } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -251,7 +251,7 @@ export function TariffMatrix({
                       tariff={tariff}
                       rowIndex={rowIndex}
                       first={rowIndex === 0}
-                      fee={monthlyFee(tariff, additionalDrivers, PRICE_DATA)}
+                      fee={monthlyFee(tariff, additionalDrivers, latestPrices(PRICE_DATA))}
                       analysis={analysis}
                       whole={whole}
                       exact={exact}

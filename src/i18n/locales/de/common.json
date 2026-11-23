@@ -107,7 +107,8 @@
         "cents_one": "{{count, number}} Cent",
         "cents_other": "{{count, number}} Cent"
       },
-      "switching": "Ein Tarifwechsel kostet {{fee}}."
+      "switching": "Ein Tarifwechsel kostet {{fee}}.",
+      "validFrom": "Gültig ab {{date}}"
     },
     "disclaimer": {
       "title": "Kein offizielles Angebot",
@@ -173,6 +174,8 @@
       "too-large": "Die Datei ist größer als 5 MB und wird nicht eingelesen."
     },
     "skipped": "Übersprungen – die Spalten wurden nicht zugeordnet.",
+    "unknownStatus_one": "Unbekannter Status „{{value}}“ bei {{count, number}} Zeile – ausgewertet wurde sie anhand der Beträge.",
+    "unknownStatus_other": "Unbekannter Status „{{value}}“ bei {{count, number}} Zeilen – ausgewertet wurden sie anhand der Beträge.",
     "noTrips": {
       "title": "Diese Datei enthält keine auswertbaren Fahrten.",
       "headerOnly": "Sie enthält nur die Kopfzeile, aber keine Zeilen darunter."

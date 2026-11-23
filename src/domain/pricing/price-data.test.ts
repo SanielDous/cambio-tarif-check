@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { toLocalMinute } from "./local-time";
-import { PRICE_DATA, surchargeAt } from "./price-data";
+import { latestPrices, parseIsoDate, PRICE_DATA, surchargeAt } from "./price-data";
 import { PRICE_CLASSES, TARIFF_IDS, type PriceClass, type TariffId } from "./types";
 
 /** Day and week prices in cents, literally from the research price table. */
@@ -42,11 +42,25 @@ const DAY_WEEK: Record<TariffId, Record<PriceClass, [day: number, week: number]>
   },
 };
 
+const PRICES = latestPrices(PRICE_DATA);
+
 describe("PRICE_DATA", () => {
+  it("holds exactly one price version, from validFrom", () => {
+    expect(PRICE_DATA.versions).toHaveLength(1);
+    expect(PRICE_DATA.versions[0]?.from).toBe(PRICE_DATA.validFrom);
+    expect(PRICES.nightHourPrice).toBe(50);
+    expect(PRICES.switchingFee).toBe(500);
+  });
+
+  it("keeps its versions ascending", () => {
+    const starts = PRICE_DATA.versions.map((v) => parseIsoDate(v.from));
+    expect(starts).toEqual([...starts].sort((a, b) => a - b));
+  });
+
   for (const [tariff, classes] of Object.entries(DAY_WEEK)) {
     for (const [cls, [day, week]] of Object.entries(classes)) {
       it(`${tariff} ${cls}: day ${day}, week ${week}`, () => {
-        const price = PRICE_DATA.tariffs[tariff as TariffId].prices[cls as PriceClass];
+        const price = PRICES.tariffs[tariff as TariffId].prices[cls as PriceClass];
         expect(price).toBeDefined();
         expect(12 * price!.hourWeekday).toBe(day);
         expect(72 * price!.hourWeekday).toBe(week);
@@ -55,26 +69,26 @@ describe("PRICE_DATA", () => {
   }
 
   it("has literal AKTIV and BASIS rows", () => {
-    expect(PRICE_DATA.tariffs.AKTIV.prices).toEqual({
+    expect(PRICES.tariffs.AKTIV.prices).toEqual({
       XS: { hourWeekday: 165, hourWeekend: 165, kmTier1: 24, kmTier2: 19 },
       S: { hourWeekday: 210, hourWeekend: 210, kmTier1: 25, kmTier2: 19 },
       M: { hourWeekday: 260, hourWeekend: 260, kmTier1: 26, kmTier2: 19 },
       L: { hourWeekday: 510, hourWeekend: 510, kmTier1: 36, kmTier2: 22 },
       XL: { hourWeekday: 612, hourWeekend: 612, kmTier1: 39, kmTier2: 23 },
     });
-    expect(PRICE_DATA.tariffs.BASIS.prices).toEqual({
+    expect(PRICES.tariffs.BASIS.prices).toEqual({
       XS: { hourWeekday: 250, hourWeekend: 325, kmTier1: 28, kmTier2: 21 },
       S: { hourWeekday: 330, hourWeekend: 415, kmTier1: 28, kmTier2: 21 },
       M: { hourWeekday: 430, hourWeekend: 520, kmTier1: 29, kmTier2: 21 },
       L: { hourWeekday: 715, hourWeekend: 820, kmTier1: 39, kmTier2: 23, dayCap: 8550 },
       XL: { hourWeekday: 858, hourWeekend: 1066, kmTier1: 42, kmTier2: 24 },
     });
-    expect(12 * PRICE_DATA.tariffs.AKTIV.prices.S!.hourWeekday).toBe(2520);
-    expect(72 * PRICE_DATA.tariffs.AKTIV.prices.S!.hourWeekday).toBe(15120);
+    expect(12 * PRICES.tariffs.AKTIV.prices.S!.hourWeekday).toBe(2520);
+    expect(72 * PRICES.tariffs.AKTIV.prices.S!.hourWeekday).toBe(15120);
   });
 
   it("has the tariff fees and availability", () => {
-    const { CAMPUS, BASIS, START, AKTIV, COMFORT } = PRICE_DATA.tariffs;
+    const { CAMPUS, BASIS, START, AKTIV, COMFORT } = PRICES.tariffs;
     expect([CAMPUS, BASIS, START, AKTIV, COMFORT].map((t) => t.monthlyFee)).toEqual([
       0, 0, 350, 1100, 2700,
     ]);
@@ -130,14 +144,14 @@ describe("surchargeAt", () => {
 
 describe("tariff and class lists", () => {
   it("list every tariff of the price data once, ordered by monthly fee", () => {
-    expect([...TARIFF_IDS].sort()).toEqual(Object.keys(PRICE_DATA.tariffs).sort());
-    const fees = TARIFF_IDS.map((id) => PRICE_DATA.tariffs[id].monthlyFee);
+    expect([...TARIFF_IDS].sort()).toEqual(Object.keys(PRICES.tariffs).sort());
+    const fees = TARIFF_IDS.map((id) => PRICES.tariffs[id].monthlyFee);
     expect(fees).toEqual([...fees].sort((a, b) => a - b));
   });
 
   it("list every price class a tariff offers", () => {
     for (const id of TARIFF_IDS) {
-      for (const cls of Object.keys(PRICE_DATA.tariffs[id].prices)) {
+      for (const cls of Object.keys(PRICES.tariffs[id].prices)) {
         expect(PRICE_CLASSES).toContain(cls);
       }
     }

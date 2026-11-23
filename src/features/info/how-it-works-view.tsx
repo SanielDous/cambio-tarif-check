@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { ReconstructionKind } from "@/domain/analysis/reconstruct-booking";
-import { PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
-import type { PriceData, TariffId } from "@/domain/pricing/types";
+import { latestPrices, PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
+import type { PriceData, PriceVersionView, TariffId } from "@/domain/pricing/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { REPOSITORY_URL } from "@/lib/links";
 import { PriceTables } from "./price-table";
@@ -32,7 +32,7 @@ const listOf = (items: string[], lang: string) =>
   new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(items);
 
 /** Tariffs that have a separate weekend price for at least one class. */
-function weekendTariffs(data: PriceData): TariffId[] {
+function weekendTariffs(data: PriceVersionView): TariffId[] {
   return (Object.keys(data.tariffs) as TariffId[]).filter((id) =>
     Object.values(data.tariffs[id].prices).some((price) => price.hourWeekend !== price.hourWeekday),
   );
@@ -60,14 +60,16 @@ export function HowItWorksView({ data = PRICE_DATA }: { data?: PriceData }) {
   const { t, i18n } = useTranslation("common");
   const lang = i18n.language;
   const date = (iso: string) => formatDate(parseIsoDate(iso), lang);
+  // The text states today's prices: those of the latest version.
+  const prices = latestPrices(data);
   const tripParams = {
     weekendTariffs: new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(
-      weekendTariffs(data).map((id) => t(`tariffs.${id}`)),
+      weekendTariffs(prices).map((id) => t(`tariffs.${id}`)),
     ),
     holidayCities: listOf(data.holidayCities, lang),
     nightFrom: hourLabel(data.nightStartHour),
     nightTo: hourLabel(data.nightEndHour),
-    nightPrice: formatCurrency(data.nightHourPrice, lang),
+    nightPrice: formatCurrency(prices.nightHourPrice, lang),
     weekendFromDay: weekdayName(data.weekendStart.weekday, lang),
     weekendFromTime: hourLabel(data.weekendStart.hour),
     weekendToDay: weekdayName(data.weekendEnd.weekday, lang),
@@ -130,7 +132,9 @@ export function HowItWorksView({ data = PRICE_DATA }: { data?: PriceData }) {
       <Section id="hiw-months" title={t("howItWorks.months.title")}>
         <p className={prose}>{t("howItWorks.months.month")}</p>
         <p className={prose}>
-          {t("howItWorks.months.actual", { switchingFee: formatCurrency(data.switchingFee, lang) })}
+          {t("howItWorks.months.actual", {
+            switchingFee: formatCurrency(prices.switchingFee, lang),
+          })}
         </p>
         <p className={prose}>{t("howItWorks.months.path")}</p>
       </Section>

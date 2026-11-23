@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { Trip } from "@/domain/import/fields";
 import { toLocalMinute } from "@/domain/pricing/local-time";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
-import type { LocalMinute, PriceClass, PriceData, TariffId } from "@/domain/pricing/types";
+import { latestPrices, PRICE_DATA } from "@/domain/pricing/price-data";
+import type { LocalMinute, PriceClass, PriceVersionView, TariffId } from "@/domain/pricing/types";
 import { bookingTimeCost, reconstructBooking } from "./reconstruct-booking";
+
+const PRICES = latestPrices(PRICE_DATA);
 
 interface TripInput {
   start: LocalMinute;
@@ -29,23 +31,14 @@ describe("bookingTimeCost", () => {
   it("charges the used part in full and the unused booked part at 50 %, each rounded", () => {
     // 2.5 h × 7.15 = 17.875 → 17.88; 0.5 h × 7.15 × 50 % = 1.7875 → 1.79.
     expect(
-      bookingTimeCost(
-        tue2026(18),
-        tue2026(20, 30),
-        tue2026(21),
-        1,
-        "BASIS",
-        "L",
-        PRICE_DATA,
-        "Aachen",
-      ),
+      bookingTimeCost(tue2026(18), tue2026(20, 30), tue2026(21), 1, "BASIS", "L", PRICES, "Aachen"),
     ).toBe(1967);
   });
 
   it("charges 50 % of the used part for a share of 0.5", () => {
-    expect(
-      bookingTimeCost(wed(13), wed(20), wed(20), 0.5, "AKTIV", "L", PRICE_DATA, "Aachen"),
-    ).toBe(1785);
+    expect(bookingTimeCost(wed(13), wed(20), wed(20), 0.5, "AKTIV", "L", PRICES, "Aachen")).toBe(
+      1785,
+    );
   });
 
   // Invoice, COMFORT M (28.20 per day, 2.35 per hour), Friday 2025-01-24 17:00 to Saturday
@@ -59,14 +52,14 @@ describe("bookingTimeCost", () => {
   it("prices the unused part as a span of its own, as invoiced for 8 days + 45 minutes", () => {
     const booked = toLocalMinute(2025, 2, 1, 21);
     expect(
-      bookingTimeCost(long.start, long.returned, booked, 1, "COMFORT", "M", PRICE_DATA, "Aachen"),
+      bookingTimeCost(long.start, long.returned, booked, 1, "COMFORT", "M", PRICES, "Aachen"),
     ).toBe(19740 + 382);
   });
 
   it("charges unused hours after the day cap was reached: 50 % of exactly those hours", () => {
     // BASIS S Monday 06:00–19:00 reaches the day cap (12 h × 3.30 = 39.60); booked until 21:00,
     // the unused 2 h cost 2 × 3.30 × 50 % = 3.30.
-    expect(bookingTimeCost(mon(6), mon(19), mon(21), 1, "BASIS", "S", PRICE_DATA, "Aachen")).toBe(
+    expect(bookingTimeCost(mon(6), mon(19), mon(21), 1, "BASIS", "S", PRICES, "Aachen")).toBe(
       3960 + 330,
     );
   });
@@ -76,7 +69,7 @@ describe("bookingTimeCost", () => {
     // Tuesday 20:00: the 24 h from Monday 18:00 are capped at 25.20, Tuesday 18:00–20:00 adds
     // 2 × 2.10, all at 50 % = 14.70. Caps anchored at the start would give only 12.60.
     const tue20 = mon(20) + 24 * 60;
-    expect(bookingTimeCost(mon(6), mon(18), tue20, 1, "AKTIV", "S", PRICE_DATA, "Aachen")).toBe(
+    expect(bookingTimeCost(mon(6), mon(18), tue20, 1, "AKTIV", "S", PRICES, "Aachen")).toBe(
       2520 + (2520 + 2 * 210) / 2,
     );
   });
@@ -94,7 +87,7 @@ describe("reconstructBooking", () => {
         billedTime: 498,
         billedKm: 494,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(["verified", "verified-rounding"]).toContain(r.kind);
     expect(r.chargedUntil).toBe(mon(19, 30));
@@ -114,7 +107,7 @@ describe("reconstructBooking", () => {
         billedTime: 1967,
         billedKm: 546,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r).toEqual({
       kind: "verified",
@@ -141,7 +134,7 @@ describe("reconstructBooking", () => {
         billedTime: 1785,
         billedKm: 0,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.kind).toBe("cancelled");
     expect(r.share).toBe(0.5);
@@ -160,7 +153,7 @@ describe("reconstructBooking", () => {
         billedTime: 5508,
         billedKm: 0,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.kind).toBe("unused");
     expect(r.share).toBe(1);
@@ -179,7 +172,7 @@ describe("reconstructBooking", () => {
         billedTime: 1141,
         billedKm: 0,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.kind).toBe("not-reproducible");
     expect(r.bookedEnd).toBe(wed(20));
@@ -197,7 +190,7 @@ describe("reconstructBooking", () => {
         billedTime: 262,
         billedKm: 260,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.kind).toBe("verified-rounding");
     expect(r.bookedEnd).toBe(wed(11, 15));
@@ -218,7 +211,7 @@ describe("reconstructBooking", () => {
         billedTime: 830 + 1980,
         billedKm: 290,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.kind).toBe("estimated");
     expect(r.bookedEnd).toBe(sat(17, 45));
@@ -239,7 +232,7 @@ describe("reconstructBooking", () => {
         billedTime: 420 + 1260,
         billedKm: 260,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.kind).toBe("verified");
     expect(r.bookedEnd).toBe(wed(20));
@@ -256,7 +249,7 @@ describe("reconstructBooking", () => {
         billedTime: 20122,
         billedKm: 26115,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.chargedUntil).toBe(toLocalMinute(2025, 2, 1, 17, 45));
     expect(r.bookedEnd).toBe(toLocalMinute(2025, 2, 1, 21));
@@ -274,7 +267,7 @@ describe("reconstructBooking", () => {
         billedTime: 210,
         billedKm: 270,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.surchargeCents).toBe(2);
     expect(r.surchargeDerived).toBe(true);
@@ -292,7 +285,7 @@ describe("reconstructBooking", () => {
         billedTime: 210,
         billedKm: 263,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.surchargeCents).toBe(1);
     expect(r.surchargeDerived).toBe(false);
@@ -312,14 +305,14 @@ describe("reconstructBooking", () => {
       billedTime: 210,
       billedKm: 760,
     });
-    const r = reconstructBooking(kmOff, PRICE_DATA);
+    const r = reconstructBooking(kmOff, PRICES);
     expect(r.kind).toBe("not-reproducible");
     expect(r.bookedEnd).toBe(wed(11));
     expect(r.chargedUntil).toBe(wed(11));
     expect(r.timeDeviation).toBe(0);
     expect(r.kmDeviation).toBe(-500);
 
-    const manual = reconstructBooking(kmOff, PRICE_DATA, wed(12));
+    const manual = reconstructBooking(kmOff, PRICES, wed(12));
     expect(manual.kind).toBe("manual");
     expect(manual.bookedEnd).toBe(wed(12));
     expect(manual.kmDeviation).toBe(-500);
@@ -337,7 +330,7 @@ describe("reconstructBooking", () => {
     });
 
     it("uses a valid manual booked end", () => {
-      const r = reconstructBooking(early, PRICE_DATA, mon(20));
+      const r = reconstructBooking(early, PRICES, mon(20));
       expect(r.kind).toBe("manual");
       expect(r.bookedEnd).toBe(mon(20));
       // 135 min × 2.10 = 4.725 → 4.73; 0.5 × 30 min × 2.10 = 0.525 → 0.53.
@@ -345,14 +338,14 @@ describe("reconstructBooking", () => {
     });
 
     it("ignores a manual booked end at or before the start or off the quarter hour", () => {
-      expect(reconstructBooking(early, PRICE_DATA, mon(17, 15)).kind).not.toBe("manual");
-      expect(reconstructBooking(early, PRICE_DATA, mon(17)).kind).not.toBe("manual");
-      expect(reconstructBooking(early, PRICE_DATA, mon(20, 5)).kind).not.toBe("manual");
-      expect(reconstructBooking(early, PRICE_DATA, mon(19, 10)).kind).not.toBe("manual");
+      expect(reconstructBooking(early, PRICES, mon(17, 15)).kind).not.toBe("manual");
+      expect(reconstructBooking(early, PRICES, mon(17)).kind).not.toBe("manual");
+      expect(reconstructBooking(early, PRICES, mon(20, 5)).kind).not.toBe("manual");
+      expect(reconstructBooking(early, PRICES, mon(19, 10)).kind).not.toBe("manual");
     });
 
     it("computes a manual booked end before the return as an overrun from there", () => {
-      const r = reconstructBooking(early, PRICE_DATA, mon(19));
+      const r = reconstructBooking(early, PRICES, mon(19));
       expect(r.kind).toBe("manual");
       expect(r.bookedEnd).toBe(mon(19));
       expect(r.chargedUntil).toBe(mon(19));
@@ -362,7 +355,7 @@ describe("reconstructBooking", () => {
     });
 
     it("keeps the overrun of a valid manual end after the return at 0", () => {
-      expect(reconstructBooking(early, PRICE_DATA, mon(20)).overrunMinutes).toBe(0);
+      expect(reconstructBooking(early, PRICES, mon(20)).overrunMinutes).toBe(0);
     });
   });
 });
@@ -383,7 +376,7 @@ describe("late return (overrun)", () => {
   });
 
   it("recognises the observed overrun (AKTIV S 15:00–20:00, returned 20:13, billed 11.41)", () => {
-    expect(reconstructBooking(observed, PRICE_DATA)).toEqual({
+    expect(reconstructBooking(observed, PRICES)).toEqual({
       kind: "overrun",
       chargedUntil: fri(20),
       bookedEnd: fri(20),
@@ -398,7 +391,7 @@ describe("late return (overrun)", () => {
   });
 
   it("infers the overrun when the export holds only the booked end (no trip end)", () => {
-    const r = reconstructBooking({ ...observed, end: fri(20) }, PRICE_DATA);
+    const r = reconstructBooking({ ...observed, end: fri(20) }, PRICES);
     expect(r.kind).toBe("overrun");
     expect(r.bookedEnd).toBe(fri(20));
     expect(r.chargedUntil).toBe(fri(20));
@@ -411,7 +404,7 @@ describe("late return (overrun)", () => {
     const booked = { ...observed, end: fri(20) };
 
     it("confirms the overrun with the trip end's minutes", () => {
-      const r = reconstructBooking({ ...booked, tripEnd: fri(20, 13) }, PRICE_DATA);
+      const r = reconstructBooking({ ...booked, tripEnd: fri(20, 13) }, PRICES);
       expect(r.kind).toBe("overrun");
       expect(r.overrunMinutes).toBe(13);
       expect(r.overrunInferred).toBe(false);
@@ -419,7 +412,7 @@ describe("late return (overrun)", () => {
 
     it("allows one minute either way, as the export drops seconds", () => {
       for (const tripEnd of [fri(20, 12), fri(20, 14)]) {
-        const r = reconstructBooking({ ...booked, tripEnd }, PRICE_DATA);
+        const r = reconstructBooking({ ...booked, tripEnd }, PRICES);
         expect(r.kind).toBe("overrun");
         expect(r.overrunMinutes).toBe(13);
         expect(r.overrunInferred).toBe(false);
@@ -428,7 +421,7 @@ describe("late return (overrun)", () => {
 
     it("does not fit other minutes when the trip end contradicts the amount", () => {
       // 17 min (16 and 18 tried too) cost 1.19 (1.12, 1.26): none gives 11.41.
-      const r = reconstructBooking({ ...booked, tripEnd: fri(20, 17) }, PRICE_DATA);
+      const r = reconstructBooking({ ...booked, tripEnd: fri(20, 17) }, PRICES);
       expect(r.kind).toBe("not-reproducible");
       expect(r.overrunMinutes).toBe(0);
       expect(r.overrunInferred).toBe(false);
@@ -436,7 +429,7 @@ describe("late return (overrun)", () => {
 
     it("does not try a return after the export's end when the trip end is not later", () => {
       for (const tripEnd of [fri(20), fri(19, 58)]) {
-        const r = reconstructBooking({ ...booked, tripEnd }, PRICE_DATA);
+        const r = reconstructBooking({ ...booked, tripEnd }, PRICES);
         expect(r.kind).toBe("not-reproducible");
         expect(r.overrunMinutes).toBe(0);
       }
@@ -445,7 +438,7 @@ describe("late return (overrun)", () => {
 
   it("leaves a quarter-hour end that no minute count explains exactly not reproducible", () => {
     // 10.50 + 7 ct per minute never gives 11.44, and the booked-end search does not either.
-    const r = reconstructBooking({ ...observed, end: fri(20), billedTime: 1144 }, PRICE_DATA);
+    const r = reconstructBooking({ ...observed, end: fri(20), billedTime: 1144 }, PRICES);
     expect(r.kind).toBe("not-reproducible");
     expect(r.overrunMinutes).toBe(0);
   });
@@ -453,7 +446,7 @@ describe("late return (overrun)", () => {
   it("finds an early return exactly at a quarter hour by the booked-end search", () => {
     // AKTIV S 15:00 returned at 19:30, booked until 20:00: 4.5 h × 2.10 = 9.45 and
     // 0.5 h × 2.10 × 50 % = 0.525 → 0.53; billed 9.98.
-    const r = reconstructBooking({ ...observed, end: fri(19, 30), billedTime: 998 }, PRICE_DATA);
+    const r = reconstructBooking({ ...observed, end: fri(19, 30), billedTime: 998 }, PRICES);
     expect(r.kind).toBe("verified");
     expect(r.bookedEnd).toBe(fri(20));
     expect(r.overrunMinutes).toBe(0);
@@ -474,27 +467,24 @@ describe("late return (overrun)", () => {
     });
 
     it("recognises an overrun of 120 minutes after a booked end before the return", () => {
-      const r = reconstructBooking(base, PRICE_DATA);
+      const r = reconstructBooking(base, PRICES);
       expect(r.kind).toBe("overrun");
       expect(r.bookedEnd).toBe(mon(21, 45));
       expect(r.overrunMinutes).toBe(120);
     });
 
     it("does not look 121 minutes back", () => {
-      const r = reconstructBooking({ ...base, end: mon(23, 46), billedTime: 2239 }, PRICE_DATA);
+      const r = reconstructBooking({ ...base, end: mon(23, 46), billedTime: 2239 }, PRICES);
       expect(r.kind).toBe("not-reproducible");
       expect(r.overrunMinutes).toBe(0);
     });
 
     it("fits at most 120 minutes after a booked end in the export", () => {
-      const at = reconstructBooking({ ...base, end: mon(21, 45) }, PRICE_DATA);
+      const at = reconstructBooking({ ...base, end: mon(21, 45) }, PRICES);
       expect(at.kind).toBe("overrun");
       expect(at.overrunMinutes).toBe(120);
       expect(at.overrunInferred).toBe(true);
-      const beyond = reconstructBooking(
-        { ...base, end: mon(21, 45), billedTime: 2239 },
-        PRICE_DATA,
-      );
+      const beyond = reconstructBooking({ ...base, end: mon(21, 45), billedTime: 2239 }, PRICES);
       expect(beyond.kind).toBe("not-reproducible");
     });
   });
@@ -504,13 +494,13 @@ describe("late return (overrun)", () => {
     // hour moved from the booking into the overrun adds exactly 1 cent. Friday 07:00, returned
     // 12:01: booked end 12:00 gives 0.20 + 0.11 = 0.31, 11:45 gives 0.19 + 0.13 = 0.32 (billed),
     // 11:30 gives 0.18 + 0.15 = 0.33.
-    const basis = PRICE_DATA.tariffs.BASIS;
+    const basis = PRICES.tariffs.BASIS;
     const s = basis.prices.S;
     if (!s) throw new Error("no BASIS S");
-    const data: PriceData = {
-      ...PRICE_DATA,
+    const data: PriceVersionView = {
+      ...PRICES,
       tariffs: {
-        ...PRICE_DATA.tariffs,
+        ...PRICES.tariffs,
         BASIS: {
           ...basis,
           prices: { ...basis.prices, S: { ...s, hourWeekday: 4, hourWeekend: 330 } },
@@ -567,19 +557,19 @@ describe("late return (overrun)", () => {
   });
 
   it("prices an overrun into the night with the night price, doubled", () => {
-    const r = reconstructBooking(night, PRICE_DATA);
+    const r = reconstructBooking(night, PRICES);
     expect(r.kind).toBe("overrun");
     expect(r.bookedEnd).toBe(mon(23, 45));
     expect(r.overrunMinutes).toBe(25);
     expect(r.overrunInferred).toBe(false);
     expect(r.timeDeviation).toBe(0);
     expect(
-      bookingTimeCost(mon(20), mon(23, 45), mon(23, 45), 1, "BASIS", "L", PRICE_DATA, "Aachen"),
+      bookingTimeCost(mon(20), mon(23, 45), mon(23, 45), 1, "BASIS", "L", PRICES, "Aachen"),
     ).toBe(2681);
   });
 
   it("accepts an overrun within 1 cent", () => {
-    const r = reconstructBooking({ ...night, billedTime: 3056 }, PRICE_DATA);
+    const r = reconstructBooking({ ...night, billedTime: 3056 }, PRICES);
     expect(r.kind).toBe("overrun");
     expect(r.bookedEnd).toBe(mon(23, 45));
     expect(r.overrunMinutes).toBe(25);
@@ -598,7 +588,7 @@ describe("late return (overrun)", () => {
         billedTime: 498,
         billedKm: 494,
       }),
-      PRICE_DATA,
+      PRICES,
     );
     expect(r.kind).not.toBe("overrun");
     expect(r.overrunMinutes).toBe(0);
@@ -606,14 +596,14 @@ describe("late return (overrun)", () => {
   });
 
   it("never makes a trip without km an overrun, even with a quarter-hour end", () => {
-    const r = reconstructBooking({ ...observed, km: 0, billedKm: 0, end: fri(20) }, PRICE_DATA);
+    const r = reconstructBooking({ ...observed, km: 0, billedKm: 0, end: fri(20) }, PRICES);
     expect(r.kind).toBe("not-reproducible");
     expect(r.overrunMinutes).toBe(0);
   });
 
   it("prices a trip with an unexplained km amount as the plain booking, without an overrun", () => {
     const kmOff = { ...observed, billedKm: 600 };
-    const r = reconstructBooking(kmOff, PRICE_DATA);
+    const r = reconstructBooking(kmOff, PRICES);
     expect(r.kind).toBe("not-reproducible");
     expect(r.kmDeviation).toBe(-28);
     expect(r.overrunMinutes).toBe(0);
@@ -621,7 +611,7 @@ describe("late return (overrun)", () => {
     // Up to 20:15: 5.25 h × 2.10 = 11.025 → 11.03.
     expect(r.bookedEnd).toBe(fri(20, 15));
     expect(r.timeDeviation).toBe(1103 - 1141);
-    expect(reconstructBooking({ ...kmOff, end: fri(20) }, PRICE_DATA).overrunMinutes).toBe(0);
-    expect(reconstructBooking(kmOff, PRICE_DATA, fri(20)).kind).toBe("manual");
+    expect(reconstructBooking({ ...kmOff, end: fri(20) }, PRICES).overrunMinutes).toBe(0);
+    expect(reconstructBooking(kmOff, PRICES, fri(20)).kind).toBe("manual");
   });
 });

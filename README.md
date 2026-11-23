@@ -44,15 +44,22 @@ Before the first end-to-end run, install the browser once:
 pnpm exec playwright install chromium
 ```
 
-The app is served under the base path `/cambio-tarif-check/` and uses hash routing
-(`/#/`, `/#/how-it-works`).
+The build uses relative asset paths and hash routing (`#/`, `#/how-it-works`), so `dist/` works
+from any path: the site root, a GitHub Pages project path or a fork under another name. The
+end-to-end tests serve the same build at the root and under a sub-path it was not built for
+(`e2e/preview.mjs`).
 
 ## Price data
 
 All prices live in `src/domain/pricing/price-data.ts` (data only, amounts in cents including VAT,
-with the "prices as of" date). The source is `docs/research/cambio-pricing.md`. To update: change
-the tariffs, fuel surcharge periods and `pricesAsOf` there; the explanation page and its price table
-are rendered from this data, and the tests will tell you what else is affected.
+with the "prices as of" date). The source is `docs/research/cambio-pricing.md`. Prices that can
+change (hour, km and night prices, monthly and additional-driver fees, the switching fee) are kept
+in `versions`, each valid from a date; rules that are not prices (night and weekend windows, km
+tier, caps, holiday cities) and the fuel surcharge periods are shared. A trip is priced with the
+version valid at its return, the fees of a month with the version valid on its first day. To add a
+new price list, append a version with its first day and update `pricesAsOf`; to correct the
+current one, change it in place. The explanation page and its price table are rendered from this
+data, and the tests will tell you what else is affected.
 
 ## Fixtures and tools
 

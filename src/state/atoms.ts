@@ -8,12 +8,14 @@ import {
 import { dedupeTrips } from "@/domain/import/dedupe";
 import { detectColumns } from "@/domain/import/detect-columns";
 import {
+  bookingKey,
   ImportError,
   type ColumnMapping,
   type Detection,
   type RawTable,
   type RowProblem,
   type Trip,
+  type UnknownStatus,
 } from "@/domain/import/fields";
 import { normalizeRows } from "@/domain/import/normalize-rows";
 import { readTable } from "@/domain/import/read-table";
@@ -28,6 +30,8 @@ export interface FileReport {
   /** Data rows below the header (blank rows not counted); 0 for a file with only a header. */
   rowCount: number;
   problems: RowProblem[];
+  /** Status values that are not a known billed status, with their row counts. */
+  unknownStatuses: UnknownStatus[];
   error?: ImportError["code"];
   /** The user cancelled the column mapping; nothing was read. */
   skipped?: boolean;
@@ -78,14 +82,22 @@ export const setAdditionalDriversAtom = atom(null, (get, set, value: number) => 
   set(driversSetByHandAtom, true);
 });
 
-/** Months of rows that are not billed yet, over all imported files. */
-const unbilledMonthsAtom = atom((get) =>
-  get(importReportAtom).files.flatMap((file) =>
+/**
+ * Months of rows that are not billed yet, over all imported files. A row stops counting once a
+ * billed trip of the same booking is imported (an older export before billing, a newer one after).
+ */
+const unbilledMonthsAtom = atom((get) => {
+  const billed = new Set(get(tripsAtom).map(bookingKey));
+  return get(importReportAtom).files.flatMap((file) =>
     file.problems.flatMap((problem) =>
-      problem.reason === "not-billed" && problem.month !== undefined ? [problem.month] : [],
+      problem.reason === "not-billed" &&
+      problem.month !== undefined &&
+      (problem.bookingKey === undefined || !billed.has(problem.bookingKey))
+        ? [problem.month]
+        : [],
     ),
-  ),
-);
+  );
+});
 
 export const analysisAtom = atom<Analysis | null>((get) => {
   const trips = get(tripsAtom);
@@ -119,7 +131,10 @@ const addErrorAtom = atom(
     const report = get(importReportAtom);
     set(importReportAtom, {
       ...report,
-      files: [...report.files, { ...file, tripCount: 0, rowCount: 0, problems: [], error }],
+      files: [
+        ...report.files,
+        { ...file, tripCount: 0, rowCount: 0, problems: [], unknownStatuses: [], error },
+      ],
     });
   },
 );
@@ -135,7 +150,11 @@ export const importFilesAtom = atom(null, async (get, set, files: File[]) => {
       if (get(generationAtom) !== generation) continue; // reset while reading
       const detection = detectColumns(table.headers);
       if (detection.missing.length === 0 && detection.ambiguous.length === 0) {
-        const { trips, problems } = normalizeRows(table, detection.mapping, PRICE_DATA);
+        const { trips, problems, unknownStatuses } = normalizeRows(
+          table,
+          detection.mapping,
+          PRICE_DATA,
+        );
         set(addResultAtom, {
           trips,
           report: {
@@ -144,6 +163,7 @@ export const importFilesAtom = atom(null, async (get, set, files: File[]) => {
             tripCount: trips.length,
             rowCount: table.rows.length,
             problems,
+            unknownStatuses,
           },
         });
       } else {
@@ -170,7 +190,7 @@ export const confirmMappingAtom = atom(null, (get, set, mapping: ColumnMapping) 
   const { id } = pending;
   const fileName = pending.table.fileName;
   try {
-    const { trips, problems } = normalizeRows(pending.table, mapping, PRICE_DATA);
+    const { trips, problems, unknownStatuses } = normalizeRows(pending.table, mapping, PRICE_DATA);
     set(addResultAtom, {
       trips,
       report: {
@@ -179,6 +199,7 @@ export const confirmMappingAtom = atom(null, (get, set, mapping: ColumnMapping) 
         tripCount: trips.length,
         rowCount: pending.table.rows.length,
         problems,
+        unknownStatuses,
       },
     });
   } catch {
@@ -202,6 +223,7 @@ export const cancelMappingAtom = atom(null, (get, set) => {
         tripCount: 0,
         rowCount: 0,
         problems: [],
+        unknownStatuses: [],
         skipped: true,
       },
     ],

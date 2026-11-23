@@ -3,7 +3,7 @@ import { useAtomValue } from "jotai";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { importReportAtom, type FileReport } from "@/state/atoms";
-import { groupProblems, ProblemList } from "./problem-list";
+import { groupProblems, ProblemList, UnknownStatusList } from "./problem-list";
 
 /** A file that was read but gave no trip: says so and lists why its rows were not used. */
 function NoTripsMessage({ file }: { file: FileReport }) {
@@ -19,6 +19,7 @@ function NoTripsMessage({ file }: { file: FileReport }) {
         {file.problems.length > 0 && (
           <ProblemList groups={groupProblems([file])} showFileName={false} />
         )}
+        <UnknownStatusList files={[file]} />
       </AlertDescription>
     </Alert>
   );

@@ -6,7 +6,7 @@ import type { Trip } from "@/domain/import/fields";
 import { normalizeRows } from "@/domain/import/normalize-rows";
 import { readTable } from "@/domain/import/read-table";
 import { parseLocal } from "@/domain/pricing/local-time";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
+import { PRICE_DATA, pricesAt } from "@/domain/pricing/price-data";
 import { roundHalfUp } from "@/domain/pricing/rounding";
 import { overrunCost, timeCost } from "@/domain/pricing/time-cost";
 import type { LocalMinute } from "@/domain/pricing/types";
@@ -70,7 +70,7 @@ const cases: Case[] = trips.map((trip) => {
   return {
     trip,
     invoice,
-    r: reconstructBooking(trip, PRICE_DATA),
+    r: reconstructBooking(trip, pricesAt(PRICE_DATA, trip.end)),
     item: (kind) => {
       const found = invoice.timeItems.find((i) => i.kind === kind);
       return found && { start: minute(found.start), end: minute(found.end), gross: found.gross };
@@ -95,15 +95,16 @@ const chargedAsInModel = ({ r, item }: Case) => {
 /** The model's amount for each invoice item of a trip, in integer cents. */
 function modelItems({ trip, r }: Case): Partial<Record<ItemKind, number>> {
   const { tariff, priceClass: cls, city } = trip;
-  const used = timeCost(trip.start, r.chargedUntil, tariff, cls, PRICE_DATA, city);
+  const prices = pricesAt(PRICE_DATA, trip.end);
+  const used = timeCost(trip.start, r.chargedUntil, tariff, cls, prices, city);
   if (r.kind === "cancelled") return { cancelled: roundHalfUp(0.5 * used) };
   const items: Partial<Record<ItemKind, number>> = {
     full: roundHalfUp(used),
-    cancelled: unusedTimeCost(r.chargedUntil, r.bookedEnd, tariff, cls, PRICE_DATA, city),
+    cancelled: unusedTimeCost(r.chargedUntil, r.bookedEnd, tariff, cls, prices, city),
   };
   if (r.overrunMinutes > 0) {
     const returned = r.bookedEnd + r.overrunMinutes;
-    items.overrun = roundHalfUp(overrunCost(r.bookedEnd, returned, tariff, cls, PRICE_DATA, city));
+    items.overrun = roundHalfUp(overrunCost(r.bookedEnd, returned, tariff, cls, prices, city));
   }
   return items;
 }
@@ -190,7 +191,10 @@ describe("invoice line items of the fixture trips", () => {
   it("finds the invoiced booked end from the invoiced charged-until where the two differ", () => {
     for (const c of cases.filter((c) => !chargedAsInModel(c))) {
       const chargedUntil = c.item("full")!.end;
-      const r = reconstructBooking({ ...c.trip, end: chargedUntil }, PRICE_DATA);
+      const r = reconstructBooking(
+        { ...c.trip, end: chargedUntil },
+        pricesAt(PRICE_DATA, chargedUntil),
+      );
       expect(r.chargedUntil).toBe(chargedUntil);
       expect(r.bookedEnd).toBe((c.item("cancelled") ?? c.item("full"))!.end);
     }
@@ -204,7 +208,14 @@ describe("invoice line items of the fixture trips", () => {
     expect(r.kind).toMatch(/^verified/);
     expect([r.chargedUntil, r.bookedEnd, r.overrunMinutes]).toEqual([end, end, 0]);
     expect(Math.abs(r.timeDeviation)).toBeLessThanOrEqual(1);
-    const model = timeCost(trip.start, end, trip.tariff, trip.priceClass, PRICE_DATA, trip.city);
+    const model = timeCost(
+      trip.start,
+      end,
+      trip.tariff,
+      trip.priceClass,
+      pricesAt(PRICE_DATA, end),
+      trip.city,
+    );
     expect(Math.abs(roundHalfUp(model) - (item("full")!.gross + item("late")!.gross))).toBe(0);
   });
 
@@ -232,7 +243,7 @@ describe("invoice line items of the fixture trips", () => {
   it("reproduces every invoiced km amount", () => {
     const wrong = cases
       .filter(({ trip, r, invoice }) => {
-        const cost = tripCostInTariff(trip, r, trip.tariff, PRICE_DATA);
+        const cost = tripCostInTariff(trip, r, trip.tariff, pricesAt(PRICE_DATA, trip.end));
         return cost?.km !== invoice.kmGross;
       })
       .map(label);

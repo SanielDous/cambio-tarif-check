@@ -1,5 +1,5 @@
 import { monthKey, parseLocal } from "@/domain/pricing/local-time";
-import { parseIsoDate } from "@/domain/pricing/price-data";
+import { parseIsoDate, pricesAt } from "@/domain/pricing/price-data";
 import {
   PRICE_CLASSES,
   TARIFF_IDS,
@@ -7,10 +7,22 @@ import {
   type PriceData,
 } from "@/domain/pricing/types";
 import { cellText, isBlankCell } from "./cells";
-import type { ColumnMapping, FieldId, RawTable, RowProblem, Trip } from "./fields";
+import {
+  BILLED_STATUSES,
+  bookingKey,
+  type ColumnMapping,
+  type FieldId,
+  type RawTable,
+  type RowProblem,
+  type Trip,
+  type UnknownStatus,
+} from "./fields";
 
-/** The processing status of a billed row. */
-const BILLED = "BILLED";
+const KNOWN_BILLED = new Set(BILLED_STATUSES.map((status) => status.toUpperCase()));
+
+/** Whether a status is one of the known statuses of a billed row. */
+export const isBilledStatus = (status: string): boolean =>
+  KNOWN_BILLED.has(status.trim().toUpperCase());
 
 class RowError extends Error {
   readonly reason: RowProblem["reason"];
@@ -90,11 +102,9 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
     return index === undefined ? undefined : row[index];
   };
 
-  // Not billed yet: a status other than BILLED (whatever the amounts say), or no amounts at all.
+  // A known billed status is a billed trip; an unknown or missing one is decided by the amounts
+  // alone. Not billed yet either way: no amounts at all.
   const status = text(cell("status"));
-  if (mapping.status !== undefined && status !== "" && status.toUpperCase() !== BILLED) {
-    throw new RowError("not-billed");
-  }
   if (isBlankCell(cell("billedTime")) && isBlankCell(cell("billedKm"))) {
     throw new RowError("not-billed");
   }
@@ -106,8 +116,12 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
     ? 0
     : toCents(cell("billedTime"), "billedTime");
   const billedKm = isBlankCell(cell("billedKm")) ? 0 : toCents(cell("billedKm"), "billedKm");
-  // A trip with km is never free: amounts of 0 stand for an invoice that is still to come.
-  if (billedTime === 0 && billedKm === 0 && km > 0) throw new RowError("not-billed");
+  // Without a known billed status a trip with km is never free: amounts of 0 stand for an invoice
+  // that is still to come. With one it is a genuinely free trip (fully credited, say), kept so
+  // that it is listed and flagged rather than silently dropped.
+  if (billedTime === 0 && billedKm === 0 && km > 0 && !isBilledStatus(status)) {
+    throw new RowError("not-billed");
+  }
   if (end < start) throw new RowError("end-before-start");
   if (end < parseIsoDate(data.validFrom)) throw new RowError("before-price-data", data.validFrom);
 
@@ -119,7 +133,8 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
   const tariffText = text(cell("tariff")).toUpperCase();
   const tariff = TARIFF_IDS.find((t) => t === tariffText);
   if (tariff === undefined) throw new RowError("unknown-tariff", tariffText);
-  if (!data.tariffs[tariff].prices[priceClass]) {
+  // The price list valid at the return prices the trip.
+  if (!pricesAt(data, end).tariffs[tariff].prices[priceClass]) {
     throw new RowError("unknown-class", `${tariff} offers no class ${priceClass}`);
   }
 
@@ -161,16 +176,43 @@ function endMonth(row: unknown[], mapping: ColumnMapping): string | undefined {
   }
 }
 
+/** `bookingKey` of a row, if its start can be read. */
+function rowBookingKey(row: unknown[], mapping: ColumnMapping): string | undefined {
+  const index = mapping.start;
+  if (index === undefined) return undefined;
+  const cell = (field: FieldId) => {
+    const i = mapping[field];
+    return i === undefined ? "" : text(row[i]);
+  };
+  try {
+    return bookingKey({
+      start: toTime(row[index], "start"),
+      vehicleClass: cell("vehicleClass"),
+      city: cell("city"),
+    });
+  } catch {
+    return undefined;
+  }
+}
+
 /** Validates the rows of a table into trips; every rejected row becomes a `RowProblem`. */
 export function normalizeRows(
   table: RawTable,
   mapping: ColumnMapping,
   data: PriceData,
-): { trips: Trip[]; problems: RowProblem[] } {
+): { trips: Trip[]; problems: RowProblem[]; unknownStatuses: UnknownStatus[] } {
   const trips: Trip[] = [];
   const problems: RowProblem[] = [];
+  // Insertion order: the order in which the values first appear.
+  const unknown = new Map<string, number>();
   table.rows.forEach((row, index) => {
     if (row.every(isBlankCell)) return;
+    if (mapping.status !== undefined) {
+      const status = text(row[mapping.status]);
+      if (status !== "" && !isBilledStatus(status)) {
+        unknown.set(status, (unknown.get(status) ?? 0) + 1);
+      }
+    }
     try {
       trips.push(toTrip(row, mapping, data));
     } catch (error) {
@@ -184,9 +226,15 @@ export function normalizeRows(
       if (error.reason === "not-billed") {
         const month = endMonth(row, mapping);
         if (month !== undefined) problem.month = month;
+        const key = rowBookingKey(row, mapping);
+        if (key !== undefined) problem.bookingKey = key;
       }
       problems.push(problem);
     }
   });
-  return { trips, problems };
+  return {
+    trips,
+    problems,
+    unknownStatuses: [...unknown].map(([value, rows]) => ({ value, rows })),
+  };
 }
