@@ -442,8 +442,16 @@ or a tolerance of a few minutes).
   model.
 - 8 days 45 min in COMFORT M (returned 3 h 15 min early): "Normalfahrt Zeit" 197.40 = week price
   169.20 + one day 28.20; the 45 minutes after the eighth 24-hour block were **not charged**. The
-  model expects 1.76 more. The cancelled 3 h 15 min were charged at 50 % of the uncapped price
-  (3.82). One observation; cause unknown (**open**).
+  cancelled 3 h 15 min were charged at 50 % of the price of exactly those hours (3.82), i.e. the
+  cancelled item is priced on its own span.
+- **Explained by a rule the calculator shows as well: a remainder of less than one hour after
+  full 24-hour blocks is free.** Calculator, COMFORT M from a Friday 17:00 (2026-11-23): 1 day
+  + 15, 30, 45, 59 min = 28.20; + 60 min = 30.55; + 75 min = 31.14; 2, 3 and 6 days + 45 min =
+  the plain day prices. Class S from a Tuesday 06:00 behaves the same (1 day + 1 min = day
+  price).
+- **Calculator and invoicing differ from 7 days on:** the calculator charges such a remainder
+  again (7 days + 45 min = 170.96, 8 days + 45 min = 199.16, also after 14 and 15 days), while
+  the invoice for 8 days + 45 min did not. The app follows the invoice.
 
 ### Older invoices (before 2024-05-02)
 
