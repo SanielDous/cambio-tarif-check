@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { BookedEndEditor } from "./booked-end-editor";
 import { StatusBadge } from "./status-badge";
-import { EDITABLE_KINDS } from "./tariffs";
+import { isEditable } from "./tariffs";
 
 // Below the md breakpoint each row becomes a card.
 const cell =
@@ -70,6 +70,13 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
           });
           const cheapest = Math.min(...totals.map((x) => x ?? Infinity));
           const bookedLater = r.bookedEnd > r.chargedUntil;
+          const late = r.overrunMinutes > 0;
+          // The duration runs to the return: the charged end, or the booked end plus the overrun.
+          const until = late ? r.bookedEnd + r.overrunMinutes : r.chargedUntil;
+          const bookedEndText =
+            dayNumber(r.bookedEnd) === dayNumber(trip.end)
+              ? formatTime(r.bookedEnd, lang)
+              : formatDateTime(r.bookedEnd, lang);
           const sameDay = dayNumber(trip.start) === dayNumber(trip.end);
           return (
             <tr
@@ -90,18 +97,24 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
                 </span>
                 {bookedLater && (
                   <span className="block text-xs whitespace-nowrap text-muted-foreground">
-                    {t("result.trips.bookedUntil", {
-                      time:
-                        dayNumber(r.bookedEnd) === dayNumber(trip.end)
-                          ? formatTime(r.bookedEnd, lang)
-                          : formatDateTime(r.bookedEnd, lang),
-                    })}
+                    {t("result.trips.bookedUntil", { time: bookedEndText })}
+                  </span>
+                )}
+                {late && (
+                  <span className="block text-xs whitespace-nowrap text-muted-foreground">
+                    {t(
+                      r.overrunInferred ? "result.trips.overrunInferred" : "result.trips.overrun",
+                      {
+                        time: bookedEndText,
+                        minutes: r.overrunMinutes,
+                      },
+                    )}
                   </span>
                 )}
               </td>
               <td data-label={col("duration")} className={cn(cell, num)}>
-                <span className="block">{formatDuration(r.chargedUntil - trip.start, units)}</span>
-                {bookedLater && (
+                <span className="block">{formatDuration(until - trip.start, units)}</span>
+                {(bookedLater || late) && (
                   <span className="block text-xs text-muted-foreground">
                     {t("result.trips.booked", {
                       duration: formatDuration(r.bookedEnd - trip.start, units),
@@ -151,8 +164,12 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
                 className={cn(cell, "max-md:col-span-4 max-md:before:hidden")}
               >
                 <div className="flex flex-wrap items-center gap-1">
-                  <StatusBadge kind={r.kind} />
-                  {EDITABLE_KINDS.includes(r.kind) && <BookedEndEditor result={result} />}
+                  <StatusBadge
+                    kind={r.kind}
+                    overrunMinutes={r.overrunMinutes}
+                    overrunInferred={r.overrunInferred}
+                  />
+                  {isEditable(r) && <BookedEndEditor result={result} />}
                 </div>
               </td>
             </tr>

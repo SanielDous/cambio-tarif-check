@@ -11,6 +11,11 @@ export interface Trip {
   billedTime: number;
   billedKm: number; // integer cents
   tariff: TariffId;
+  /**
+   * The export's trip end ("Fahrtende"), if given: the actual return. Not part of `id`, so it never
+   * affects deduplication.
+   */
+  tripEnd?: LocalMinute;
   driver?: string;
   status?: string;
 }

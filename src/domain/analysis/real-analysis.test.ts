@@ -63,19 +63,31 @@ describe("analysis of the fixtures", () => {
     }
     expect(a.optimalPath.total).toBeLessThanOrEqual(a.bestSingle.total);
     expect(a.bestSingle.total).toBeLessThanOrEqual(Math.max(...totals));
-    expect(a.verification["not-reproducible"]).toBe(1);
+    expect(a.verification).toEqual({
+      verified: 73,
+      "verified-rounding": 9,
+      estimated: 0,
+      manual: 0,
+      cancelled: 1,
+      unused: 1,
+      overrun: 1,
+      "not-reproducible": 0,
+    });
     expect(a.optimalPath.tariffs).toHaveLength(18);
   });
 
   it("reproduces the recorded figures", () => {
-    expect(a?.totals).toEqual({ BASIS: 317521, AKTIV: 240011, COMFORT: 240790 });
+    // The overrun of 2025-05-09 adds its 13 doubled minutes in every tariff: AKTIV +91,
+    // COMFORT +80, BASIS +180 (Friday evening, weekend price 4.15).
+    expect(a?.totals).toEqual({ BASIS: 317701, AKTIV: 240102, COMFORT: 240870 });
     expect(a?.actualTotal).toBe(231249);
-    expect(a?.bestSingle).toEqual({ tariff: "AKTIV", total: 240011, saving: -8762 });
-    expect(a?.optimalPath.total).toBe(224751);
+    expect(a?.bestSingle).toEqual({ tariff: "AKTIV", total: 240102, saving: -8853 });
+    // The path keeps Aktiv in May 2025, so it rises by the Aktiv change only: 224,751 + 91.
+    expect(a?.optimalPath.total).toBe(224842);
     expect(a?.optimalPath.switches).toBe(7);
-    expect(a?.recomputationDeviation).toBe(-82);
+    expect(a?.recomputationDeviation).toBe(9);
     expect(a?.breakEven).toMatchObject([
-      { lower: "BASIS", higher: "AKTIV", monthlyTripCost: 3589 },
+      { lower: "BASIS", higher: "AKTIV", monthlyTripCost: 3588 },
       { lower: "AKTIV", higher: "COMFORT", monthlyTripCost: 12574 },
     ]);
     for (const b of a?.breakEven ?? []) {

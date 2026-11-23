@@ -49,12 +49,12 @@ describe("reconstruction of the real, anonymised trips", () => {
     expect(misses.map(({ trip }) => trip.id)).toEqual([]);
   });
 
-  it("explains every time amount but one to within 1 cent", () => {
+  it("explains every time amount to within 1 cent", () => {
     const misses = results.filter(({ r }) => Math.abs(r.timeDeviation) > 1);
-    expect(misses).toHaveLength(1);
+    expect(misses).toHaveLength(0);
   });
 
-  it("classifies the trips (one not reproducible, one cancelled, one unused)", () => {
+  it("classifies the trips (one overrun, one cancelled, one unused, none not reproducible)", () => {
     const counts: Partial<Record<ReconstructionKind, number>> = {};
     for (const { r } of results) counts[r.kind] = (counts[r.kind] ?? 0) + 1;
     console.info("Reconstruction kinds of the 85 real trips:", counts);
@@ -65,8 +65,23 @@ describe("reconstruction of the real, anonymised trips", () => {
           `${fmt(r.bookedEnd)}, deviation ${r.timeDeviation}`,
       );
     }
-    expect(counts["not-reproducible"]).toBe(1);
-    expect(counts.cancelled).toBe(1);
-    expect(counts.unused).toBe(1);
+    expect(counts).toEqual({
+      verified: 73,
+      "verified-rounding": 9,
+      cancelled: 1,
+      unused: 1,
+      overrun: 1,
+    });
+  });
+
+  it("finds the late return of 2025-05-09: booked until 20:00, returned 13 minutes later", () => {
+    const late = results.filter(({ r }) => r.kind === "overrun");
+    expect(
+      late.map(({ trip, r }) => [fmt(trip.start), fmt(r.bookedEnd), r.overrunMinutes]),
+    ).toEqual([["2025-05-09 15:00", "2025-05-09 20:00", 13]]);
+    expect(late[0]?.r.timeDeviation).toBe(0);
+    // The export has no trip end for it, so the 13 minutes are fitted to the amount.
+    expect(late[0]?.trip.tripEnd).toBeUndefined();
+    expect(late[0]?.r.overrunInferred).toBe(true);
   });
 });

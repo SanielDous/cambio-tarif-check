@@ -120,5 +120,21 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
       expect(list).toHaveTextContent(i18n.t(`result.kinds.${kind}.label`));
       expect(list).toHaveTextContent(i18n.t(`result.kinds.${kind}.text`));
     }
+    expect(list).toHaveTextContent(i18n.t("result.kinds.overrun.label"));
+    expect(list).toHaveTextContent(i18n.t("result.kinds.overrun.general"));
+  });
+
+  it("explains late returns and what is left out about them", async () => {
+    await setup();
+    const early = screen.getByRole("region", { name: i18n.t("howItWorks.earlyReturn.title") });
+    expect(early).toHaveTextContent(i18n.t("howItWorks.earlyReturn.late"));
+    expect(i18n.t("howItWorks.earlyReturn.late")).toMatch(
+      /doppelten Zeitpreis|double the time price/,
+    );
+    const limits = screen.getByRole("region", { name: i18n.t("howItWorks.limits.title") });
+    expect(limits).toHaveTextContent(i18n.t("howItWorks.limits.credit"));
+    expect(limits).toHaveTextContent(i18n.t("howItWorks.limits.lateFees"));
+    expect(i18n.t("howItWorks.limits.credit")).toMatch(/Fahrtguthaben|credit/);
+    expect(i18n.t("howItWorks.limits.lateFees")).toMatch(/Verspätungsgebühr|late fee/);
   });
 });

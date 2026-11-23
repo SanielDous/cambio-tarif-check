@@ -145,7 +145,8 @@ describe("analyze", () => {
       PRICE_DATA,
     );
     expect(a?.suggestedAdditionalDrivers).toBe(1);
-    expect(Object.keys(a?.verification ?? {})).toHaveLength(7);
+    expect(Object.keys(a?.verification ?? {})).toHaveLength(8);
+    expect(a?.verification.overrun).toBe(0);
     expect(analyze([trip(2025, 1, 1)], SETTINGS, PRICE_DATA)?.suggestedAdditionalDrivers).toBe(0);
   });
 

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { toLocalMinute } from "./local-time";
 import { PRICE_DATA } from "./price-data";
-import { hourPriceAt, timeCost } from "./time-cost";
+import { hourPriceAt, overrunCost, timeCost } from "./time-cost";
 
 const HOUR = 60;
 const DAY = 24 * HOUR;
@@ -106,5 +106,33 @@ describe("hourPriceAt", () => {
 
   it("has no weekend price in AKTIV", () => {
     expect(hourPriceAt(toLocalMinute(2027, 3, 6, 10), "AKTIV", "S", PRICE_DATA)).toBe(210);
+  });
+});
+
+describe("overrunCost", () => {
+  it("charges every minute after the booked end at twice its hour price", () => {
+    // AKTIV S: 13 min × 2.10 / 60 × 2 = 0.91.
+    expect(overrunCost(tue(20), tue(20, 13), "AKTIV", "S", PRICE_DATA)).toBeCloseTo(91, 9);
+    // COMFORT S: 13 min × 1.85 / 60 × 2 = 0.80166…
+    expect(overrunCost(tue(20), tue(20, 13), "COMFORT", "S", PRICE_DATA)).toBeCloseTo(
+      (13 * 185 * 2) / 60,
+      9,
+    );
+  });
+
+  it("uses the night and weekend prices of each minute, without caps", () => {
+    // BASIS L 23:45–00:10: 15 min at 7.15 and 10 min at the night price 0.50, both doubled.
+    const late = toLocalMinute(2027, 3, 2, 23, 45);
+    expect(overrunCost(late, late + 25, "BASIS", "L", PRICE_DATA)).toBeCloseTo(
+      (15 * 715 * 2 + 10 * 50 * 2) / 60,
+      9,
+    );
+    // BASIS S on a Friday evening: the weekend price 4.15.
+    const friday = toLocalMinute(2027, 3, 5, 20);
+    expect(overrunCost(friday, friday + 13, "BASIS", "S", PRICE_DATA)).toBeCloseTo(
+      (13 * 415 * 2) / 60,
+      9,
+    );
+    expect(overrunCost(tue(20), tue(20), "BASIS", "S", PRICE_DATA)).toBe(0);
   });
 });

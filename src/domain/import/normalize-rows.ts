@@ -135,6 +135,15 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
     billedKm,
     tariff,
   };
+  // The trip end is optional: an empty or unreadable cell is simply left out.
+  const tripEndCell = cell("tripEnd");
+  if (!isBlankCell(tripEndCell)) {
+    try {
+      trip.tripEnd = toTime(tripEndCell, "tripEnd");
+    } catch {
+      // ignored on purpose
+    }
+  }
   const driver = text(cell("driver"));
   if (driver !== "") trip.driver = driver;
   if (status !== "") trip.status = status;

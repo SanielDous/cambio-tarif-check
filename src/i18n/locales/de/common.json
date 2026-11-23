@@ -44,6 +44,7 @@
       "title": "Frühe Rückgabe und das gebuchte Ende",
       "export": "Im Export steht die Zeit der Rückgabe, nicht das ursprünglich gebuchte Ende. Gibst du das Auto früher zurück, berechnet cambio die ungenutzte gebuchte Zeit mit 50 %.",
       "reconstruction": "Die Seite ermittelt das gebuchte Ende aus dem abgerechneten Betrag: Bis zur auf die nächste Viertelstunde aufgerundeten Rückgabe gilt der volle Preis, der Rest der Buchung kostet 50 %. Dieselbe Buchung wird dann in den anderen Tarifen nachgerechnet.",
+      "late": "Gibst du das Auto nach dem gebuchten Ende zurück, kostet jede Minute danach den doppelten Zeitpreis. Die Seite erkennt das am abgerechneten Betrag und rechnet dieselbe Verspätung auch in den anderen Tarifen nach.",
       "ambiguous": "Passen mehrere gebuchte Enden zum Betrag, wird das früheste verwendet; passt keines, wird bis zur Rückgabe gerechnet. In beiden Fällen kannst du das gebuchte Ende in der Fahrtenliste selbst eintragen."
     },
     "kinds": {
@@ -63,7 +64,9 @@
       "discounts": "Partnerrabatte und Stadtangebote",
       "signup": "die Anmeldegebühr",
       "sipack": "das SiPack",
-      "penalties": "Strafgebühren, etwa für verspätete Rückgabe",
+      "penalties": "weitere Strafgebühren",
+      "lateFees": "pauschale Verspätungsgebühren, die cambio berechnet, wenn eine verspätete Rückgabe eine folgende Buchung betrifft",
+      "credit": "Fahrtguthaben, die cambio mit den Fahrtkosten verrechnet – sie hängen nicht vom Tarif ab",
       "business": "Geschäftskunden-Tarife",
       "before": "Fahrten vor dem {{date}}",
       "holidays": "Feiertage folgen einer festen Liste, die vom Kalender von cambio abweichen kann.",
@@ -265,6 +268,8 @@
         "estimated_other": "{{count, number}} geschätzt",
         "manual_one": "{{count, number}} von Hand ergänzt",
         "manual_other": "{{count, number}} von Hand ergänzt",
+        "overrunInferred_one": "{{count, number}} verspätet zurückgegeben (Rückgabezeit aus dem Betrag erschlossen)",
+        "overrunInferred_other": "{{count, number}} verspätet zurückgegeben (Rückgabezeit aus dem Betrag erschlossen)",
         "not-reproducible_one": "{{count, number}} nicht nachrechenbar",
         "not-reproducible_other": "{{count, number}} nicht nachrechenbar"
       },
@@ -374,6 +379,8 @@
       "paid": "bezahlt inkl. Gebühren",
       "bookedUntil": "gebucht bis {{time}}",
       "booked": "gebucht {{duration}}",
+      "overrun": "gebucht bis {{time}}, {{minutes}} min später zurückgegeben",
+      "overrunInferred": "gebucht bis {{time}}, vermutlich {{minutes}} min später zurückgegeben",
       "deviation": "Nachrechnung {{amount}}",
       "deviationHint": "Unterschied zwischen nachgerechnetem und abgerechnetem Betrag im Tarif der Fahrt",
       "columns": {
@@ -410,6 +417,14 @@
         "label": "nicht angetreten (100 %)",
         "text": "Die Buchung wurde nicht angetreten; berechnet wird der volle Zeitpreis."
       },
+      "overrun": {
+        "label": "verspätet zurückgegeben",
+        "text_one": "Das Auto wurde {{count, number}} Minute nach dem gebuchten Ende zurückgegeben. Diese Zeit kostet den doppelten Zeitpreis.",
+        "text_other": "Das Auto wurde {{count, number}} Minuten nach dem gebuchten Ende zurückgegeben. Diese Zeit kostet den doppelten Zeitpreis.",
+        "inferred_one": "Der Betrag passt zu einer Rückgabe {{count, number}} Minute nach dem gebuchten Ende. Die Rückgabezeit steht nicht im Export und ist aus dem Betrag erschlossen.",
+        "inferred_other": "Der Betrag passt zu einer Rückgabe {{count, number}} Minuten nach dem gebuchten Ende. Die Rückgabezeit steht nicht im Export und ist aus dem Betrag erschlossen.",
+        "general": "Das Auto wurde nach dem gebuchten Ende zurückgegeben. Diese Zeit kostet den doppelten Zeitpreis."
+      },
       "not-reproducible": {
         "label": "nicht nachrechenbar",
         "text": "Kein gebuchtes Ende ergibt den abgerechneten Betrag. Gerechnet wird bis zur Rückgabe; trag das gebuchte Ende ein, wenn du es kennst."
@@ -419,7 +434,9 @@
       "open": "Gebuchtes Ende eintragen",
       "edit": "Gebuchtes Ende ändern",
       "title": "Gebuchtes Ende",
-      "description": "Bis wann war die Fahrt gebucht? Frühestens {{time}} (Rückgabe, auf die Viertelstunde aufgerundet).",
+      "description": "Bis wann war die Fahrt gebucht? Zurückgegeben wurde das Auto am {{time}}. Liegt das gebuchte Ende davor, zählt die Zeit danach als verspätete Rückgabe zum doppelten Zeitpreis.",
+      "inferred": "Gebucht bis {{booked}} · zurückgegeben vermutlich {{returned}}. Die Rückgabezeit steht nicht im Export, sie ist aus dem Betrag erschlossen. Stimmt das nicht, trag das gebuchte Ende ein oder rechne ohne verspätete Rückgabe.",
+      "noOverrun": "Keine verspätete Rückgabe",
       "date": "Datum",
       "time": "Uhrzeit",
       "apply": "Übernehmen",

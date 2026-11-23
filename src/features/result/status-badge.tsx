@@ -1,4 +1,5 @@
 import {
+  AlarmClock,
   Ban,
   CalendarX2,
   CircleCheck,
@@ -20,16 +21,35 @@ const ICONS: Record<ReconstructionKind, LucideIcon> = {
   manual: PenLine,
   cancelled: CalendarX2,
   unused: Ban,
+  overrun: AlarmClock,
   "not-reproducible": TriangleAlert,
 };
 
-/** How a trip was recomputed, with a plain-language explanation on hover, focus or tap. */
-export function StatusBadge({ kind }: { kind: ReconstructionKind }) {
+/**
+ * How a trip was recomputed, with a plain-language explanation on hover, focus or tap. A late
+ * return names its overrun minutes and says whether they were only inferred from the amount.
+ */
+export function StatusBadge({
+  kind,
+  overrunMinutes = 0,
+  overrunInferred = false,
+}: {
+  kind: ReconstructionKind;
+  overrunMinutes?: number;
+  overrunInferred?: boolean;
+}) {
   const { t } = useTranslation("common");
   const Icon = ICONS[kind];
-  const open = kind === "estimated" || kind === "not-reproducible";
+  const inferred = kind === "overrun" && overrunInferred;
+  const open = kind === "estimated" || kind === "not-reproducible" || inferred;
+  const text =
+    kind === "overrun"
+      ? t(inferred ? "result.kinds.overrun.inferred" : "result.kinds.overrun.text", {
+          count: overrunMinutes,
+        })
+      : t(`result.kinds.${kind}.text`);
   return (
-    <Hint content={t(`result.kinds.${kind}.text`)}>
+    <Hint content={text}>
       <Badge
         asChild
         variant={open ? "outline" : "secondary"}

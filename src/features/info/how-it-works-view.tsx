@@ -15,6 +15,7 @@ const KINDS: ReconstructionKind[] = [
   "manual",
   "cancelled",
   "unused",
+  "overrun",
   "not-reproducible",
 ];
 
@@ -101,6 +102,7 @@ export function HowItWorksView({ data = PRICE_DATA }: { data?: PriceData }) {
       <Section id="hiw-early" title={t("howItWorks.earlyReturn.title")}>
         <p className={prose}>{t("howItWorks.earlyReturn.export")}</p>
         <p className={prose}>{t("howItWorks.earlyReturn.reconstruction")}</p>
+        <p className={prose}>{t("howItWorks.earlyReturn.late")}</p>
         <p className={prose}>{t("howItWorks.earlyReturn.ambiguous")}</p>
       </Section>
 
@@ -110,7 +112,11 @@ export function HowItWorksView({ data = PRICE_DATA }: { data?: PriceData }) {
           {KINDS.map((kind) => (
             <div key={kind}>
               <dt className="font-medium">{t(`result.kinds.${kind}.label`)}</dt>
-              <dd className="text-muted-foreground">{t(`result.kinds.${kind}.text`)}</dd>
+              <dd className="text-muted-foreground">
+                {t(
+                  kind === "overrun" ? "result.kinds.overrun.general" : `result.kinds.${kind}.text`,
+                )}
+              </dd>
             </div>
           ))}
         </dl>
@@ -128,7 +134,17 @@ export function HowItWorksView({ data = PRICE_DATA }: { data?: PriceData }) {
       <Section id="hiw-limits" title={t("howItWorks.limits.title")}>
         <p className={prose}>{t("howItWorks.limits.intro")}</p>
         <List>
-          {(["discounts", "signup", "sipack", "penalties", "business"] as const).map((key) => (
+          {(
+            [
+              "discounts",
+              "signup",
+              "sipack",
+              "credit",
+              "lateFees",
+              "penalties",
+              "business",
+            ] as const
+          ).map((key) => (
             <li key={key}>{t(`howItWorks.limits.${key}`)}</li>
           ))}
           <li>{t("howItWorks.limits.before", { date: date(data.validFrom) })}</li>
