@@ -250,18 +250,61 @@ describe("normalizeRows", () => {
       expect(problems[0]).not.toHaveProperty("month");
     });
 
-    it("reports a status other than BILLED regardless of the amounts", () => {
-      const { trips, problems } = runStatus("OPEN");
-      expect(trips).toEqual([]);
-      expect(problems).toEqual([
+    it("decides an unknown status by the amounts and records it", () => {
+      const billed = runStatus("ABGERECHNET");
+      expect(billed.trips).toHaveLength(1);
+      expect(billed.problems).toEqual([]);
+      expect(billed.unknownStatuses).toEqual([{ value: "ABGERECHNET", rows: 1 }]);
+
+      const open = runStatus("OPEN", { 5: "", 6: "" });
+      expect(open.trips).toEqual([]);
+      expect(open.problems).toEqual([
         { fileName: "t.csv", rowNumber: 2, reason: "not-billed", month: "2025-12" },
+      ]);
+      expect(open.unknownStatuses).toEqual([{ value: "OPEN", rows: 1 }]);
+    });
+
+    it("counts the rows per unknown status value", () => {
+      const { trips, unknownStatuses } = normalizeRows(
+        {
+          fileName: "t.csv",
+          headers: withStatus,
+          rows: [
+            [...row({}), "NEU"],
+            [...row({ 2: "16.12.2025 10:00:00", 3: "16.12.2025 11:00:00" }), "NEU"],
+            [...row({ 2: "17.12.2025 10:00:00", 3: "17.12.2025 11:00:00" }), "BILLED"],
+            [...row({ 2: "18.12.2025 10:00:00", 3: "18.12.2025 11:00:00" }), "ALT"],
+          ],
+          rowNumbers: [2, 3, 4, 5],
+        },
+        statusMapping,
+        PRICE_DATA,
+      );
+      expect(trips).toHaveLength(4);
+      expect(unknownStatuses).toEqual([
+        { value: "NEU", rows: 2 },
+        { value: "ALT", rows: 1 },
       ]);
     });
 
     it("accepts BILLED in any case and spacing, and an empty status", () => {
       expect(runStatus(" billed ").trips).toHaveLength(1);
+      expect(runStatus(" billed ").unknownStatuses).toEqual([]);
       expect(runStatus("").trips).toHaveLength(1);
       expect(runStatus(null).trips).toHaveLength(1);
+      expect(runStatus(null).unknownStatuses).toEqual([]);
+    });
+
+    it("decides a missing status by the amounts", () => {
+      expect(runStatus("", { 5: "", 6: "" }).problems[0]?.reason).toBe("not-billed");
+      expect(runStatus("", { 5: "0", 6: "0" }).problems[0]?.reason).toBe("not-billed");
+      expect(runStatus("").unknownStatuses).toEqual([]);
+    });
+
+    it("keeps a known billed status with both amounts empty as not billed", () => {
+      const { trips, problems } = runStatus("BILLED", { 5: "", 6: "" });
+      expect(trips).toEqual([]);
+      expect(problems[0]?.reason).toBe("not-billed");
     });
 
     it("reports zero amounts for a trip with km", () => {

@@ -120,6 +120,18 @@ export const FIELD_ALIASES: Record<FieldId, string[]> = {
   invoiceDate: ["Rechnungsdatum", "Datum der Rechnung", "Rechnung vom", "Invoice Date"],
 };
 
+/**
+ * Processing statuses ("Verarbeitungsstatus") of a billed row, compared trimmed and case-blind.
+ * Any other value is unknown: such a row is judged by its amounts, as if there were no status.
+ */
+export const BILLED_STATUSES: string[] = ["BILLED"];
+
+/** A status value that is not in `BILLED_STATUSES`, with the number of rows that carry it. */
+export interface UnknownStatus {
+  value: string;
+  rows: number;
+}
+
 export interface RawTable {
   fileName: string;
   headers: string[];

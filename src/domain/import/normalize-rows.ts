@@ -7,10 +7,21 @@ import {
   type PriceData,
 } from "@/domain/pricing/types";
 import { cellText, isBlankCell } from "./cells";
-import type { ColumnMapping, FieldId, RawTable, RowProblem, Trip } from "./fields";
+import {
+  BILLED_STATUSES,
+  type ColumnMapping,
+  type FieldId,
+  type RawTable,
+  type RowProblem,
+  type Trip,
+  type UnknownStatus,
+} from "./fields";
 
-/** The processing status of a billed row. */
-const BILLED = "BILLED";
+const KNOWN_BILLED = new Set(BILLED_STATUSES.map((status) => status.toUpperCase()));
+
+/** Whether a status is one of the known statuses of a billed row. */
+export const isBilledStatus = (status: string): boolean =>
+  KNOWN_BILLED.has(status.trim().toUpperCase());
 
 class RowError extends Error {
   readonly reason: RowProblem["reason"];
@@ -90,11 +101,9 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
     return index === undefined ? undefined : row[index];
   };
 
-  // Not billed yet: a status other than BILLED (whatever the amounts say), or no amounts at all.
+  // A known billed status is a billed trip; an unknown or missing one is decided by the amounts
+  // alone. Not billed yet either way: no amounts at all.
   const status = text(cell("status"));
-  if (mapping.status !== undefined && status !== "" && status.toUpperCase() !== BILLED) {
-    throw new RowError("not-billed");
-  }
   if (isBlankCell(cell("billedTime")) && isBlankCell(cell("billedKm"))) {
     throw new RowError("not-billed");
   }
@@ -166,11 +175,19 @@ export function normalizeRows(
   table: RawTable,
   mapping: ColumnMapping,
   data: PriceData,
-): { trips: Trip[]; problems: RowProblem[] } {
+): { trips: Trip[]; problems: RowProblem[]; unknownStatuses: UnknownStatus[] } {
   const trips: Trip[] = [];
   const problems: RowProblem[] = [];
+  // Insertion order: the order in which the values first appear.
+  const unknown = new Map<string, number>();
   table.rows.forEach((row, index) => {
     if (row.every(isBlankCell)) return;
+    if (mapping.status !== undefined) {
+      const status = text(row[mapping.status]);
+      if (status !== "" && !isBilledStatus(status)) {
+        unknown.set(status, (unknown.get(status) ?? 0) + 1);
+      }
+    }
     try {
       trips.push(toTrip(row, mapping, data));
     } catch (error) {
@@ -188,5 +205,9 @@ export function normalizeRows(
       problems.push(problem);
     }
   });
-  return { trips, problems };
+  return {
+    trips,
+    problems,
+    unknownStatuses: [...unknown].map(([value, rows]) => ({ value, rows })),
+  };
 }
