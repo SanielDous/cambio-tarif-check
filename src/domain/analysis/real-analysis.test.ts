@@ -74,10 +74,14 @@ describe("analysis of the fixtures", () => {
     expect(a?.optimalPath.total).toBe(224751);
     expect(a?.optimalPath.switches).toBe(7);
     expect(a?.recomputationDeviation).toBe(-82);
-    expect(a?.breakEven).toEqual([
+    expect(a?.breakEven).toMatchObject([
       { lower: "BASIS", higher: "AKTIV", monthlyTripCost: 3589 },
       { lower: "AKTIV", higher: "COMFORT", monthlyTripCost: 12574 },
     ]);
+    for (const b of a?.breakEven ?? []) {
+      expect(b.months).toHaveLength(18);
+      expect(b.monthsAbove).toBe(b.months.filter((m) => m.above).length);
+    }
   });
 });
 
