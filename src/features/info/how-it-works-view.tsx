@@ -175,7 +175,7 @@ export function HowItWorksView({ data = PRICE_DATA }: { data?: PriceData }) {
         <p className={prose}>
           {t("howItWorks.disclaimer.source")}{" "}
           <a
-            className="underline underline-offset-4"
+            className="text-primary underline underline-offset-4"
             href={REPOSITORY_URL}
             target="_blank"
             rel="noreferrer"

@@ -58,7 +58,7 @@ function MonthFlag({
         type="button"
         aria-label={label}
         data-testid={testId}
-        className="flex size-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        className="flex size-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring"
       >
         <Icon className="size-3.5" aria-hidden="true" />
       </button>
@@ -172,7 +172,7 @@ export function TariffMatrix({
           tabIndex={0}
           role="region"
           aria-labelledby={MATRIX_CAPTION_ID}
-          className="overflow-x-auto rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+          className="overflow-x-auto rounded-xl outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
         >
           <div ref={tableRef} className="relative w-max min-w-full">
             <table className="w-full border-separate border-spacing-0 text-sm" id="cost-matrix">
@@ -214,7 +214,7 @@ export function TariffMatrix({
                             <button
                               type="button"
                               onClick={() => onShowMonth(m.month)}
-                              className="flex rounded-md px-2 py-1 outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                              className="flex rounded-md px-2 py-1 outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring"
                               aria-label={t("result.matrix.showTrips", { month: long })}
                               title={t("result.matrix.showTrips", { month: long })}
                             >

@@ -89,7 +89,7 @@ function EditorForm({ result, onDone }: { result: TripResult; onDone: () => void
             }}
             aria-invalid={error !== null}
             aria-describedby={error ? `${id}-error` : undefined}
-            className="h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive"
+            className="h-9 w-full min-w-0 rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring aria-invalid:border-destructive"
           />
         </div>
         <div className="grid w-28 gap-1">

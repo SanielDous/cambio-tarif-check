@@ -20,7 +20,7 @@ function Scroller({ labelledBy, children }: { labelledBy: string; children: Reac
       role="region"
       aria-labelledby={labelledBy}
       tabIndex={0}
-      className="overflow-x-auto rounded-lg border outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      className="overflow-x-auto rounded-lg border outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
     >
       {children}
     </div>
@@ -215,7 +215,7 @@ function VersionSection({ prices, open }: { prices: PriceVersionView; open: bool
   return (
     <Collapsible defaultOpen={open} className="group space-y-4" data-version={prices.from}>
       <h3 className={subtitle}>
-        <CollapsibleTrigger className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">
+        <CollapsibleTrigger className="flex items-center gap-2 rounded-md outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
           <ChevronRight
             className="size-4 transition-transform group-data-[state=open]:rotate-90 motion-reduce:transition-none"
             aria-hidden="true"

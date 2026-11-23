@@ -22,7 +22,7 @@ export function RouterNotFound() {
     <div className="space-y-3 py-8">
       <h1 className="text-2xl font-semibold">{t("router.notFound.title")}</h1>
       <p>
-        <a className="underline underline-offset-4" href="#/">
+        <a className="text-primary underline underline-offset-4" href="#/">
           {t("router.notFound.home")}
         </a>
       </p>

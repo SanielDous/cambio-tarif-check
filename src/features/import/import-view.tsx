@@ -39,7 +39,7 @@ export function ImportView() {
           })}
         </span>
         <span aria-hidden="true">·</span>
-        <a className="underline underline-offset-4" href="#/how-it-works">
+        <a className="text-primary underline underline-offset-4" href="#/how-it-works">
           {t("import.notice.more")}
         </a>
       </p>

@@ -10,8 +10,11 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  /* The accent: a warm, deep orange for filled buttons, links and selected states. Deep enough
+     that white text on it (also at the 90 % hover) and the colour as text on white and on muted
+     surfaces keep 4.5:1. */
+  --primary: #b24700;
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -21,16 +24,17 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  /* Focus rings are drawn at 50 % opacity (ring-ring/50); the base colour is dark enough that the
-     result keeps 3:1 against the page and card backgrounds. */
-  --ring: oklch(0.2 0 0);
-  /* Tariff identity colours, shared by matrix and chart. Categorical slots validated for
-     colour-vision deficiency on light and dark surfaces; Basis, Aktiv and Comfort (the common
-     trio) also pass when every pair is compared. */
-  --tariff-campus: #d9578a;
+  /* Focus rings: a brighter step of the accent at full opacity, 3:1 against the page, card and
+     muted backgrounds. */
+  --ring: #dd6400;
+  /* Tariff identity colours, shared by matrix and chart. No orange among them, so none can be
+     mistaken for the accent. Basis, Aktiv and Comfort (always compared) stay apart in every pair,
+     also under simulated protanopia and deuteranopia; with all five, names in the legend, the
+     tooltip and the matrix rows carry the identity as well. */
+  --tariff-campus: #d239ab;
   --tariff-basis: #2a78d6;
-  --tariff-start: #c98500;
-  --tariff-aktiv: #eb6834;
+  --tariff-start: #646511;
+  --tariff-aktiv: #7638ad;
   --tariff-comfort: #139a69;
   /* The user's own costs: neutral ink, drawn dashed in the chart. */
   --tariff-actual: oklch(0.3 0 0);
@@ -50,7 +54,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
+  /* A lighter orange on dark surfaces, with dark text on it. */
+  --primary: #f39340;
   --primary-foreground: oklch(0.205 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
@@ -61,11 +66,11 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.97 0 0);
-  --tariff-campus: #d55181;
+  --ring: #f39340;
+  --tariff-campus: #e557b1;
   --tariff-basis: #3987e5;
-  --tariff-start: #c98500;
-  --tariff-aktiv: #d95926;
+  --tariff-start: #7b6813;
+  --tariff-aktiv: #964bb4;
   --tariff-comfort: #199e70;
   --tariff-actual: oklch(0.93 0 0);
   --best: oklch(0.95 0 0);
@@ -104,7 +109,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
   }
   body {
     @apply bg-background text-foreground;

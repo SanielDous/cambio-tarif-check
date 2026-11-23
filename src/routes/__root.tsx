@@ -14,6 +14,10 @@ import { REPOSITORY_URL } from "@/lib/links";
 
 type Theme = "light" | "dark" | "system";
 
+/** Header links; the active one is set in bold and underlined in the accent colour. */
+const navLink =
+  "rounded-sm underline-offset-[6px] outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring [&.active]:font-semibold [&.active]:underline [&.active]:decoration-primary [&.active]:decoration-2";
+
 function useTheme() {
   const [theme, setTheme] = useState<Theme>("system");
   useEffect(() => {
@@ -87,10 +91,10 @@ function RootLayout() {
       <PageDrop onFiles={showResult} />
       <header className="flex items-center justify-between gap-4 border-b py-4">
         <nav className="flex gap-4 text-sm">
-          <Link to="/" className="[&.active]:font-semibold">
+          <Link to="/" className={navLink}>
             {t("nav.home")}
           </Link>
-          <Link to="/how-it-works" className="[&.active]:font-semibold">
+          <Link to="/how-it-works" className={navLink}>
             {t("nav.howItWorks")}
           </Link>
         </nav>
@@ -105,7 +109,12 @@ function RootLayout() {
       <footer className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t py-4 text-sm text-muted-foreground">
         <span>{t("footer.version", { version: __APP_VERSION__ })}</span>
         <span>{t("footer.disclaimer")}</span>
-        <a className="underline" href={REPOSITORY_URL} target="_blank" rel="noreferrer">
+        <a
+          className="text-primary underline underline-offset-4"
+          href={REPOSITORY_URL}
+          target="_blank"
+          rel="noreferrer"
+        >
           {t("footer.repository")}
         </a>
       </footer>

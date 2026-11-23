@@ -69,7 +69,7 @@ function AddFileButton() {
   const { importFiles, busy } = useImportFiles();
   return (
     <Button asChild variant="outline" aria-busy={busy}>
-      <label className="cursor-pointer focus-within:ring-[3px] focus-within:ring-ring/50">
+      <label className="cursor-pointer focus-within:ring-[3px] focus-within:ring-ring">
         <Plus />
         {t("import.summary.addFile")}
         <input
