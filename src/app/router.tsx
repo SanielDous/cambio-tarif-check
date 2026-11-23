@@ -5,7 +5,11 @@ import { howItWorksRoute } from "@/routes/how-it-works";
 
 const routeTree = rootRoute.addChildren([indexRoute, howItWorksRoute]);
 
-export const router = createRouter({ routeTree, history: createHashHistory() });
+export const router = createRouter({
+  routeTree,
+  history: createHashHistory(),
+  defaultPreload: "intent",
+});
 
 declare module "@tanstack/react-router" {
   interface Register {

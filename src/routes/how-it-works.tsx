@@ -1,19 +1,12 @@
-import { createRoute } from "@tanstack/react-router";
-import { useTranslation } from "react-i18next";
+import { createRoute, lazyRouteComponent } from "@tanstack/react-router";
 import { rootRoute } from "./__root";
 
-function HowItWorksPage() {
-  const { t } = useTranslation("common");
-  return (
-    <section className="space-y-2">
-      <h1 className="text-3xl font-semibold">{t("howItWorks.title")}</h1>
-      <p>{t("howItWorks.placeholder")}</p>
-    </section>
-  );
-}
-
+// The explanation and its price tables load on demand, off the start page's critical path.
 export const howItWorksRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/how-it-works",
-  component: HowItWorksPage,
+  component: lazyRouteComponent(
+    () => import("@/features/info/how-it-works-view"),
+    "HowItWorksView",
+  ),
 });
