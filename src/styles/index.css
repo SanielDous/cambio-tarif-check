@@ -21,15 +21,17 @@
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* Focus rings are drawn at 50 % opacity (ring-ring/50); the base colour is dark enough that the
+     result keeps 3:1 against the page and card backgrounds. */
+  --ring: oklch(0.2 0 0);
   /* Tariff identity colours, shared by matrix and chart. Categorical slots validated for
      colour-vision deficiency on light and dark surfaces; Basis, Aktiv and Comfort (the common
      trio) also pass when every pair is compared. */
-  --tariff-campus: #e87ba4;
+  --tariff-campus: #d9578a;
   --tariff-basis: #2a78d6;
-  --tariff-start: #eda100;
+  --tariff-start: #c98500;
   --tariff-aktiv: #eb6834;
-  --tariff-comfort: #1baf7a;
+  --tariff-comfort: #139a69;
   /* The user's own costs: neutral ink, drawn dashed in the chart. */
   --tariff-actual: oklch(0.3 0 0);
   /* The one accent: the cheapest option. */
@@ -58,7 +60,7 @@
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.97 0 0);
   --tariff-campus: #d55181;
   --tariff-basis: #3987e5;
   --tariff-start: #c98500;
@@ -105,5 +107,17 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Respect the system setting: no animations or transitions, no smooth scrolling. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

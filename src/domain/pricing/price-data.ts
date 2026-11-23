@@ -115,7 +115,7 @@ export const PRICE_DATA: PriceData = {
   ],
 };
 
-function parseIsoDate(date: string): LocalMinute {
+export function parseIsoDate(date: string): LocalMinute {
   const [y, m, d] = date.split("-").map(Number) as [number, number, number];
   return toLocalMinute(y, m, d);
 }

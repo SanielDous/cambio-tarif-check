@@ -1,7 +1,8 @@
 import { CircleCheck, Info } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Analysis } from "@/domain/analysis/analyze";
-import { formatCurrency, formatMonth } from "@/lib/format";
+import { PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
+import { formatCurrency, formatDate, formatMonth } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Hint } from "./hint";
 import type { ReconstructionKind } from "@/domain/analysis/reconstruct-booking";
@@ -188,6 +189,14 @@ function Warnings({ analysis }: { analysis: Analysis }) {
   if (open > 0) items.push(t("result.summary.warnings.open", { count: open }));
   if (analysis.surchargeDerivedTrips > 0) {
     items.push(t("result.summary.warnings.surcharge", { count: analysis.surchargeDerivedTrips }));
+  }
+  if (analysis.tripsAfterPricesAsOf > 0) {
+    items.push(
+      t("result.summary.warnings.afterPrices", {
+        count: analysis.tripsAfterPricesAsOf,
+        date: formatDate(parseIsoDate(PRICE_DATA.pricesAsOf), lang),
+      }),
+    );
   }
   if (mixed.length > 0) items.push(t("result.summary.warnings.mixed", { months: list(mixed) }));
   if (inherited.length > 0) {

@@ -3,6 +3,7 @@ import { useAtom, useAtomValue } from "jotai";
 import { CalendarX2, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { scrollBehavior } from "@/lib/motion";
 import { analysisAtom, settingsAtom } from "@/state/atoms";
 import { BreakEvenCard } from "./break-even-card";
 import { SettingsBar } from "./settings-bar";
@@ -56,7 +57,7 @@ export function ResultView() {
     setOpen(month, true);
     requestAnimationFrame(() => {
       const section = document.getElementById(monthSectionId(month));
-      section?.scrollIntoView?.({ behavior: "smooth", block: "start" });
+      section?.scrollIntoView?.({ behavior: scrollBehavior(), block: "start" });
       section?.querySelector<HTMLElement>("button[data-month]")?.focus({ preventScroll: true });
     });
   };

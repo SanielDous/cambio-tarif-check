@@ -20,7 +20,96 @@
   },
   "howItWorks": {
     "title": "How it works",
-    "placeholder": "The explanation is coming."
+    "intro": "A short explanation of what is calculated here, what is left out, and which prices are used.",
+    "whatItDoes": {
+      "title": "What this page does",
+      "body": "This page compares what your trips actually cost with what they would have cost in the other cambio tariffs. Each trip is priced with the prices that were valid at the time of the trip.",
+      "hindsight": "The result is a look back at your past trips. It does not predict which tariff will be the cheapest in future."
+    },
+    "data": {
+      "title": "Where the data comes from and where it stays",
+      "source": "The trips come from the export you can download in the cambio customer portal under “Fahrtenarchiv” (trip archive), as CSV or Excel.",
+      "privacy": "Everything is calculated in your browser. Your data is neither uploaded nor stored; once you reload or close the page, it is gone."
+    },
+    "trip": {
+      "title": "How a trip is recalculated",
+      "intro": "Every trip is priced to the minute with the stored prices:",
+      "time": "Time: each minute costs one sixtieth of the hourly price of the vehicle class in that tariff.",
+      "night": "Night: from {{nightFrom}} to {{nightTo}} the hour costs {{nightPrice}} in every tariff.",
+      "weekend": "Weekend: from {{weekendFromDay}} {{weekendFromTime}} until {{weekendToDay}} {{weekendToTime}} and on public holidays the weekend price applies. It exists only in Basis and Campus; in the other tariffs the hourly price is always the same.",
+      "caps": "Caps: a day (24 hours) costs at most the price of {{dayCapHours}} hours, a week at most the price of {{weekCapDays}} full days.",
+      "km": "Kilometres: the first {{kmBoundary}} km cost the higher price, every further kilometre the cheaper one. A fuel surcharge per kilometre is added, and it changes over time."
+    },
+    "earlyReturn": {
+      "title": "Early return and the booked end",
+      "export": "The export contains the time of return, not the originally booked end. If you return the car early, cambio charges the unused booked time at 50 %.",
+      "reconstruction": "This page works out the booked end from the billed amount: up to the return, rounded up to the next quarter hour, the full price applies, and the rest of the booking costs 50 %. The same booking is then priced in the other tariffs.",
+      "ambiguous": "If several booked ends fit the amount, the earliest is used; if none fits, the trip is priced up to the return. In both cases you can enter the booked end yourself in the trip list."
+    },
+    "kinds": {
+      "title": "What the classifications mean",
+      "intro": "Every trip gets a classification that shows how reliable its recalculation is:",
+      "rounding": "How exactly cambio rounds is not known. A difference of one cent in the time amount is therefore treated as matching and only marked “1 cent rounding”."
+    },
+    "months": {
+      "title": "The monthly comparison",
+      "month": "A trip counts in the month in which it was returned. Each month includes the monthly fee of the tariff and, with additional drivers, their fee.",
+      "actual": "Actual cost is the billed amounts plus fees plus {{switchingFee}} per tariff change. Months without trips take the previous month’s tariff unless you correct it in the table.",
+      "path": "The “optimal path” is hindsight: for each month it picks the tariff that makes the total, including switching fees, the smallest. You do not know the month in advance."
+    },
+    "limits": {
+      "title": "What is not included",
+      "intro": "The comparison leaves out:",
+      "discounts": "partner discounts and city offers",
+      "signup": "the sign-up fee",
+      "sipack": "SiPack",
+      "penalties": "penalties, for example for returning late",
+      "business": "business tariffs",
+      "before": "trips before {{date}}",
+      "holidays": "Public holidays follow a fixed list that may differ from cambio’s calendar.",
+      "cap": "How the 50 % charge interacts with the day cap is an assumption."
+    },
+    "prices": {
+      "title": "Price list",
+      "asOf": "The prices are as of {{date}}.",
+      "outdated": "Prices can change, and this page only knows the date given. Check the current prices with cambio before you switch.",
+      "vat": "All amounts are in euros and include VAT. Kilometre prices are without the fuel surcharge.",
+      "tariffs": {
+        "title": "Tariffs and fees",
+        "tariff": "Tariff",
+        "monthlyFee": "Monthly fee",
+        "additionalDriver": "Additional driver per month",
+        "notAllowed": "not possible",
+        "availability": "Available",
+        "everywhere": "everywhere"
+      },
+      "classes": {
+        "title": "Prices per tariff and vehicle class",
+        "tariff": "Tariff",
+        "class": "Class",
+        "hourWeekday": "Hour",
+        "hourWeekend": "Hour, weekend",
+        "dayCap": "Day cap",
+        "weekCap": "Week cap",
+        "kmTier1": "km up to {{boundary}}",
+        "kmTier2": "km from {{next}}",
+        "same": "as hour",
+        "note": "The day cap is {{dayCapHours}} × the hourly price unless another value is stored; the week cap is {{weekCapDays}} × {{dayCapHours}} × the hourly price. “as hour” means there is no separate weekend price."
+      },
+      "surcharge": {
+        "title": "Fuel surcharge per km",
+        "from": "Valid from",
+        "amount": "Surcharge",
+        "cents_one": "{{count, number}} cent",
+        "cents_other": "{{count, number}} cents"
+      },
+      "switching": "A tariff change costs {{fee}}."
+    },
+    "disclaimer": {
+      "title": "Not an official offer",
+      "body": "This page is an independent, unofficial tool and is not affiliated with cambio. There is no guarantee that the results are correct.",
+      "source": "You can find the source code here:"
+    }
   },
   "footer": {
     "version": "Version {{version}}",
@@ -117,6 +206,11 @@
       "confirmYes": "Yes, start over",
       "confirmNo": "Cancel",
       "moreRows": "… and {{count, number}} more"
+    },
+    "notice": {
+      "unofficial": "Unofficial tool",
+      "pricesAsOf": "Prices as of {{date}}",
+      "more": "How it works"
     }
   },
   "result": {
@@ -177,7 +271,9 @@
         "surcharge_other": "For {{count, number}} trips, the fuel surcharge was derived from the billed distance amount.",
         "mixed": "In {{months}}, trips were billed in more than one tariff. Your tariff is taken from the month's last trip.",
         "inherited": "There were no trips in {{months}}. The previous month's tariff is assumed – you can change it in the table.",
-        "incomplete": "Trips may be missing for {{months}}."
+        "incomplete": "Trips may be missing for {{months}}.",
+        "afterPrices_one": "{{count, number}} trip is after the price date ({{date}}) and was priced with the latest known prices.",
+        "afterPrices_other": "{{count, number}} trips are after the price date ({{date}}) and were priced with the latest known prices."
       }
     },
     "settings": {
@@ -324,7 +420,8 @@
       "period": "There are no trips in the chosen period.",
       "tariffs": "No tariff can price all of your trips.",
       "reset": "Show the whole period"
-    }
+    },
+    "loading": "Loading the analysis …"
   },
   "tariffs": {
     "CAMPUS": "Campus",

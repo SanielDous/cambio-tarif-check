@@ -20,7 +20,96 @@
   },
   "howItWorks": {
     "title": "So funktioniert’s",
-    "placeholder": "Die Erklärung folgt."
+    "intro": "Kurz erklärt, was hier gerechnet wird, was dabei nicht berücksichtigt ist und welche Preise zugrunde liegen.",
+    "whatItDoes": {
+      "title": "Was die Seite macht",
+      "body": "Die Seite vergleicht, was deine Fahrten tatsächlich gekostet haben, mit dem, was sie in den anderen cambio-Tarifen gekostet hätten. Für jede Fahrt gelten dabei die Preise, die zum Zeitpunkt der Fahrt gültig waren.",
+      "hindsight": "Das Ergebnis ist ein Rückblick auf deine bisherigen Fahrten. Es sagt nicht voraus, welcher Tarif in Zukunft am günstigsten ist."
+    },
+    "data": {
+      "title": "Woher die Daten kommen und wo sie bleiben",
+      "source": "Die Fahrten stammen aus dem Export, den du im cambio-Kundenportal unter „Fahrtenarchiv“ herunterladen kannst (CSV oder Excel).",
+      "privacy": "Alles wird in deinem Browser berechnet. Deine Daten werden weder hochgeladen noch gespeichert; sobald du die Seite neu lädst oder schließt, sind sie weg."
+    },
+    "trip": {
+      "title": "Wie eine Fahrt nachgerechnet wird",
+      "intro": "Jede Fahrt wird minutengenau mit den hinterlegten Preisen berechnet:",
+      "time": "Zeit: Jede Minute kostet ein Sechzigstel des Stundenpreises der Wagenklasse im jeweiligen Tarif.",
+      "night": "Nacht: Von {{nightFrom}} bis {{nightTo}} Uhr kostet die Stunde in jedem Tarif {{nightPrice}}.",
+      "weekend": "Wochenende: Von {{weekendFromDay}} {{weekendFromTime}} Uhr bis {{weekendToDay}} {{weekendToTime}} Uhr und an Feiertagen gilt der Wochenendpreis. Den gibt es nur in Basis und Campus; in den anderen Tarifen ist der Stundenpreis immer gleich.",
+      "caps": "Deckel: Ein Tag (24 Stunden) kostet höchstens den Preis für {{dayCapHours}} Stunden, eine Woche höchstens den Preis für {{weekCapDays}} volle Tage.",
+      "km": "Kilometer: Die ersten {{kmBoundary}} km kosten den höheren Preis, jeder weitere Kilometer den günstigeren. Dazu kommt ein Kraftstoffzuschlag je Kilometer, der sich im Lauf der Zeit ändert."
+    },
+    "earlyReturn": {
+      "title": "Frühe Rückgabe und das gebuchte Ende",
+      "export": "Im Export steht die Zeit der Rückgabe, nicht das ursprünglich gebuchte Ende. Gibst du das Auto früher zurück, berechnet cambio die ungenutzte gebuchte Zeit mit 50 %.",
+      "reconstruction": "Die Seite ermittelt das gebuchte Ende aus dem abgerechneten Betrag: Bis zur auf die nächste Viertelstunde aufgerundeten Rückgabe gilt der volle Preis, der Rest der Buchung kostet 50 %. Dieselbe Buchung wird dann in den anderen Tarifen nachgerechnet.",
+      "ambiguous": "Passen mehrere gebuchte Enden zum Betrag, wird das früheste verwendet; passt keines, wird bis zur Rückgabe gerechnet. In beiden Fällen kannst du das gebuchte Ende in der Fahrtenliste selbst eintragen."
+    },
+    "kinds": {
+      "title": "Was die Einstufungen bedeuten",
+      "intro": "Jede Fahrt bekommt eine Einstufung, die zeigt, wie verlässlich die Nachrechnung ist:",
+      "rounding": "Wie cambio genau rundet, ist nicht bekannt. Deshalb gilt ein Unterschied von einem Cent im Zeitbetrag als „nachgerechnet“ und wird nur als „1 Cent Rundung“ vermerkt."
+    },
+    "months": {
+      "title": "Der Monatsvergleich",
+      "month": "Eine Fahrt zählt in dem Monat, in dem sie zurückgegeben wurde. Jeder Monat enthält die Monatsgebühr des Tarifs, bei weiteren Fahrer:innen auch deren Gebühr.",
+      "actual": "Die tatsächlichen Kosten sind die abgerechneten Beträge plus Gebühren plus {{switchingFee}} je Tarifwechsel. Monate ohne Fahrt übernehmen den Tarif des Vormonats, solange du ihn nicht in der Tabelle korrigierst.",
+      "path": "Der „optimale Pfad“ ist ein Rückblick: Er wählt für jeden Monat den Tarif, bei dem die Summe samt Wechselgebühren am kleinsten ist. Im Voraus kennt man den Monat nicht."
+    },
+    "limits": {
+      "title": "Was nicht berücksichtigt ist",
+      "intro": "Der Vergleich lässt aus:",
+      "discounts": "Partnerrabatte und Stadtangebote",
+      "signup": "die Anmeldegebühr",
+      "sipack": "das SiPack",
+      "penalties": "Strafgebühren, etwa für verspätete Rückgabe",
+      "business": "Geschäftskunden-Tarife",
+      "before": "Fahrten vor dem {{date}}",
+      "holidays": "Feiertage folgen einer festen Liste, die vom Kalender von cambio abweichen kann.",
+      "cap": "Wie die 50 %-Berechnung mit dem Tagesdeckel zusammenspielt, ist eine Annahme."
+    },
+    "prices": {
+      "title": "Preisstand",
+      "asOf": "Die Preise stammen vom {{date}}.",
+      "outdated": "Preise können sich ändern; diese Seite kennt nur den genannten Stand. Prüfe vor einem Wechsel die aktuellen Preise bei cambio.",
+      "vat": "Alle Beträge sind in Euro und enthalten die Mehrwertsteuer. Die Kilometerpreise gelten ohne Kraftstoffzuschlag.",
+      "tariffs": {
+        "title": "Tarife und Gebühren",
+        "tariff": "Tarif",
+        "monthlyFee": "Monatsgebühr",
+        "additionalDriver": "Weitere Fahrer:in je Monat",
+        "notAllowed": "nicht möglich",
+        "availability": "Verfügbar",
+        "everywhere": "überall"
+      },
+      "classes": {
+        "title": "Preise je Tarif und Wagenklasse",
+        "tariff": "Tarif",
+        "class": "Klasse",
+        "hourWeekday": "Stunde",
+        "hourWeekend": "Stunde am Wochenende",
+        "dayCap": "Tagesdeckel",
+        "weekCap": "Wochendeckel",
+        "kmTier1": "km bis {{boundary}}",
+        "kmTier2": "km ab {{next}}",
+        "same": "wie Stunde",
+        "note": "Der Tagesdeckel ist {{dayCapHours}} × Stundenpreis, wo kein anderer Wert hinterlegt ist; der Wochendeckel ist {{weekCapDays}} × {{dayCapHours}} × Stundenpreis. „wie Stunde“ heißt: kein eigener Wochenendpreis."
+      },
+      "surcharge": {
+        "title": "Kraftstoffzuschlag je km",
+        "from": "Gültig ab",
+        "amount": "Zuschlag",
+        "cents_one": "{{count, number}} Cent",
+        "cents_other": "{{count, number}} Cent"
+      },
+      "switching": "Ein Tarifwechsel kostet {{fee}}."
+    },
+    "disclaimer": {
+      "title": "Kein offizielles Angebot",
+      "body": "Diese Seite ist ein unabhängiges, inoffizielles Werkzeug und steht in keiner Verbindung zu cambio. Für die Richtigkeit der Ergebnisse gibt es keine Gewähr.",
+      "source": "Den Quellcode findest du hier:"
+    }
   },
   "footer": {
     "version": "Version {{version}}",
@@ -117,6 +206,11 @@
       "confirmYes": "Ja, neu starten",
       "confirmNo": "Abbrechen",
       "moreRows": "… und {{count, number}} weitere"
+    },
+    "notice": {
+      "unofficial": "Inoffizielles Werkzeug",
+      "pricesAsOf": "Preisstand {{date}}",
+      "more": "So funktioniert’s"
     }
   },
   "result": {
@@ -177,7 +271,9 @@
         "surcharge_other": "Bei {{count, number}} Fahrten wurde der Kraftstoffzuschlag aus dem abgerechneten Kilometerbetrag abgeleitet.",
         "mixed": "In {{months}} wurden Fahrten in mehreren Tarifen abgerechnet. Als dein Tarif gilt der Tarif der letzten Fahrt im Monat.",
         "inherited": "In {{months}} gab es keine Fahrten. Angenommen wird jeweils der Tarif des Vormonats – du kannst ihn in der Tabelle ändern.",
-        "incomplete": "Für {{months}} fehlen möglicherweise Fahrten."
+        "incomplete": "Für {{months}} fehlen möglicherweise Fahrten.",
+        "afterPrices_one": "{{count, number}} Fahrt liegt nach dem Preisstand ({{date}}) und wurde mit den zuletzt bekannten Preisen berechnet.",
+        "afterPrices_other": "{{count, number}} Fahrten liegen nach dem Preisstand ({{date}}) und wurden mit den zuletzt bekannten Preisen berechnet."
       }
     },
     "settings": {
@@ -324,7 +420,8 @@
       "period": "Im gewählten Zeitraum gibt es keine Fahrten.",
       "tariffs": "Für deine Fahrten lässt sich kein Tarif vollständig berechnen.",
       "reset": "Gesamten Zeitraum anzeigen"
-    }
+    },
+    "loading": "Auswertung wird geladen …"
   },
   "tariffs": {
     "CAMPUS": "Campus",

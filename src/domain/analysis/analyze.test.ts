@@ -318,3 +318,19 @@ describe("actual tariff overrides", () => {
     expect(a?.months[1]?.actualTariff).toBe("AKTIV");
   });
 });
+
+describe("analyze: trips after the price date", () => {
+  const [y, m, d] = PRICE_DATA.pricesAsOf.split("-").map(Number) as [number, number, number];
+
+  it("counts only trips returned after the day of pricesAsOf", () => {
+    const sameDay = trip(y, m, d, "AKTIV", { end: toLocalMinute(y, m, d, 23, 59) });
+    const nextDay = trip(y, m, d + 1, "AKTIV", { end: toLocalMinute(y, m, d + 1, 0, 30) });
+    const later = trip(y + 1, 3, 3);
+    const earlier = trip(2025, 1, 10);
+    expect(analyze([earlier], SETTINGS, PRICE_DATA)?.tripsAfterPricesAsOf).toBe(0);
+    expect(analyze([earlier, sameDay], SETTINGS, PRICE_DATA)?.tripsAfterPricesAsOf).toBe(0);
+    expect(
+      analyze([earlier, sameDay, nextDay, later], SETTINGS, PRICE_DATA)?.tripsAfterPricesAsOf,
+    ).toBe(2);
+  });
+});

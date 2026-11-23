@@ -233,6 +233,17 @@ describe("import", () => {
   });
 });
 
+describe("start page notice", () => {
+  it("states that the tool is unofficial and links the price date to the explanation", () => {
+    setup();
+    const notice = screen.getByText("Inoffizielles Werkzeug").parentElement;
+    expect(notice).toHaveTextContent(/Preisstand \d{1,2}\.\d{1,2}\.\d{4}/);
+    expect(
+      within(notice as HTMLElement).getByRole("link", { name: "So funktioniert’s" }),
+    ).toHaveAttribute("href", "#/how-it-works");
+  });
+});
+
 describe("reset while reading", () => {
   it("drops files that finish after the reset", async () => {
     const store = createStore();
