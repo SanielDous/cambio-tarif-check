@@ -1,10 +1,19 @@
-import { ArrowLeftRight, Check, UserRound } from "lucide-react";
+import { ArrowLeftRight, Check, CircleDashed, Hourglass, UserRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
 import { formatCurrency } from "@/lib/format";
 
-/** Explains the three marks of the matrix; each is a shape, not only a colour. */
-export function MatrixLegend() {
+/**
+ * Explains the marks of the matrix; each is a shape, not only a colour. The month marks are
+ * listed only when a month carries them.
+ */
+export function MatrixLegend({
+  incomplete = false,
+  partial = false,
+}: {
+  incomplete?: boolean;
+  partial?: boolean;
+}) {
   const { t, i18n } = useTranslation("common");
   const fee = PRICE_DATA.switchingFee;
   return (
@@ -46,6 +55,18 @@ export function MatrixLegend() {
           amount: formatCurrency(fee, i18n.language, { decimals: fee % 100 === 0 ? 0 : 2 }),
         })}
       </li>
+      {incomplete && (
+        <li className="flex items-center gap-2">
+          <Hourglass className="size-3.5 text-foreground" aria-hidden="true" />
+          {t("result.matrix.legend.incomplete")}
+        </li>
+      )}
+      {partial && (
+        <li className="flex items-center gap-2">
+          <CircleDashed className="size-3.5 text-foreground" aria-hidden="true" />
+          {t("result.matrix.legend.partial")}
+        </li>
+      )}
     </ul>
   );
 }

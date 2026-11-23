@@ -1,13 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, CircleDashed, Hourglass, type LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
-import type { Analysis } from "@/domain/analysis/analyze";
+import type { Analysis, MonthRow } from "@/domain/analysis/analyze";
 import { monthlyFee } from "@/domain/analysis/months";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
 import { formatCurrency, formatMonth, formatMonthName } from "@/lib/format";
 import { scrollBehavior } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { Hint } from "./hint";
 import { MatrixLegend } from "./matrix-legend";
 import { ActualRows, stickyLeft, stickyRight, TariffRow } from "./matrix-rows";
 import { PathOverlay } from "./path-overlay";
@@ -38,6 +39,49 @@ function useScrollEdges() {
       behavior: scrollBehavior(),
     });
   return { ref, edges, update, scrollBy };
+}
+
+/** A small mark next to a month name; its text shows on hover, focus and tap. */
+function MonthFlag({
+  icon: Icon,
+  label,
+  testId,
+}: {
+  icon: LucideIcon;
+  label: string;
+  testId: string;
+}) {
+  return (
+    <Hint content={label}>
+      <button
+        type="button"
+        aria-label={label}
+        data-testid={testId}
+        className="flex size-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+      >
+        <Icon className="size-3.5" aria-hidden="true" />
+      </button>
+    </Hint>
+  );
+}
+
+/** The marks of a month that the export may not fully describe. */
+function MonthFlags({ row }: { row: MonthRow }) {
+  const { t } = useTranslation("common");
+  return (
+    <>
+      {row.incomplete && (
+        <MonthFlag
+          icon={Hourglass}
+          label={t("result.matrix.incomplete")}
+          testId="month-incomplete"
+        />
+      )}
+      {row.partial && (
+        <MonthFlag icon={CircleDashed} label={t("result.matrix.partial")} testId="month-partial" />
+      )}
+    </>
+  );
 }
 
 /**
@@ -154,24 +198,27 @@ export function TariffMatrix({
                         data-testid="month-header"
                         abbr={long}
                       >
-                        {hasTrips ? (
-                          <button
-                            type="button"
-                            onClick={() => onShowMonth(m.month)}
-                            className="ml-auto flex rounded-md px-2 py-1 outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                            aria-label={t("result.matrix.showTrips", { month: long })}
-                            title={t("result.matrix.showTrips", { month: long })}
-                          >
-                            {label}
-                          </button>
-                        ) : (
-                          <span
-                            className="flex justify-end px-2 py-1"
-                            title={t("result.matrix.noTrips", { month: long })}
-                          >
-                            {label}
-                          </span>
-                        )}
+                        <div className="flex items-center justify-end">
+                          <MonthFlags row={m} />
+                          {hasTrips ? (
+                            <button
+                              type="button"
+                              onClick={() => onShowMonth(m.month)}
+                              className="ml-auto flex rounded-md px-2 py-1 outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                              aria-label={t("result.matrix.showTrips", { month: long })}
+                              title={t("result.matrix.showTrips", { month: long })}
+                            >
+                              {label}
+                            </button>
+                          ) : (
+                            <span
+                              className="flex justify-end px-2 py-1"
+                              title={t("result.matrix.noTrips", { month: long })}
+                            >
+                              {label}
+                            </span>
+                          )}
+                        </div>
                       </th>
                     );
                   })}
@@ -215,7 +262,10 @@ export function TariffMatrix({
           />
         )}
       </div>
-      <MatrixLegend />
+      <MatrixLegend
+        incomplete={months.some((m) => m.incomplete)}
+        partial={months.some((m) => m.partial)}
+      />
     </section>
   );
 }

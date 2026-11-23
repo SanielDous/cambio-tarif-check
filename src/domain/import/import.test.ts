@@ -222,6 +222,60 @@ describe("normalizeRows", () => {
     expect(problems[0]).toMatchObject({ fileName: "t.csv", rowNumber: 2, reason });
   });
 
+  describe("not yet billed rows", () => {
+    const withStatus = [...headers, "Verarbeitungsstatus"];
+    const statusMapping = detectColumns(withStatus).mapping;
+    const runStatus = (status: unknown, changes: Record<number, unknown> = {}) =>
+      normalizeRows(
+        {
+          fileName: "t.csv",
+          headers: withStatus,
+          rows: [[...row(changes), status]],
+          rowNumbers: [2],
+        },
+        statusMapping,
+        PRICE_DATA,
+      );
+
+    it("reports both amounts empty with the month of the row's end", () => {
+      const { problems } = run(row({ 3: "01.01.2026 01:00:00", 5: "", 6: "" }));
+      expect(problems).toEqual([
+        { fileName: "t.csv", rowNumber: 2, reason: "not-billed", month: "2026-01" },
+      ]);
+    });
+
+    it("leaves the month out when the end cannot be read", () => {
+      const { problems } = run(row({ 3: "bald", 5: "", 6: "" }));
+      expect(problems[0]?.reason).toBe("not-billed");
+      expect(problems[0]).not.toHaveProperty("month");
+    });
+
+    it("reports a status other than BILLED regardless of the amounts", () => {
+      const { trips, problems } = runStatus("OPEN");
+      expect(trips).toEqual([]);
+      expect(problems).toEqual([
+        { fileName: "t.csv", rowNumber: 2, reason: "not-billed", month: "2025-12" },
+      ]);
+    });
+
+    it("accepts BILLED in any case and spacing, and an empty status", () => {
+      expect(runStatus(" billed ").trips).toHaveLength(1);
+      expect(runStatus("").trips).toHaveLength(1);
+      expect(runStatus(null).trips).toHaveLength(1);
+    });
+
+    it("reports zero amounts for a trip with km", () => {
+      const { trips, problems } = run(row({ 5: "0", 6: "0,00" }));
+      expect(trips).toEqual([]);
+      expect(problems[0]).toMatchObject({ reason: "not-billed", month: "2025-12" });
+    });
+
+    it("keeps zero amounts without km and one zero amount with km", () => {
+      expect(run(row({ 4: "0", 5: "0", 6: "0" })).trips).toHaveLength(1);
+      expect(run(row({ 5: "0" })).trips).toHaveLength(1);
+    });
+  });
+
   it("numbers rows from 2 and skips blank rows", () => {
     const { trips, problems } = normalizeRows(
       table(good, ["", null, "  ", undefined], row({ 7: "X" })),

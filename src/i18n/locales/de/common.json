@@ -271,9 +271,10 @@
         "surcharge_other": "Bei {{count, number}} Fahrten wurde der Kraftstoffzuschlag aus dem abgerechneten Kilometerbetrag abgeleitet.",
         "mixed": "In {{months}} wurden Fahrten in mehreren Tarifen abgerechnet. Als dein Tarif gilt der Tarif der letzten Fahrt im Monat.",
         "inherited": "In {{months}} gab es keine Fahrten. Angenommen wird jeweils der Tarif des Vormonats – du kannst ihn in der Tabelle ändern.",
-        "incomplete": "Für {{months}} fehlen möglicherweise Fahrten.",
+        "incomplete": "In {{months}} gibt es noch nicht abgerechnete Fahrten. Sie fehlen in der Auswertung.",
         "afterPrices_one": "{{count, number}} Fahrt liegt nach dem Preisstand ({{date}}) und wurde mit den zuletzt bekannten Preisen berechnet.",
-        "afterPrices_other": "{{count, number}} Fahrten liegen nach dem Preisstand ({{date}}) und wurden mit den zuletzt bekannten Preisen berechnet."
+        "afterPrices_other": "{{count, number}} Fahrten liegen nach dem Preisstand ({{date}}) und wurden mit den zuletzt bekannten Preisen berechnet.",
+        "partial": "Vermutlich nur teilweise im Export enthalten: {{months}}. Diese Monate können zu niedrig ausfallen."
       }
     },
     "settings": {
@@ -316,7 +317,9 @@
         "cheapest": "Günstigster Tarif im Monat",
         "actual": "Dein Tarif",
         "path": "Rückblickend optimaler Pfad (mit Wechselgebühren)",
-        "switch": "Tarifwechsel, {{amount}} Gebühr"
+        "switch": "Tarifwechsel, {{amount}} Gebühr",
+        "incomplete": "Noch nicht abgerechnete Fahrten im Monat",
+        "partial": "Monat vermutlich nur teilweise im Export"
       },
       "source": {
         "inherited": "angenommen",
@@ -332,7 +335,9 @@
       "menuLabel": "Dein Tarif im {{month}}",
       "change": "Dein Tarif im {{month}}: {{tariff}}. Ändern",
       "resetOverride": "Wieder aus den Fahrten bestimmen",
-      "notCompared": "wird nicht verglichen"
+      "notCompared": "wird nicht verglichen",
+      "incomplete": "In diesem Monat gibt es noch nicht abgerechnete Fahrten",
+      "partial": "Dieser Monat ist im Export vermutlich nicht vollständig enthalten"
     },
     "chart": {
       "title": "Monatskosten im Verlauf",

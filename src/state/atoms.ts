@@ -63,9 +63,21 @@ export const importBusyAtom = atom(0);
 /** Number of additional drivers set automatically on the first import, 0 if none. */
 export const autoDriversAtom = atom(0);
 
+/** Months of rows that are not billed yet, over all imported files. */
+const unbilledMonthsAtom = atom((get) =>
+  get(importReportAtom).files.flatMap((file) =>
+    file.problems.flatMap((problem) =>
+      problem.reason === "not-billed" && problem.month !== undefined ? [problem.month] : [],
+    ),
+  ),
+);
+
 export const analysisAtom = atom<Analysis | null>((get) => {
   const trips = get(tripsAtom);
-  return trips.length === 0 ? null : analyze(trips, get(settingsAtom), PRICE_DATA);
+  if (trips.length === 0) return null;
+  return analyze(trips, get(settingsAtom), PRICE_DATA, {
+    unbilledMonths: get(unbilledMonthsAtom),
+  });
 });
 
 /** Merges new trips and a file report into the state. */

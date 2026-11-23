@@ -1,4 +1,4 @@
-import { parseLocal } from "@/domain/pricing/local-time";
+import { monthKey, parseLocal } from "@/domain/pricing/local-time";
 import { parseIsoDate } from "@/domain/pricing/price-data";
 import {
   PRICE_CLASSES,
@@ -8,6 +8,9 @@ import {
 } from "@/domain/pricing/types";
 import { cellText, isBlankCell } from "./cells";
 import type { ColumnMapping, FieldId, RawTable, RowProblem, Trip } from "./fields";
+
+/** The processing status of a billed row. */
+const BILLED = "BILLED";
 
 class RowError extends Error {
   readonly reason: RowProblem["reason"];
@@ -87,8 +90,14 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
     return index === undefined ? undefined : row[index];
   };
 
-  if (isBlankCell(cell("billedTime")) && isBlankCell(cell("billedKm")))
+  // Not billed yet: a status other than BILLED (whatever the amounts say), or no amounts at all.
+  const status = text(cell("status"));
+  if (mapping.status !== undefined && status !== "" && status.toUpperCase() !== BILLED) {
     throw new RowError("not-billed");
+  }
+  if (isBlankCell(cell("billedTime")) && isBlankCell(cell("billedKm"))) {
+    throw new RowError("not-billed");
+  }
 
   const start = toTime(cell("start"), "start");
   const end = toTime(cell("end"), "end");
@@ -97,6 +106,8 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
     ? 0
     : toCents(cell("billedTime"), "billedTime");
   const billedKm = isBlankCell(cell("billedKm")) ? 0 : toCents(cell("billedKm"), "billedKm");
+  // A trip with km is never free: amounts of 0 stand for an invoice that is still to come.
+  if (billedTime === 0 && billedKm === 0 && km > 0) throw new RowError("not-billed");
   if (end < start) throw new RowError("end-before-start");
   if (end < parseIsoDate(data.validFrom)) throw new RowError("before-price-data", data.validFrom);
 
@@ -126,9 +137,19 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
   };
   const driver = text(cell("driver"));
   if (driver !== "") trip.driver = driver;
-  const status = text(cell("status"));
   if (status !== "") trip.status = status;
   return trip;
+}
+
+/** Month key of a row's end, if it can be read. */
+function endMonth(row: unknown[], mapping: ColumnMapping): string | undefined {
+  const index = mapping.end;
+  if (index === undefined) return undefined;
+  try {
+    return monthKey(toTime(row[index], "end"));
+  } catch {
+    return undefined;
+  }
 }
 
 /** Validates the rows of a table into trips; every rejected row becomes a `RowProblem`. */
@@ -151,6 +172,10 @@ export function normalizeRows(
         reason: error.reason,
       };
       if (error.detail !== undefined) problem.detail = error.detail;
+      if (error.reason === "not-billed") {
+        const month = endMonth(row, mapping);
+        if (month !== undefined) problem.month = month;
+      }
       problems.push(problem);
     }
   });
