@@ -7,7 +7,10 @@ export const tariffColorVar = (tariff: TariffId) => `--tariff-${tariff.toLowerCa
 /** `var(...)` reference to a tariff's identity colour, for inline styles. */
 export const tariffColor = (tariff: TariffId) => `var(${tariffColorVar(tariff)})`;
 
-/** Kinds whose billed amount was reproduced to the cent from the export alone. */
+/**
+ * Kinds whose billed amount was reproduced to the cent from the export alone. A late return
+ * ("overrun") counts as exact only with a time deviation of 0, as rounding with ±1 cent.
+ */
 export const EXACT_KINDS: ReconstructionKind[] = ["verified", "cancelled", "unused"];
 
 /** Kinds for which the user can enter the booked end by hand. */

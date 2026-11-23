@@ -53,6 +53,31 @@ describe("tripCostInTariff", () => {
     expect(tripCostInTariff(earlyReturn, r, "AKTIV", PRICE_DATA)).toEqual({ time: 1403, km: 507 });
   });
 
+  it("prices an overrun in another tariff as the same booking plus the same doubled minutes", () => {
+    // Friday 2025-05-09, AKTIV S 15:00–20:00, returned 20:13, billed 10.50 + 0.91.
+    const fri = (hh: number, mm = 0) => toLocalMinute(2025, 5, 9, hh, mm);
+    const late: Trip = {
+      id: "o",
+      city: "Aachen",
+      vehicleClass: "S Kleinwagen",
+      priceClass: "S",
+      start: fri(15),
+      end: fri(20, 13),
+      km: 22,
+      billedTime: 1141,
+      billedKm: 572,
+      tariff: "AKTIV",
+    };
+    const r = reconstructBooking(late, PRICE_DATA);
+    expect(r.kind).toBe("overrun");
+    expect(tripCostInTariff(late, r, "AKTIV", PRICE_DATA)?.time).toBe(1141);
+    // COMFORT S: 5 h × 1.85 = 9.25; 13 min × 1.85 / 60 × 2 = 0.8017 → 0.80.
+    expect(tripCostInTariff(late, r, "COMFORT", PRICE_DATA)?.time).toBe(1005);
+    // BASIS S on a Friday after 12:00 has the weekend price 4.15: 5 h = 20.75;
+    // 13 min × 4.15 / 60 × 2 = 1.7983 → 1.80.
+    expect(tripCostInTariff(late, r, "BASIS", PRICE_DATA)?.time).toBe(2255);
+  });
+
   it("returns null when the tariff has no price for the class", () => {
     const data: PriceData = {
       ...PRICE_DATA,

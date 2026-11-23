@@ -108,10 +108,29 @@ describe("result summary", () => {
   it("counts only exact recomputations and lists the other kinds", async () => {
     await withFixtures();
     expect(screen.getByTestId("verification")).toHaveTextContent(
-      /^75 von 85 Fahrten auf den Cent nachgerechnet$/,
+      /^76 von 85 Fahrten auf den Cent nachgerechnet$/,
     );
     expect(screen.getByTestId("verification-others")).toHaveTextContent(
-      /^9 mit 1 Cent Rundungsabweichung · 1 nicht nachrechenbar$/,
+      /^9 mit 1 Cent Rundungsabweichung$/,
+    );
+    expect(screen.queryByTestId("warnings")).not.toHaveTextContent(/nicht eindeutig/);
+  });
+
+  it("counts a late return as exact at 0 and as rounding at 1 cent deviation", async () => {
+    const { store } = await withFixtures();
+    const a = store.get(analysisAtom);
+    if (!a) throw new Error("no analysis");
+    expect(a.verification.overrun).toBe(1);
+    cleanup();
+    const trips = a.trips.map((r) =>
+      r.reconstruction.kind === "overrun"
+        ? { ...r, reconstruction: { ...r.reconstruction, timeDeviation: 1 } }
+        : r,
+    );
+    render(<SummaryCard analysis={{ ...a, trips }} />);
+    expect(screen.getByTestId("verification")).toHaveTextContent(/^75 von 85 Fahrten/);
+    expect(screen.getByTestId("verification-others")).toHaveTextContent(
+      /^10 mit 1 Cent Rundungsabweichung$/,
     );
   });
 
@@ -315,19 +334,47 @@ describe("tariff matrix", () => {
 });
 
 describe("trip list", () => {
+  it("shows the late return of May 2025 with its booked end and overrun minutes", async () => {
+    const { user } = await withFixtures();
+    const may = screen.getByRole("button", { name: /^Mai 2025/ });
+    expect(may).not.toHaveTextContent(/zu prüfen/);
+    expect(screen.queryAllByText(/zu prüfen/)).toHaveLength(0);
+    await user.click(may);
+    const badge = screen.getAllByTestId("status-badge").find((b) => b.dataset.kind === "overrun");
+    if (!badge) throw new Error("badge not shown");
+    expect(badge).toHaveTextContent("verspätet zurückgegeben");
+    expect(badge).toHaveAccessibleDescription(
+      "Das Auto wurde 13 Minuten nach dem gebuchten Ende zurückgegeben. Diese Zeit kostet den doppelten Zeitpreis.",
+    );
+    const row = badge.closest("tr") as HTMLElement;
+    expect(row).toHaveTextContent("gebucht bis 20:00, 13 min später zurückgegeben");
+    expect(row).toHaveTextContent("5 h 13 min");
+    expect(row).not.toHaveTextContent("Nachrechnung");
+    expect(within(row).queryByRole("button", { name: /Gebuchtes Ende/ })).not.toBeInTheDocument();
+  });
+
+  /** Monday 2025-12-15, AKTIV S 10:00–11:07, 10 km: a time amount of 1.00 € no booking explains. */
+  const unexplained: Trip = {
+    id: "unexplained",
+    city: "Nowhere",
+    vehicleClass: "S Kleinwagen",
+    priceClass: "S",
+    start: toLocalMinute(2025, 12, 15, 10, 0),
+    end: toLocalMinute(2025, 12, 15, 11, 7),
+    km: 10,
+    billedTime: 100,
+    billedKm: 260,
+    tariff: "AKTIV",
+  };
+
   /** Opens the month of the not-reproducible trip and its booked-end editor. */
   async function openEditor() {
-    const { store, user } = await withFixtures();
-    const target = store
-      .get(analysisAtom)
-      ?.trips.find((r) => r.reconstruction.kind === "not-reproducible");
-    if (!target) throw new Error("fixture without a not-reproducible trip");
-    const monthName = new Intl.DateTimeFormat("de", {
-      month: "long",
-      year: "numeric",
-      timeZone: "UTC",
-    }).format(new Date(`${target.month}-01T00:00:00Z`));
-    await user.click(screen.getByRole("button", { name: new RegExp(`^${monthName}`) }));
+    const { store, user } = await withTrips([unexplained]);
+    const target = store.get(analysisAtom)?.trips[0];
+    if (target?.reconstruction.kind !== "not-reproducible") {
+      throw new Error("the trip should not be reproducible");
+    }
+    await user.click(screen.getByRole("button", { name: /^Dezember 2025/ }));
     const badge = screen
       .getAllByTestId("status-badge")
       .find((b) => b.dataset.kind === "not-reproducible");
@@ -354,10 +401,8 @@ describe("trip list", () => {
     const updated = within(row).getByTestId("status-badge");
     expect(updated).toHaveAttribute("data-kind", "manual");
     expect(updated).toHaveTextContent("von Hand ergänzt");
-    expect(screen.getByTestId("verification")).toHaveTextContent(/^75 von 85 Fahrten/);
-    expect(screen.getByTestId("verification-others")).toHaveTextContent(
-      /^9 mit 1 Cent Rundungsabweichung · 1 von Hand ergänzt$/,
-    );
+    expect(screen.getByTestId("verification")).toHaveTextContent(/^0 von 1 Fahrt/);
+    expect(screen.getByTestId("verification-others")).toHaveTextContent(/^1 von Hand ergänzt$/);
     // The manual trip still shows how far the model is from the invoice.
     const manual = store.get(analysisAtom)?.trips.find((r) => r.trip.id === target.trip.id);
     const own = manual?.costs[target.trip.tariff];
@@ -382,11 +427,27 @@ describe("trip list", () => {
     );
   });
 
-  it("rejects a booked end before the return", async () => {
-    const { store, user, time, date, apply } = await openEditor();
-    await user.selectOptions(time, String(Number(time.value) - 15));
+  it("accepts a booked end before the return as a late return and explains it", async () => {
+    const { store, user, target, row, time, apply } = await openEditor();
+    expect(screen.getByText(/Bis wann war die Fahrt gebucht\?/)).toHaveTextContent(
+      "doppelten Zeitpreis",
+    );
+    await user.selectOptions(time, String(10 * 60 + 45));
     await apply();
-    expect(await screen.findByRole("alert")).toHaveTextContent("kann nicht vor");
+    expect(store.get(settingsAtom).manualBookedEnds[target.trip.id]).toBe(
+      toLocalMinute(2025, 12, 15, 10, 45),
+    );
+    const r = store.get(analysisAtom)?.trips[0]?.reconstruction;
+    expect(r?.kind).toBe("manual");
+    expect(r?.overrunMinutes).toBe(22);
+    expect(row).toHaveTextContent("gebucht bis 10:45, 22 min später zurückgegeben");
+  });
+
+  it("rejects a booked end at or before the start", async () => {
+    const { store, user, time, date, apply } = await openEditor();
+    await user.selectOptions(time, String(10 * 60));
+    await apply();
+    expect(await screen.findByRole("alert")).toHaveTextContent("kann nicht vor 15.12.2025, 10:15");
     expect(date).toHaveAttribute("aria-invalid", "true");
     expect(date).toHaveAccessibleDescription(/kann nicht vor/);
     expect(store.get(settingsAtom).manualBookedEnds).toEqual({});
@@ -395,7 +456,7 @@ describe("trip list", () => {
   it("rejects a booked end more than 30 days after the start", async () => {
     const { store, target, date, apply } = await openEditor();
     expect(date.max).toBe(toDateValue(target.trip.start + 30 * 24 * 60));
-    expect(date.min).toBe(toDateValue(target.reconstruction.chargedUntil));
+    expect(date.min).toBe(toDateValue(target.trip.start));
     fireEvent.change(date, { target: { value: toDateValue(target.trip.start + 31 * 24 * 60) } });
     await apply();
     expect(await screen.findByRole("alert")).toHaveTextContent("höchstens 30 Tage");

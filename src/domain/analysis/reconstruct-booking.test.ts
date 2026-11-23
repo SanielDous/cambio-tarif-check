@@ -76,6 +76,7 @@ describe("reconstructBooking", () => {
       kind: "verified",
       chargedUntil: tue2026(20, 30),
       bookedEnd: tue2026(21),
+      overrunMinutes: 0,
       share: 1,
       surchargeCents: 3,
       surchargeDerived: false,
@@ -278,9 +279,133 @@ describe("reconstructBooking", () => {
       expect(r.timeDeviation).toBe(526 - 498);
     });
 
-    it("ignores a manual booked end before the charged end or off the quarter hour", () => {
-      expect(reconstructBooking(early, PRICE_DATA, mon(19, 15)).kind).not.toBe("manual");
+    it("ignores a manual booked end at or before the start or off the quarter hour", () => {
+      expect(reconstructBooking(early, PRICE_DATA, mon(17, 15)).kind).not.toBe("manual");
+      expect(reconstructBooking(early, PRICE_DATA, mon(17)).kind).not.toBe("manual");
       expect(reconstructBooking(early, PRICE_DATA, mon(20, 5)).kind).not.toBe("manual");
+      expect(reconstructBooking(early, PRICE_DATA, mon(19, 10)).kind).not.toBe("manual");
     });
+
+    it("computes a manual booked end before the return as an overrun from there", () => {
+      const r = reconstructBooking(early, PRICE_DATA, mon(19));
+      expect(r.kind).toBe("manual");
+      expect(r.bookedEnd).toBe(mon(19));
+      expect(r.chargedUntil).toBe(mon(19));
+      expect(r.overrunMinutes).toBe(21);
+      // 105 min × 2.10 = 3.675 → 3.68; 21 min × 2.10 / 60 × 2 = 1.47.
+      expect(r.timeDeviation).toBe(368 + 147 - 498);
+    });
+
+    it("keeps the overrun of a valid manual end after the return at 0", () => {
+      expect(reconstructBooking(early, PRICE_DATA, mon(20)).overrunMinutes).toBe(0);
+    });
+  });
+});
+
+describe("late return (overrun)", () => {
+  // 2025-05-09 is a Friday; AKTIV and COMFORT S have no weekend price.
+  const fri = (hh: number, mm = 0) => toLocalMinute(2025, 5, 9, hh, mm);
+  // The invoice: booking 15:00–20:00, returned 20:13; 5 h × 2.10 = 10.50 and
+  // 13 min × 2.10 / 60 × 2 = 0.91, billed time 11.41; 22 km at (0.25 + 0.01) = 5.72.
+  const observed = trip({
+    start: fri(15),
+    end: fri(20, 13),
+    tariff: "AKTIV",
+    priceClass: "S",
+    km: 22,
+    billedTime: 1141,
+    billedKm: 572,
+  });
+
+  it("recognises the observed overrun (AKTIV S 15:00–20:00, returned 20:13, billed 11.41)", () => {
+    expect(reconstructBooking(observed, PRICE_DATA)).toEqual({
+      kind: "overrun",
+      chargedUntil: fri(20),
+      bookedEnd: fri(20),
+      overrunMinutes: 13,
+      share: 1,
+      surchargeCents: 1,
+      surchargeDerived: false,
+      timeDeviation: 0,
+      kmDeviation: 0,
+    });
+  });
+
+  it("recognises the overrun when the export holds the booked end instead of the return", () => {
+    const r = reconstructBooking({ ...observed, end: fri(20) }, PRICE_DATA);
+    expect(r.kind).toBe("overrun");
+    expect(r.bookedEnd).toBe(fri(20));
+    expect(r.chargedUntil).toBe(fri(20));
+    expect(r.overrunMinutes).toBe(13);
+    expect(r.timeDeviation).toBe(0);
+  });
+
+  // BASIS L Monday 20:00, booked until 23:45, returned Tuesday 00:10, 10 km at (0.39 + 0.01).
+  // 3.75 h × 7.15 = 26.8125 → 26.81; overrun 15 min × 7.15 / 60 × 2 = 3.575 plus 10 min at the
+  // night price 0.50 / 60 × 2 = 0.1667, together 3.7417 → 3.74; billed 30.55.
+  const night = trip({
+    start: mon(20),
+    end: toLocalMinute(2025, 12, 16, 0, 10),
+    tariff: "BASIS",
+    priceClass: "L",
+    km: 10,
+    billedTime: 3055,
+    billedKm: 400,
+  });
+
+  it("prices an overrun into the night with the night price, doubled", () => {
+    const r = reconstructBooking(night, PRICE_DATA);
+    expect(r.kind).toBe("overrun");
+    expect(r.bookedEnd).toBe(mon(23, 45));
+    expect(r.overrunMinutes).toBe(25);
+    expect(r.timeDeviation).toBe(0);
+    expect(bookingTimeCost(mon(20), mon(23, 45), mon(23, 45), 1, "BASIS", "L", PRICE_DATA)).toBe(
+      2681,
+    );
+  });
+
+  it("accepts an overrun within 1 cent", () => {
+    const r = reconstructBooking({ ...night, billedTime: 3056 }, PRICE_DATA);
+    expect(r.kind).toBe("overrun");
+    expect(r.bookedEnd).toBe(mon(23, 45));
+    expect(r.overrunMinutes).toBe(25);
+    expect(r.timeDeviation).toBe(-1);
+  });
+
+  it("never classifies a trip the booked-end search explains as an overrun", () => {
+    // Early return AKTIV S 17:15–19:21, billed 4.98: booked until 19:45.
+    const r = reconstructBooking(
+      trip({
+        start: mon(17, 15),
+        end: mon(19, 21),
+        tariff: "AKTIV",
+        priceClass: "S",
+        km: 19,
+        billedTime: 498,
+        billedKm: 494,
+      }),
+      PRICE_DATA,
+    );
+    expect(r.kind).not.toBe("overrun");
+    expect(r.overrunMinutes).toBe(0);
+    expect(r.bookedEnd).toBe(mon(19, 45));
+  });
+
+  it("leaves a trip without km to the unused / cancelled rules", () => {
+    const r = reconstructBooking({ ...observed, km: 0, billedKm: 0, end: fri(20) }, PRICE_DATA);
+    expect(r.kind).toBe("not-reproducible");
+    expect(r.overrunMinutes).toBe(0);
+  });
+
+  it("still makes an unexplained km amount not reproducible", () => {
+    const kmOff = { ...observed, billedKm: 600 };
+    const r = reconstructBooking(kmOff, PRICE_DATA);
+    expect(r.kind).toBe("not-reproducible");
+    expect(r.kmDeviation).toBe(-28);
+    // The overrun found from the time amount is kept as the best estimate.
+    expect(r.bookedEnd).toBe(fri(20));
+    expect(r.overrunMinutes).toBe(13);
+    expect(r.timeDeviation).toBe(0);
+    expect(reconstructBooking(kmOff, PRICE_DATA, fri(20)).kind).toBe("manual");
   });
 });

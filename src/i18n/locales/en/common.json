@@ -44,6 +44,7 @@
       "title": "Early return and the booked end",
       "export": "The export contains the time of return, not the originally booked end. If you return the car early, cambio charges the unused booked time at 50 %.",
       "reconstruction": "This page works out the booked end from the billed amount: up to the return, rounded up to the next quarter hour, the full price applies, and the rest of the booking costs 50 %. The same booking is then priced in the other tariffs.",
+      "late": "If you return the car after the booked end, every minute after it costs double the time price. The page recognises this from the billed amount and prices the same delay in the other tariffs too.",
       "ambiguous": "If several booked ends fit the amount, the earliest is used; if none fits, the trip is priced up to the return. In both cases you can enter the booked end yourself in the trip list."
     },
     "kinds": {
@@ -63,7 +64,9 @@
       "discounts": "partner discounts and city offers",
       "signup": "the sign-up fee",
       "sipack": "SiPack",
-      "penalties": "penalties, for example for returning late",
+      "penalties": "other penalty fees",
+      "lateFees": "flat late fees (“Verspätungsgebühr”) that cambio charges when a late return affects a following booking",
+      "credit": "trip credits (“Fahrtguthaben”) that cambio offsets against trip costs – they do not depend on the tariff",
       "business": "business tariffs",
       "before": "trips before {{date}}",
       "holidays": "Public holidays follow a fixed list that may differ from cambio’s calendar.",
@@ -374,6 +377,7 @@
       "paid": "paid incl. fees",
       "bookedUntil": "booked until {{time}}",
       "booked": "booked {{duration}}",
+      "overrun": "booked until {{time}}, returned {{minutes}} min later",
       "deviation": "Recomputed {{amount}}",
       "deviationHint": "Difference between the recomputed and the billed amount in the trip's tariff",
       "columns": {
@@ -410,6 +414,12 @@
         "label": "not started (100 %)",
         "text": "The booking was not used; the full time price is charged."
       },
+      "overrun": {
+        "label": "returned late",
+        "text_one": "The car was returned {{count, number}} minute after the booked end. This time costs double the time price.",
+        "text_other": "The car was returned {{count, number}} minutes after the booked end. This time costs double the time price.",
+        "general": "The car was returned after the booked end. This time costs double the time price."
+      },
       "not-reproducible": {
         "label": "not reproducible",
         "text": "No booked end yields the billed amount. The trip is priced up to the return; enter the booked end if you know it."
@@ -419,7 +429,7 @@
       "open": "Enter booked end",
       "edit": "Change booked end",
       "title": "Booked end",
-      "description": "Until when was the trip booked? No earlier than {{time}} (the return, rounded up to the quarter hour).",
+      "description": "Until when was the trip booked? The car was returned on {{time}}. If the booked end lies before that, the time after it counts as a late return at double the time price.",
       "date": "Date",
       "time": "Time",
       "apply": "Apply",

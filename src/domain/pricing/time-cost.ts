@@ -43,6 +43,24 @@ export function hourPriceAt(
 }
 
 /**
+ * Cost of returning late, [bookedEnd, returned), in fractional cents: every minute after the booked
+ * end costs twice the hour price that applies to it (night and weekend prices included), without
+ * any cap. The invoice rounds it as a line item of its own.
+ */
+export function overrunCost(
+  bookedEnd: LocalMinute,
+  returned: LocalMinute,
+  tariff: TariffId,
+  cls: PriceClass,
+  data: PriceData,
+): number {
+  // cents × 60, as in `uncapped`, divided once at the end.
+  let sum = 0;
+  for (let t = bookedEnd; t < returned; t++) sum += 2 * hourPriceAt(t, tariff, cls, data);
+  return sum / HOUR;
+}
+
+/**
  * Uncapped cost of [from, to) in cents × 60 (an integer), stopping early once `limit` is reached.
  * Prices only change at full hours, so the walk goes hour by hour.
  */

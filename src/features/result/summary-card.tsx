@@ -80,9 +80,16 @@ export function SummaryCard({ analysis }: { analysis: Analysis }) {
   };
 
   const total = analysis.trips.length;
-  const exact = EXACT_KINDS.reduce((s, k) => s + analysis.verification[k], 0);
-  const others = OTHER_KINDS.filter((k) => analysis.verification[k] > 0).map((k) =>
-    t(`result.summary.verificationParts.${k}`, { count: analysis.verification[k] }),
+  // A late return is exact at 0 deviation and a rounding case at ±1 cent, like the search.
+  const overrun = analysis.trips.filter((r) => r.reconstruction.kind === "overrun");
+  const overrunExact = overrun.filter((r) => r.reconstruction.timeDeviation === 0).length;
+  const counts: Record<ReconstructionKind, number> = {
+    ...analysis.verification,
+    "verified-rounding": analysis.verification["verified-rounding"] + overrun.length - overrunExact,
+  };
+  const exact = EXACT_KINDS.reduce((s, k) => s + counts[k], 0) + overrunExact;
+  const others = OTHER_KINDS.filter((k) => counts[k] > 0).map((k) =>
+    t(`result.summary.verificationParts.${k}`, { count: counts[k] }),
   );
   const hindsight = actualTotal - optimalPath.total;
   const sub = kind === "alreadyBest" && hindsight > 0 ? "alreadyBestHindsight" : kind;

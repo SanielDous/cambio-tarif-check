@@ -91,6 +91,7 @@ const KINDS: ReconstructionKind[] = [
   "manual",
   "cancelled",
   "unused",
+  "overrun",
   "not-reproducible",
 ];
 
