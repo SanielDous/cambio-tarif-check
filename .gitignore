@@ -5,3 +5,8 @@ private/
 
 node_modules/
 dist/
+.superpowers/
+playwright-report/
+test-results/
+coverage/
+*.tsbuildinfo

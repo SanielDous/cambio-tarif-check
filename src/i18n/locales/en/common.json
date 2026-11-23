@@ -1,0 +1,33 @@
+{
+  "app": {
+    "title": "cambio Tarif-Check",
+    "subtitle": "Find out which cambio tariff would have been the cheapest for your trips."
+  },
+  "nav": {
+    "home": "Home",
+    "howItWorks": "How it works"
+  },
+  "language": {
+    "label": "Language",
+    "de": "Deutsch",
+    "en": "English"
+  },
+  "theme": {
+    "label": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "home": {
+    "placeholder": "Soon you will be able to drop your trip export here."
+  },
+  "howItWorks": {
+    "title": "How it works",
+    "placeholder": "The explanation is coming."
+  },
+  "footer": {
+    "version": "Version {{version}}",
+    "disclaimer": "Not an official offer from cambio",
+    "repository": "Source code on GitHub"
+  }
+}
