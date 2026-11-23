@@ -321,6 +321,32 @@ Open questions:
 - How the 50 % charge interacts with day/week caps and night hours.
 - Whether the portal or the invoice PDF shows the originally booked period.
 
+Booking reconstruction in the app (`src/domain/analysis/reconstruct-booking.ts`), 85 trips of
+both exports (2026-11-23):
+
+- **Km amount: 85 of 85 exact** with the surcharge table (no derived surcharge needed).
+- **Time amount: 84 of 85 within 1 cent, 75 exact.** Model: full price up to the return rounded up
+  to the quarter hour, 50 % of the capped cost of the remaining booked time
+  (`timeCost(start, bookedEnd) − timeCost(start, chargedUntil)`), both parts rounded half-up.
+  Classified: 73 verified, 9 within 1 cent, 1 cancelled, 1 unused, 1 not reproducible (the
+  class S trip at 11.41). No trip has more than one matching booked end.
+- All 9 one-cent trips are AKTIV S and billed 1 cent **below** the model (a half cent rounded
+  down). Hit counts (exact / 1 cent off, 83 trips): both parts half-up 73/9; parts summed 66/16;
+  full part rounded down 46/36; 50 % part rounded down 63/19; float32 rule of the calculator per
+  part 74/8 (breaks 7 otherwise exact trips); float32 on the sum 64/18. No single rule fits all.
+  (inferred)
+
+Open questions:
+
+- **How the 50 % charge interacts with day/week caps:** still open. "50 % of the capped remainder"
+  and "50 % of the uncapped unused span" explain exactly the same 73 + 9 trips. The 8-day trip
+  (1495 km) returned 1.75 h early within an uncapped part of its last day block, so both readings
+  agree there. One class XL trip (Saturday 08:30–14:36, 47.94) fits both, but with different booked
+  ends (capped: next day 09:30; uncapped: 21:30), because both unused amounts are 33.615.
+  Night hours in the unused part (one trip, 00:11 → 01:15) are charged at 50 % of 0.50/h.
+- Whether the portal or the invoice PDF shows the originally booked period.
+- The exact rounding rule of invoiced time amounts (see above).
+
 ## Price calculator
 
 There is no JSON API. The calculator is a server-rendered form on the tariff page whose hidden
