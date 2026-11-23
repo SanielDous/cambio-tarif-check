@@ -31,13 +31,13 @@ Emptied: `Kommentar`, `KommentarKundenService`, `Abteilung`, `Kostenstelle`.
 
 ### Regenerate
 
-The personal originals (`Fahrten_*.csv`, `Fahrten_*.xlsx`) live in the repository root and are
-git-ignored. With them present:
+The personal originals (`Fahrten_*.csv`, `Fahrten_*.xlsx`) live in `private/exports/`. The whole
+`private/` folder is git-ignored. With them present:
 
 ```sh
-node tools/anonymize-export.mjs Fahrten_2024-12-31_2025-12-31.csv tests/fixtures/trips-2025.csv
-node tools/anonymize-export.mjs Fahrten_2025-12-31_2026-11-23.csv tests/fixtures/trips-2026.csv
-node tools/anonymize-export.mjs Fahrten_2024-12-31_2025-12-31.xlsx tests/fixtures/trips-2025.xlsx
+node tools/anonymize-export.mjs private/exports/Fahrten_2024-12-31_2025-12-31.csv tests/fixtures/trips-2025.csv
+node tools/anonymize-export.mjs private/exports/Fahrten_2025-12-31_2026-11-23.csv tests/fixtures/trips-2026.csv
+node tools/anonymize-export.mjs private/exports/Fahrten_2024-12-31_2025-12-31.xlsx tests/fixtures/trips-2025.xlsx
 ```
 
 The tool is deterministic: the same input always produces the same bytes. When the originals are
