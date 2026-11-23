@@ -74,7 +74,7 @@ export default function CostChart({
 }) {
   const { t, i18n } = useTranslation("common");
   const lang = i18n.language;
-  const [mode, setMode] = useState<"monthly" | "cumulative">("monthly");
+  const [mode, setMode] = useState<"monthly" | "cumulative">("cumulative");
   const series = useMemo<Series[]>(() => [...analysis.tariffs, ACTUAL], [analysis.tariffs]);
   const colors = useColors(series);
   const { ref, width } = useWidth();
@@ -129,16 +129,14 @@ export default function CostChart({
         >
           {series.map((s) => (
             <li key={s} className="flex items-center gap-1.5">
-              <svg aria-hidden="true" width="16" height="4">
+              <svg aria-hidden="true" width="16" height="4" className="overflow-visible">
                 <line
                   x1="0"
                   y1="2"
                   x2="16"
                   y2="2"
-                  strokeWidth="2"
-                  stroke={s === ACTUAL ? "var(--tariff-actual)" : tariffColor(s)}
+                  strokeWidth={s === ACTUAL ? 3.5 : 2}
                   style={{ stroke: s === ACTUAL ? "var(--tariff-actual)" : tariffColor(s) }}
-                  strokeDasharray={s === ACTUAL ? "4 2" : undefined}
                 />
               </svg>
               {name(s)}
@@ -150,7 +148,7 @@ export default function CostChart({
           aria-label={t("result.chart.view")}
           className="inline-flex rounded-md border p-0.5 text-xs"
         >
-          {(["monthly", "cumulative"] as const).map((m) => (
+          {(["cumulative", "monthly"] as const).map((m) => (
             <button
               key={m}
               type="button"
@@ -199,8 +197,8 @@ export default function CostChart({
                 name={name(s)}
                 type="linear"
                 stroke={colors.series[s]}
-                strokeWidth={2}
-                strokeDasharray={s === ACTUAL ? "6 3" : undefined}
+                // The user's own cost: thicker neutral ink, drawn last so it lies on top.
+                strokeWidth={s === ACTUAL ? 3.5 : 2}
                 dot={false}
                 activeDot={{ r: 4, stroke: colors.surface, strokeWidth: 2 }}
                 isAnimationActive={false}

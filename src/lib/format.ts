@@ -127,10 +127,10 @@ export function formatDateTime(t: LocalMinute, language: string): string {
   ).format(utcFromMinute(t));
 }
 
-/** A length of time in minutes: "2 h 15 min", "45 min", "3 h" (the same in both languages). */
-export function formatDuration(minutes: number): string {
+/** A length of time in minutes with the given unit labels: "2 h 15 min", "45 min", "3 h". */
+export function formatDuration(minutes: number, units: { hour: string; minute: string }): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  if (h === 0) return `${m} min`;
-  return m === 0 ? `${h} h` : `${h} h ${m} min`;
+  if (h === 0) return `${m} ${units.minute}`;
+  return m === 0 ? `${h} ${units.hour}` : `${h} ${units.hour} ${m} ${units.minute}`;
 }

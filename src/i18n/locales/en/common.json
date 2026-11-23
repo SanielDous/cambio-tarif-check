@@ -126,13 +126,16 @@
         "saving": "With the {{tariff}} tariff you would have saved {{amount}}.",
         "alreadyBest": "You were in the cheapest tariff the whole time: {{tariff}}.",
         "switchingWon": "Thanks to your switches you paid {{amount}} less than in the best single tariff ({{tariff}}).",
-        "cheaperThanBest": "You paid {{amount}} less than in the best single tariff ({{tariff}})."
+        "cheaperThanBest": "You paid {{amount}} less than in the best single tariff ({{tariff}}).",
+        "equal": "You paid exactly as much as in the best single tariff ({{tariff}})."
       },
       "sub": {
         "saving": "You paid {{actual}}. With {{tariff}}, the same trips would have cost {{best}}.",
         "alreadyBest": "No other tariff would have been cheaper for your trips. By these numbers, switching does not pay off.",
         "switchingWon": "No single tariff would have been cheaper over the whole period than what you actually did.",
-        "cheaperThanBest": "No single tariff would have been cheaper over the whole period than what you actually paid."
+        "cheaperThanBest": "No single tariff would have been cheaper over the whole period than what you actually paid.",
+        "equal": "A single tariff would not have saved you anything on these trips.",
+        "alreadyBestHindsight": "No other single tariff would have been cheaper. In hindsight, switching between tariffs would have saved {{hindsight}} – but you cannot know the month in advance."
       },
       "actual": {
         "label": "Actually paid",
@@ -152,8 +155,19 @@
         "less": "{{amount}} less than actually paid",
         "same": "exactly what you paid"
       },
-      "verification": "{{recomputed, number}} of {{total, number}} trips recomputed to the cent",
-      "verificationHint": "For every trip, the booking is reconstructed from the billed amount and recomputed with the stored prices. If the result matches the invoice, the trip counts as recomputed.",
+      "verification_one": "{{exact, number}} of {{count, number}} trip recomputed to the cent",
+      "verification_other": "{{exact, number}} of {{count, number}} trips recomputed to the cent",
+      "verificationParts": {
+        "verified-rounding_one": "{{count, number}} with a 1 cent rounding difference",
+        "verified-rounding_other": "{{count, number}} with a 1 cent rounding difference",
+        "estimated_one": "{{count, number}} estimated",
+        "estimated_other": "{{count, number}} estimated",
+        "manual_one": "{{count, number}} added by hand",
+        "manual_other": "{{count, number}} added by hand",
+        "not-reproducible_one": "{{count, number}} not reproducible",
+        "not-reproducible_other": "{{count, number}} not reproducible"
+      },
+      "verificationHint": "For every trip, the booking is reconstructed from the billed amount and recomputed with the stored prices. Only trips whose amount comes out exactly count as recomputed to the cent – not those with a 1 cent rounding difference, estimated ones or ones completed by hand.",
       "deviation": "Total recomputation difference: {{amount}}",
       "warnings": {
         "title": "Notes",
@@ -206,7 +220,7 @@
         "cheapest": "Cheapest tariff of the month",
         "actual": "Your tariff",
         "path": "Optimal path in hindsight (with switching fees)",
-        "switch": "Tariff switch, €5 fee"
+        "switch": "Tariff switch, {{amount}} fee"
       },
       "source": {
         "inherited": "assumed",
@@ -221,7 +235,8 @@
       },
       "menuLabel": "Your tariff in {{month}}",
       "change": "Your tariff in {{month}}: {{tariff}}. Change",
-      "resetOverride": "Determine from the trips again"
+      "resetOverride": "Determine from the trips again",
+      "notCompared": "not compared"
     },
     "chart": {
       "title": "Monthly cost over time",
@@ -301,7 +316,8 @@
       "apply": "Apply",
       "clear": "Remove entry",
       "tooEarly": "The booked end cannot be before {{time}}.",
-      "invalid": "Please choose a valid date."
+      "invalid": "This date does not exist. Please choose a valid date.",
+      "tooLate": "The booked end can be at most 30 days after the trip start, so {{time}} at the latest."
     },
     "empty": {
       "title": "No result possible",
@@ -316,5 +332,9 @@
     "START": "Start",
     "AKTIV": "Aktiv",
     "COMFORT": "Comfort"
+  },
+  "units": {
+    "hour": "h",
+    "minute": "min"
   }
 }

@@ -95,7 +95,7 @@ export function ResultView() {
                 <CostChart analysis={analysis} describedBy={`chart-note ${MATRIX_CAPTION_ID}`} />
               </Suspense>
             </section>
-            <BreakEvenCard analysis={analysis} additionalDrivers={additionalDrivers} />
+            <BreakEvenCard analysis={analysis} />
           </div>
           <TripList analysis={analysis} openMonths={openMonths} onOpenChange={setOpen} />
         </>

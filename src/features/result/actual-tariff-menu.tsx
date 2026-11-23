@@ -30,13 +30,16 @@ function sourceKey(row: MonthRow): "inherited" | "override" | "mixed" | null {
  * The user's tariff in one month, with a menu to correct it. Inherited months are labelled as
  * assumed, corrections as set by hand; a correction can be removed again.
  */
-export function ActualTariffMenu({ row }: { row: MonthRow }) {
+export function ActualTariffMenu({ row, compared }: { row: MonthRow; compared: TariffId[] }) {
   const { t, i18n } = useTranslation("common");
   const [settings, setSettings] = useAtom(settingsAtom);
   const month = formatMonth(row.month, i18n.language);
   const tariff = t(`tariffs.${row.actualTariff}`);
   const source = sourceKey(row);
   const sourceLabel = source ? t(`result.matrix.source.${source}`) : null;
+
+  // Compared tariffs, plus the month's own tariff if it is not compared.
+  const options = ALL_TARIFFS.filter((id) => compared.includes(id) || id === row.actualTariff);
 
   const setOverride = (value: TariffId | null) => {
     const overrides = { ...settings.actualTariffOverrides };
@@ -81,22 +84,31 @@ export function ActualTariffMenu({ row }: { row: MonthRow }) {
           {t(`result.matrix.sourceHint.${source ?? "trips"}`)}
         </p>
         <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup
-          value={row.actualTariff}
-          onValueChange={(value) => {
-            if (value !== row.actualTariff) {
-              setOverride(value as TariffId);
-            }
-          }}
-        >
-          {ALL_TARIFFS.map((id) => (
-            <DropdownMenuRadioItem key={id} value={id}>
+        <DropdownMenuRadioGroup value={row.actualTariff}>
+          {options.map((id) => (
+            <DropdownMenuRadioItem
+              key={id}
+              value={id}
+              // Choosing the current value pins it, so an assumption can be confirmed.
+              onSelect={() => {
+                if (id !== row.actualTariff || row.actualTariffSource !== "override") {
+                  setOverride(id);
+                }
+              }}
+            >
               <span
                 aria-hidden="true"
-                className="size-2.5 rounded-sm"
+                className="size-2.5 shrink-0 rounded-sm"
                 style={{ background: tariffColor(id) }}
               />
-              {t(`tariffs.${id}`)}
+              <span className="flex flex-col">
+                {t(`tariffs.${id}`)}
+                {!compared.includes(id) && (
+                  <span className="text-xs text-muted-foreground">
+                    {t("result.matrix.notCompared")}
+                  </span>
+                )}
+              </span>
             </DropdownMenuRadioItem>
           ))}
         </DropdownMenuRadioGroup>

@@ -4,15 +4,26 @@ import type { Analysis } from "@/domain/analysis/analyze";
 import { formatCurrency, formatMonth } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Hint } from "./hint";
-import { RECOMPUTED_KINDS } from "./tariffs";
+import type { ReconstructionKind } from "@/domain/analysis/reconstruct-booking";
+import { EXACT_KINDS } from "./tariffs";
 
-type Headline = "saving" | "alreadyBest" | "switchingWon" | "cheaperThanBest";
+/** Kinds listed after the exact count, each only when it occurs. */
+const OTHER_KINDS: ReconstructionKind[] = [
+  "verified-rounding",
+  "estimated",
+  "manual",
+  "not-reproducible",
+];
+
+type Headline = "alreadyBest" | "saving" | "equal" | "switchingWon" | "cheaperThanBest";
 
 /** Which of the possible answers applies. */
 export function headlineCase(analysis: Analysis): Headline {
   const best = analysis.bestSingle.tariff;
   if (analysis.months.every((m) => m.actualTariff === best)) return "alreadyBest";
-  if (analysis.bestSingle.saving > 0) return "saving";
+  const { saving } = analysis.bestSingle;
+  if (saving > 0) return "saving";
+  if (saving === 0) return "equal";
   return analysis.months.some((m) => m.switched) ? "switchingWon" : "cheaperThanBest";
 }
 
@@ -38,7 +49,12 @@ function Total({
       data-testid={testId}
     >
       <dt className="text-sm text-muted-foreground">{label}</dt>
-      <dd className="text-xl font-semibold sm:text-2xl tracking-tight tabular-nums">{amount}</dd>
+      <dd
+        data-testid={`${testId}-amount`}
+        className="text-xl font-semibold sm:text-2xl tracking-tight tabular-nums"
+      >
+        {amount}
+      </dd>
       <dd className="text-xs text-muted-foreground">{note}</dd>
     </div>
   );
@@ -63,7 +79,12 @@ export function SummaryCard({ analysis }: { analysis: Analysis }) {
   };
 
   const total = analysis.trips.length;
-  const recomputed = RECOMPUTED_KINDS.reduce((s, k) => s + analysis.verification[k], 0);
+  const exact = EXACT_KINDS.reduce((s, k) => s + analysis.verification[k], 0);
+  const others = OTHER_KINDS.filter((k) => analysis.verification[k] > 0).map((k) =>
+    t(`result.summary.verificationParts.${k}`, { count: analysis.verification[k] }),
+  );
+  const hindsight = actualTotal - optimalPath.total;
+  const sub = kind === "alreadyBest" && hindsight > 0 ? "alreadyBestHindsight" : kind;
   const first = months[0]?.month ?? "";
   const last = months[months.length - 1]?.month ?? "";
 
@@ -89,10 +110,11 @@ export function SummaryCard({ analysis }: { analysis: Analysis }) {
           {t(`result.summary.headline.${kind}`, { tariff, amount })}
         </h2>
         <p className="max-w-prose text-muted-foreground">
-          {t(`result.summary.sub.${kind}`, {
+          {t(`result.summary.sub.${sub}`, {
             tariff,
             actual: money(actualTotal),
             best: money(bestSingle.total),
+            hindsight: money(hindsight),
           })}
         </p>
       </div>
@@ -130,10 +152,15 @@ export function SummaryCard({ analysis }: { analysis: Analysis }) {
           >
             <CircleCheck className="size-4 shrink-0 text-best" aria-hidden="true" />
             <span className="underline decoration-dotted underline-offset-4">
-              {t("result.summary.verification", { recomputed, total })}
+              {t("result.summary.verification", { exact, count: total })}
             </span>
           </button>
         </Hint>
+        {others.length > 0 && (
+          <span className="text-muted-foreground" data-testid="verification-others">
+            {others.join(" · ")}
+          </span>
+        )}
         <span className="text-muted-foreground tabular-nums">
           {t("result.summary.deviation", {
             amount: formatCurrency(analysis.recomputationDeviation, lang, { signed: true }),

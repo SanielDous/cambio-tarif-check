@@ -16,7 +16,7 @@ import { BookedEndEditor } from "./booked-end-editor";
 import { StatusBadge } from "./status-badge";
 import { EDITABLE_KINDS } from "./tariffs";
 
-// Below the md breakpoint each row becomes a card; explicit roles keep the table semantics.
+// Below the md breakpoint each row becomes a card.
 const cell =
   "align-top md:border-t md:px-3 md:py-2.5 max-md:before:mb-0.5 max-md:before:block max-md:before:text-xs max-md:before:text-muted-foreground max-md:before:content-[attr(data-label)]";
 const num = "tabular-nums md:text-right whitespace-nowrap";
@@ -27,42 +27,38 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
   const lang = i18n.language;
   const money = (cents: number) => formatCurrency(cents, lang);
   const col = (key: string) => t(`result.trips.columns.${key}`);
+  const units = { hour: t("units.hour"), minute: t("units.minute") };
 
   return (
-    <table role="table" className="w-full text-sm max-md:block">
-      <thead role="rowgroup" className="max-md:sr-only">
-        <tr role="row" className="text-xs text-muted-foreground">
-          <th role="columnheader" scope="col" className="px-3 py-2 text-left font-medium">
+    <table className="w-full text-sm max-md:block">
+      <thead className="max-md:sr-only">
+        <tr className="text-xs text-muted-foreground">
+          <th scope="col" className="px-3 py-2 text-left font-medium">
             {col("trip")}
           </th>
-          <th role="columnheader" scope="col" className="px-3 py-2 text-right font-medium">
+          <th scope="col" className="px-3 py-2 text-right font-medium">
             {col("duration")}
           </th>
-          <th role="columnheader" scope="col" className="px-3 py-2 text-right font-medium">
+          <th scope="col" className="px-3 py-2 text-right font-medium">
             {col("km")}
           </th>
-          <th role="columnheader" scope="col" className="px-3 py-2 text-left font-medium">
+          <th scope="col" className="px-3 py-2 text-left font-medium">
             {col("vehicle")}
           </th>
-          <th role="columnheader" scope="col" className="px-3 py-2 text-right font-medium">
+          <th scope="col" className="px-3 py-2 text-right font-medium">
             {col("billed")}
           </th>
           {tariffs.map((tariff) => (
-            <th
-              key={tariff}
-              role="columnheader"
-              scope="col"
-              className="px-3 py-2 text-right font-medium"
-            >
+            <th key={tariff} scope="col" className="px-3 py-2 text-right font-medium">
               {t(`tariffs.${tariff}`)}
             </th>
           ))}
-          <th role="columnheader" scope="col" className="px-3 py-2 text-left font-medium">
+          <th scope="col" className="px-3 py-2 text-left font-medium">
             {col("status")}
           </th>
         </tr>
       </thead>
-      <tbody role="rowgroup" className="max-md:grid max-md:gap-3">
+      <tbody className="max-md:grid max-md:gap-3">
         {trips.map((result) => {
           const { trip, reconstruction: r } = result;
           const billed = trip.billedTime + trip.billedKm;
@@ -78,12 +74,10 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
           return (
             <tr
               key={trip.id}
-              role="row"
               data-testid="trip-row"
               className="max-md:grid max-md:grid-cols-4 max-md:gap-x-3 max-md:gap-y-3 max-md:rounded-lg max-md:border max-md:p-3"
             >
               <td
-                role="cell"
                 data-label={col("trip")}
                 className={cn(cell, "max-md:col-span-4 max-md:before:hidden")}
               >
@@ -105,26 +99,26 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
                   </span>
                 )}
               </td>
-              <td role="cell" data-label={col("duration")} className={cn(cell, num)}>
-                <span className="block">{formatDuration(r.chargedUntil - trip.start)}</span>
+              <td data-label={col("duration")} className={cn(cell, num)}>
+                <span className="block">{formatDuration(r.chargedUntil - trip.start, units)}</span>
                 {bookedLater && (
                   <span className="block text-xs text-muted-foreground">
                     {t("result.trips.booked", {
-                      duration: formatDuration(r.bookedEnd - trip.start),
+                      duration: formatDuration(r.bookedEnd - trip.start, units),
                     })}
                   </span>
                 )}
               </td>
-              <td role="cell" data-label={col("km")} className={cn(cell, num)}>
+              <td data-label={col("km")} className={cn(cell, num)}>
                 {formatNumber(trip.km, lang)}
               </td>
-              <td role="cell" data-label={col("vehicle")} className={cn(cell, "max-md:col-span-2")}>
+              <td data-label={col("vehicle")} className={cn(cell, "max-md:col-span-2")}>
                 <span className="block">{trip.vehicleClass}</span>
                 <span className="block text-xs text-muted-foreground">
                   {t(`tariffs.${trip.tariff}`)}
                 </span>
               </td>
-              <td role="cell" data-label={col("billed")} className={cn(cell, num)}>
+              <td data-label={col("billed")} className={cn(cell, num)}>
                 <span className="block font-medium">{money(billed)}</span>
                 {deviation !== 0 && (
                   <span
@@ -141,12 +135,7 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
                 const total = totals[i] ?? null;
                 const best = total !== null && total === cheapest;
                 return (
-                  <td
-                    key={tariff}
-                    role="cell"
-                    data-label={t(`tariffs.${tariff}`)}
-                    className={cn(cell, num)}
-                  >
+                  <td key={tariff} data-label={t(`tariffs.${tariff}`)} className={cn(cell, num)}>
                     <span className={cn("inline-flex items-center gap-1", best && "font-semibold")}>
                       {best && <Check className="size-3.5 text-best" aria-hidden="true" />}
                       {total === null ? "–" : money(total)}
@@ -158,7 +147,6 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
                 );
               })}
               <td
-                role="cell"
                 data-label={col("status")}
                 className={cn(cell, "max-md:col-span-4 max-md:before:hidden")}
               >

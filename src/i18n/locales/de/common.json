@@ -126,13 +126,16 @@
         "saving": "Mit dem Tarif {{tariff}} hättest du {{amount}} gespart.",
         "alreadyBest": "Du warst die ganze Zeit im günstigsten Tarif: {{tariff}}.",
         "switchingWon": "Du hast durch deine Wechsel {{amount}} weniger bezahlt als im besten einzelnen Tarif ({{tariff}}).",
-        "cheaperThanBest": "Du hast {{amount}} weniger bezahlt als im besten einzelnen Tarif ({{tariff}})."
+        "cheaperThanBest": "Du hast {{amount}} weniger bezahlt als im besten einzelnen Tarif ({{tariff}}).",
+        "equal": "Du hast genau so viel bezahlt wie im besten einzelnen Tarif ({{tariff}})."
       },
       "sub": {
         "saving": "Du hast {{actual}} bezahlt. Mit {{tariff}} wären es für dieselben Fahrten {{best}} gewesen.",
         "alreadyBest": "Kein anderer Tarif wäre für deine Fahrten günstiger gewesen. Ein Wechsel lohnt sich nach diesen Zahlen nicht.",
         "switchingWon": "Kein einzelner Tarif wäre über den ganzen Zeitraum günstiger gewesen als dein tatsächlicher Verlauf.",
-        "cheaperThanBest": "Kein einzelner Tarif wäre über den ganzen Zeitraum günstiger gewesen als das, was du tatsächlich bezahlt hast."
+        "cheaperThanBest": "Kein einzelner Tarif wäre über den ganzen Zeitraum günstiger gewesen als das, was du tatsächlich bezahlt hast.",
+        "equal": "Ein einzelner Tarif hätte dir für diese Fahrten nichts gespart.",
+        "alreadyBestHindsight": "Kein anderer einzelner Tarif wäre günstiger gewesen. Rückblickend hätten Wechsel zwischen den Tarifen {{hindsight}} gespart – im Voraus kennt man den Monat aber nicht."
       },
       "actual": {
         "label": "Tatsächlich bezahlt",
@@ -152,8 +155,19 @@
         "less": "{{amount}} weniger als tatsächlich",
         "same": "genau so viel wie tatsächlich"
       },
-      "verification": "{{recomputed, number}} von {{total, number}} Fahrten auf den Cent nachgerechnet",
-      "verificationHint": "Für jede Fahrt wird die Buchung aus dem abgerechneten Betrag rekonstruiert und mit den hinterlegten Preisen nachgerechnet. Stimmt das Ergebnis mit der Rechnung überein, gilt die Fahrt als nachgerechnet.",
+      "verification_one": "{{exact, number}} von {{count, number}} Fahrt auf den Cent nachgerechnet",
+      "verification_other": "{{exact, number}} von {{count, number}} Fahrten auf den Cent nachgerechnet",
+      "verificationParts": {
+        "verified-rounding_one": "{{count, number}} mit 1 Cent Rundungsabweichung",
+        "verified-rounding_other": "{{count, number}} mit 1 Cent Rundungsabweichung",
+        "estimated_one": "{{count, number}} geschätzt",
+        "estimated_other": "{{count, number}} geschätzt",
+        "manual_one": "{{count, number}} von Hand ergänzt",
+        "manual_other": "{{count, number}} von Hand ergänzt",
+        "not-reproducible_one": "{{count, number}} nicht nachrechenbar",
+        "not-reproducible_other": "{{count, number}} nicht nachrechenbar"
+      },
+      "verificationHint": "Für jede Fahrt wird die Buchung aus dem abgerechneten Betrag rekonstruiert und mit den hinterlegten Preisen nachgerechnet. Als auf den Cent nachgerechnet zählen nur Fahrten, deren Betrag genau herauskommt – nicht Fahrten mit 1 Cent Rundungsabweichung, geschätzte oder von Hand ergänzte.",
       "deviation": "Abweichung der Nachrechnung insgesamt: {{amount}}",
       "warnings": {
         "title": "Hinweise",
@@ -206,7 +220,7 @@
         "cheapest": "Günstigster Tarif im Monat",
         "actual": "Dein Tarif",
         "path": "Rückblickend optimaler Pfad (mit Wechselgebühren)",
-        "switch": "Tarifwechsel, 5 € Gebühr"
+        "switch": "Tarifwechsel, {{amount}} Gebühr"
       },
       "source": {
         "inherited": "angenommen",
@@ -221,7 +235,8 @@
       },
       "menuLabel": "Dein Tarif im {{month}}",
       "change": "Dein Tarif im {{month}}: {{tariff}}. Ändern",
-      "resetOverride": "Wieder aus den Fahrten bestimmen"
+      "resetOverride": "Wieder aus den Fahrten bestimmen",
+      "notCompared": "wird nicht verglichen"
     },
     "chart": {
       "title": "Monatskosten im Verlauf",
@@ -301,7 +316,8 @@
       "apply": "Übernehmen",
       "clear": "Eintrag entfernen",
       "tooEarly": "Das gebuchte Ende kann nicht vor {{time}} liegen.",
-      "invalid": "Bitte ein gültiges Datum wählen."
+      "invalid": "Dieses Datum gibt es nicht. Bitte ein gültiges Datum wählen.",
+      "tooLate": "Das gebuchte Ende kann höchstens 30 Tage nach Fahrtbeginn liegen, also spätestens {{time}}."
     },
     "empty": {
       "title": "Keine Auswertung möglich",
@@ -316,5 +332,9 @@
     "START": "Start",
     "AKTIV": "Aktiv",
     "COMFORT": "Comfort"
+  },
+  "units": {
+    "hour": "h",
+    "minute": "min"
   }
 }

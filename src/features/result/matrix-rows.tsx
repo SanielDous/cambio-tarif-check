@@ -194,7 +194,7 @@ export function ActualRows({ analysis }: { analysis: Analysis }) {
         </th>
         {months.map((m) => (
           <td key={m.month} className="px-1 pt-0.5 pb-2 align-top">
-            <ActualTariffMenu row={m} />
+            <ActualTariffMenu row={m} compared={analysis.tariffs} />
           </td>
         ))}
         <td className={cn(stickyRight, "rounded-br-xl")} />

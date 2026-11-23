@@ -6,27 +6,19 @@ import { Button } from "@/components/ui/button";
 import { NativeSelect } from "@/components/ui/native-select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import type { TripResult } from "@/domain/analysis/analyze";
-import { dateParts, toLocalMinute } from "@/domain/pricing/local-time";
+import { dateParts } from "@/domain/pricing/local-time";
 import type { LocalMinute } from "@/domain/pricing/types";
 import { formatDateTime, formatTime } from "@/lib/format";
 import { settingsAtom } from "@/state/atoms";
+import { MAX_BOOKING_MINUTES, parseBookedEnd, toDateValue } from "./booked-end";
 
 const QUARTER = 15;
-const pad = (n: number) => String(n).padStart(2, "0");
 /** Minutes of the day in quarter-hour steps: 0, 15, …, 1425. */
 const QUARTERS = Array.from({ length: 96 }, (_, i) => i * QUARTER);
 
-function toFields(t: LocalMinute) {
+function minuteOfDay(t: LocalMinute) {
   const p = dateParts(t);
-  return { date: `${p.year}-${pad(p.month)}-${pad(p.day)}`, time: p.hour * 60 + p.minute };
-}
-
-function fromFields(date: string, time: number): LocalMinute | null {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
-  if (!match) return null;
-  const [y, m, d] = match.slice(1).map(Number) as [number, number, number];
-  if (m < 1 || m > 12 || d < 1 || d > 31) return null;
-  return toLocalMinute(y, m, d) + time;
+  return p.hour * 60 + p.minute;
 }
 
 function EditorForm({ result, onDone }: { result: TripResult; onDone: () => void }) {
@@ -36,9 +28,10 @@ function EditorForm({ result, onDone }: { result: TripResult; onDone: () => void
   const { trip, reconstruction } = result;
   const current = settings.manualBookedEnds[trip.id];
   const min = reconstruction.chargedUntil;
-  const initial = toFields(current ?? Math.max(min, reconstruction.bookedEnd));
-  const [date, setDate] = useState(initial.date);
-  const [time, setTime] = useState(initial.time);
+  const max = trip.start + MAX_BOOKING_MINUTES;
+  const initial = current ?? Math.max(min, reconstruction.bookedEnd);
+  const [date, setDate] = useState(toDateValue(initial));
+  const [time, setTime] = useState(minuteOfDay(initial));
   const [error, setError] = useState<string | null>(null);
   const id = useId();
 
@@ -52,12 +45,10 @@ function EditorForm({ result, onDone }: { result: TripResult; onDone: () => void
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
-    const value = fromFields(date, time);
-    if (value === null) return setError(t("result.bookedEnd.invalid"));
-    if (value < min) {
-      return setError(t("result.bookedEnd.tooEarly", { time: formatDateTime(min, lang) }));
-    }
-    save(value);
+    const parsed = parseBookedEnd(date, time, min, max);
+    if (parsed.ok) return save(parsed.value);
+    const limit = parsed.error === "tooLate" ? max : min;
+    setError(t(`result.bookedEnd.${parsed.error}`, { time: formatDateTime(limit, lang) }));
   };
 
   return (
@@ -77,6 +68,8 @@ function EditorForm({ result, onDone }: { result: TripResult; onDone: () => void
             id={`${id}-date`}
             type="date"
             value={date}
+            min={toDateValue(min)}
+            max={toDateValue(max)}
             onChange={(e) => {
               setDate(e.target.value);
               setError(null);
@@ -98,6 +91,7 @@ function EditorForm({ result, onDone }: { result: TripResult; onDone: () => void
               setError(null);
             }}
             aria-invalid={error !== null}
+            aria-describedby={error ? `${id}-error` : undefined}
           >
             {QUARTERS.map((q) => (
               <option key={q} value={q}>

@@ -1,18 +1,10 @@
 import { useTranslation } from "react-i18next";
 import type { Analysis } from "@/domain/analysis/analyze";
-import { monthlyFee } from "@/domain/analysis/months";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
 import { formatCurrency, formatMonth } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 /** For each neighbouring tariff pair: from which monthly trip cost the higher fee pays off. */
-export function BreakEvenCard({
-  analysis,
-  additionalDrivers,
-}: {
-  analysis: Analysis;
-  additionalDrivers: number;
-}) {
+export function BreakEvenCard({ analysis }: { analysis: Analysis }) {
   const { t, i18n } = useTranslation("common");
   const lang = i18n.language;
   const total = analysis.months.length;
@@ -33,7 +25,7 @@ export function BreakEvenCard({
         <p className="text-sm">{t("result.breakEven.none")}</p>
       ) : (
         <ul className="grid gap-5">
-          {analysis.breakEven.map(({ lower, higher, monthlyTripCost }) => {
+          {analysis.breakEven.map(({ lower, higher, monthlyTripCost, monthsAbove, months }) => {
             const names = { lower: t(`tariffs.${lower}`), higher: t(`tariffs.${higher}`) };
             if (monthlyTripCost === null) {
               return (
@@ -42,9 +34,7 @@ export function BreakEvenCard({
                 </li>
               );
             }
-            const fee = monthlyFee(lower, additionalDrivers, PRICE_DATA);
-            const above = analysis.months.map((m) => (m.costs[lower] ?? 0) - fee > monthlyTripCost);
-            const count = above.filter(Boolean).length;
+            const count = monthsAbove;
             return (
               <li key={`${lower}-${higher}`} className="space-y-2 text-sm">
                 <p>
@@ -59,15 +49,15 @@ export function BreakEvenCard({
                     role="img"
                     aria-label={t("result.breakEven.months", { count, total })}
                   >
-                    {analysis.months.map((m, i) => (
+                    {months.map((m) => (
                       <span
                         key={m.month}
                         title={`${formatMonth(m.month, lang, "short")}: ${t(
-                          above[i] ? "result.breakEven.above" : "result.breakEven.below",
+                          m.above ? "result.breakEven.above" : "result.breakEven.below",
                         )}`}
                         className={cn(
                           "h-3 w-2 rounded-[2px] border border-foreground/60",
-                          above[i] && "bg-foreground/75",
+                          m.above && "bg-foreground/75",
                         )}
                       />
                     ))}

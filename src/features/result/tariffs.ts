@@ -10,14 +10,8 @@ export const tariffColorVar = (tariff: TariffId) => `--tariff-${tariff.toLowerCa
 /** `var(...)` reference to a tariff's identity colour, for inline styles. */
 export const tariffColor = (tariff: TariffId) => `var(${tariffColorVar(tariff)})`;
 
-/** Kinds whose trip was recomputed to the cent (or whose cost follows from a fixed rule). */
-export const RECOMPUTED_KINDS: ReconstructionKind[] = [
-  "verified",
-  "verified-rounding",
-  "cancelled",
-  "unused",
-  "manual",
-];
+/** Kinds whose billed amount was reproduced to the cent from the export alone. */
+export const EXACT_KINDS: ReconstructionKind[] = ["verified", "cancelled", "unused"];
 
 /** Kinds for which the user can enter the booked end by hand. */
 export const EDITABLE_KINDS: ReconstructionKind[] = ["estimated", "not-reproducible", "manual"];

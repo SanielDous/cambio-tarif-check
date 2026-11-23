@@ -75,10 +75,12 @@ describe("date and time", () => {
 
 describe("formatDuration and formatNumber", () => {
   it("formats durations", () => {
-    expect(formatDuration(135)).toBe("2 h 15 min");
-    expect(formatDuration(45)).toBe("45 min");
-    expect(formatDuration(180)).toBe("3 h");
-    expect(formatDuration(0)).toBe("0 min");
+    const units = { hour: "h", minute: "min" };
+    expect(formatDuration(135, units)).toBe("2 h 15 min");
+    expect(formatDuration(45, units)).toBe("45 min");
+    expect(formatDuration(180, units)).toBe("3 h");
+    expect(formatDuration(0, units)).toBe("0 min");
+    expect(formatDuration(135, { hour: "Std.", minute: "Min." })).toBe("2 Std. 15 Min.");
   });
 
   it("formats numbers per language", () => {
