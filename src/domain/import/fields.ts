@@ -20,6 +20,15 @@ export interface Trip {
   status?: string;
 }
 
+/**
+ * Identifies the booking behind a row across exports: start, vehicle class and city. The end is
+ * left out on purpose, since it is the booked end before the trip and the actual return after it.
+ * Not part of `Trip.id`.
+ */
+export function bookingKey(trip: Pick<Trip, "start" | "vehicleClass" | "city">): string {
+  return [trip.start, trip.vehicleClass.trim(), trip.city.trim()].join("|");
+}
+
 export type FieldId =
   | "city"
   | "vehicleClass"
@@ -166,6 +175,11 @@ export type RowProblem = {
   detail?: string;
   /** Month key ("YYYY-MM") of the row's end; set for "not-billed" rows whose end is readable. */
   month?: string;
+  /**
+   * `bookingKey` of the row; set for "not-billed" rows whose start is readable. Such a row stops
+   * counting as open once a billed trip of the same booking is imported.
+   */
+  bookingKey?: string;
 };
 
 export class ImportError extends Error {

@@ -9,6 +9,7 @@ import {
 import { cellText, isBlankCell } from "./cells";
 import {
   BILLED_STATUSES,
+  bookingKey,
   type ColumnMapping,
   type FieldId,
   type RawTable,
@@ -174,6 +175,25 @@ function endMonth(row: unknown[], mapping: ColumnMapping): string | undefined {
   }
 }
 
+/** `bookingKey` of a row, if its start can be read. */
+function rowBookingKey(row: unknown[], mapping: ColumnMapping): string | undefined {
+  const index = mapping.start;
+  if (index === undefined) return undefined;
+  const cell = (field: FieldId) => {
+    const i = mapping[field];
+    return i === undefined ? "" : text(row[i]);
+  };
+  try {
+    return bookingKey({
+      start: toTime(row[index], "start"),
+      vehicleClass: cell("vehicleClass"),
+      city: cell("city"),
+    });
+  } catch {
+    return undefined;
+  }
+}
+
 /** Validates the rows of a table into trips; every rejected row becomes a `RowProblem`. */
 export function normalizeRows(
   table: RawTable,
@@ -205,6 +225,8 @@ export function normalizeRows(
       if (error.reason === "not-billed") {
         const month = endMonth(row, mapping);
         if (month !== undefined) problem.month = month;
+        const key = rowBookingKey(row, mapping);
+        if (key !== undefined) problem.bookingKey = key;
       }
       problems.push(problem);
     }

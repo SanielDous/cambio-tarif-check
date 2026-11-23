@@ -6,7 +6,7 @@ import { dateParts, parseLocal } from "@/domain/pricing/local-time";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
 import { dedupeTrips } from "./dedupe";
 import { detectColumns } from "./detect-columns";
-import { ImportError, type RawTable, type RowProblem, type Trip } from "./fields";
+import { bookingKey, ImportError, type RawTable, type RowProblem, type Trip } from "./fields";
 import { normalizeRows } from "./normalize-rows";
 import { readTable } from "./read-table";
 
@@ -241,14 +241,38 @@ describe("normalizeRows", () => {
     it("reports both amounts empty with the month of the row's end", () => {
       const { problems } = run(row({ 3: "01.01.2026 01:00:00", 5: "", 6: "" }));
       expect(problems).toEqual([
-        { fileName: "t.csv", rowNumber: 2, reason: "not-billed", month: "2026-01" },
+        {
+          fileName: "t.csv",
+          rowNumber: 2,
+          reason: "not-billed",
+          month: "2026-01",
+          bookingKey: bookingKey(run(good).trips[0] as Trip),
+        },
       ]);
+    });
+
+    it("keys the row by start, class and city, the same as the billed trip", () => {
+      const billed = run(good).trips[0] as Trip;
+      const key = (changes: Record<number, unknown>) =>
+        run(row({ 5: "", 6: "", ...changes })).problems[0]?.bookingKey;
+      // The end differs before and after the trip: booked end, then the actual return.
+      expect(key({ 3: "15.12.2025 20:00:00" })).toBe(bookingKey(billed));
+      expect(key({ 2: "15.12.2025 17:30:00" })).not.toBe(bookingKey(billed));
+      expect(key({ 1: "M Kompakt" })).not.toBe(bookingKey(billed));
+      expect(key({ 0: "Köln" })).not.toBe(bookingKey(billed));
+      expect(billed.id).not.toContain(bookingKey(billed));
     });
 
     it("leaves the month out when the end cannot be read", () => {
       const { problems } = run(row({ 3: "bald", 5: "", 6: "" }));
       expect(problems[0]?.reason).toBe("not-billed");
       expect(problems[0]).not.toHaveProperty("month");
+    });
+
+    it("leaves the booking key out when the start cannot be read", () => {
+      const { problems } = run(row({ 2: "bald", 5: "", 6: "" }));
+      expect(problems[0]?.reason).toBe("not-billed");
+      expect(problems[0]).not.toHaveProperty("bookingKey");
     });
 
     it("decides an unknown status by the amounts and records it", () => {
@@ -259,7 +283,7 @@ describe("normalizeRows", () => {
 
       const open = runStatus("OPEN", { 5: "", 6: "" });
       expect(open.trips).toEqual([]);
-      expect(open.problems).toEqual([
+      expect(open.problems).toMatchObject([
         { fileName: "t.csv", rowNumber: 2, reason: "not-billed", month: "2025-12" },
       ]);
       expect(open.unknownStatuses).toEqual([{ value: "OPEN", rows: 1 }]);

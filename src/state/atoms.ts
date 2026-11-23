@@ -8,6 +8,7 @@ import {
 import { dedupeTrips } from "@/domain/import/dedupe";
 import { detectColumns } from "@/domain/import/detect-columns";
 import {
+  bookingKey,
   ImportError,
   type ColumnMapping,
   type Detection,
@@ -81,14 +82,22 @@ export const setAdditionalDriversAtom = atom(null, (get, set, value: number) => 
   set(driversSetByHandAtom, true);
 });
 
-/** Months of rows that are not billed yet, over all imported files. */
-const unbilledMonthsAtom = atom((get) =>
-  get(importReportAtom).files.flatMap((file) =>
+/**
+ * Months of rows that are not billed yet, over all imported files. A row stops counting once a
+ * billed trip of the same booking is imported (an older export before billing, a newer one after).
+ */
+const unbilledMonthsAtom = atom((get) => {
+  const billed = new Set(get(tripsAtom).map(bookingKey));
+  return get(importReportAtom).files.flatMap((file) =>
     file.problems.flatMap((problem) =>
-      problem.reason === "not-billed" && problem.month !== undefined ? [problem.month] : [],
+      problem.reason === "not-billed" &&
+      problem.month !== undefined &&
+      (problem.bookingKey === undefined || !billed.has(problem.bookingKey))
+        ? [problem.month]
+        : [],
     ),
-  ),
-);
+  );
+});
 
 export const analysisAtom = atom<Analysis | null>((get) => {
   const trips = get(tripsAtom);
