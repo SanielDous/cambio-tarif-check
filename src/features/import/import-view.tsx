@@ -1,12 +1,14 @@
 import { Lock, Table2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
+import { formatDate } from "@/lib/format";
 import { Dropzone } from "./dropzone";
 import { FileMessages } from "./file-messages";
 import { MappingDialog } from "./mapping-dialog";
 
 /** The first screen: where to get the export, what happens to the data, and the drop zone. */
 export function ImportView() {
-  const { t } = useTranslation("common");
+  const { t, i18n } = useTranslation("common");
   return (
     <div className="space-y-6">
       <Dropzone />
@@ -28,6 +30,19 @@ export function ImportView() {
         </section>
       </div>
       <p className="text-sm text-muted-foreground">{t("import.completeness")}</p>
+      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t pt-4 text-sm text-muted-foreground">
+        <span>{t("import.notice.unofficial")}</span>
+        <span aria-hidden="true">·</span>
+        <span>
+          {t("import.notice.pricesAsOf", {
+            date: formatDate(parseIsoDate(PRICE_DATA.pricesAsOf), i18n.language),
+          })}
+        </span>
+        <span aria-hidden="true">·</span>
+        <a className="underline underline-offset-4" href="#/how-it-works">
+          {t("import.notice.more")}
+        </a>
+      </p>
       <MappingDialog />
     </div>
   );

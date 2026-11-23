@@ -1,5 +1,6 @@
 import type { Trip } from "@/domain/import/fields";
 import { monthKey } from "@/domain/pricing/local-time";
+import { parseIsoDate } from "@/domain/pricing/price-data";
 import type { LocalMinute, PriceData, TariffId } from "@/domain/pricing/types";
 import { breakEven, type BreakEven } from "./break-even";
 import { buildMonths, comparedTariffs, monthlyFee } from "./months";
@@ -63,6 +64,8 @@ export interface Analysis {
   breakEven: BreakEven[];
   suggestedAdditionalDrivers: number;
   surchargeDerivedTrips: number;
+  /** Trips returned after the day of `pricesAsOf`; they are priced with the latest known prices. */
+  tripsAfterPricesAsOf: number;
 }
 
 const KINDS: ReconstructionKind[] = [
@@ -155,6 +158,8 @@ export function analyze(trips: Trip[], settings: Settings, data: PriceData): Ana
 
   const drivers = new Set(inPeriod.map((t) => t.driver?.trim() ?? "").filter((d) => d !== ""));
 
+  const afterPrices = parseIsoDate(data.pricesAsOf) + 24 * 60;
+
   return {
     tariffs,
     trips: results,
@@ -168,5 +173,6 @@ export function analyze(trips: Trip[], settings: Settings, data: PriceData): Ana
     breakEven: breakEven(tariffs, tripsCost, fees, monthly),
     suggestedAdditionalDrivers: Math.max(0, drivers.size - 1),
     surchargeDerivedTrips: results.filter((r) => r.reconstruction.surchargeDerived).length,
+    tripsAfterPricesAsOf: inPeriod.filter((trip) => trip.end >= afterPrices).length,
   };
 }
