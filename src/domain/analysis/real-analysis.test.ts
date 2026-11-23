@@ -113,3 +113,41 @@ describe("override on the fixtures", () => {
     expect((base?.actualTotal ?? 0) - (a?.actualTotal ?? 0)).toBe(4 * 1100);
   });
 });
+
+describe("period filter on the fixtures", () => {
+  it("keeps the inherited Aktiv months of 2026 before the Basis trip in May", () => {
+    const a = analyze(
+      trips,
+      { ...SETTINGS, period: { from: "2026-01", to: "2026-05" } },
+      PRICE_DATA,
+    );
+    expect(a?.months.map((m) => m.month)).toEqual([
+      "2026-01",
+      "2026-02",
+      "2026-03",
+      "2026-04",
+      "2026-05",
+    ]);
+    expect(a?.months.map((m) => m.actualTariff)).toEqual([
+      "AKTIV",
+      "AKTIV",
+      "AKTIV",
+      "AKTIV",
+      "BASIS",
+    ]);
+    expect(a?.months.map((m) => m.switched)).toEqual([false, false, false, false, true]);
+    // 4 × 11.00 Aktiv fee + 19.67 + 5.46 billed in May + 5.00 switching fee.
+    expect(a?.actualTotal).toBe(4 * 1100 + 1967 + 546 + 500);
+    expect(a?.bestSingle.tariff).toBe("BASIS");
+    expect(a?.months.every((m) => m.actualTariff === a.bestSingle.tariff)).toBe(false);
+  });
+});
+
+describe("partial months of the fixtures", () => {
+  it("flags the first (trip on the 31st) and the last month (trip on the 12th)", () => {
+    const a = analyze(trips, SETTINGS, PRICE_DATA);
+    const partial = a?.months.filter((m) => m.partial).map((m) => m.month);
+    expect(partial).toEqual(["2024-12", "2026-05"]);
+    expect(a?.months.some((m) => m.incomplete)).toBe(false);
+  });
+});

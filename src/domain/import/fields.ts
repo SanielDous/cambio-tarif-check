@@ -147,6 +147,8 @@ export type RowProblem = {
     | "before-price-data"
     | "not-billed";
   detail?: string;
+  /** Month key ("YYYY-MM") of the row's end; set for "not-billed" rows whose end is readable. */
+  month?: string;
 };
 
 export class ImportError extends Error {

@@ -1,21 +1,11 @@
 import Papa from "papaparse";
+import { cellText, isBlankCell } from "./cells";
 import { detectColumns } from "./detect-columns";
 import { ImportError, type RawTable } from "./fields";
 
 const MAX_BYTES = 5 * 1024 * 1024;
 const HEADER_SEARCH_ROWS = 10;
 const HEADER_MIN_FIELDS = 5;
-
-const isBlank = (cell: unknown): boolean =>
-  cell === null || cell === undefined || (typeof cell === "string" && cell.trim() === "");
-
-function cellText(cell: unknown): string {
-  if (cell === null || cell === undefined) return "";
-  if (cell instanceof Date) return cell.toISOString();
-  return typeof cell === "string" || typeof cell === "number" || typeof cell === "boolean"
-    ? String(cell)
-    : "";
-}
 
 /**
  * The delimiter that splits most of the first non-blank lines into several fields. Papa Parse's
@@ -67,7 +57,7 @@ async function readXlsx(file: File): Promise<unknown[][]> {
 function splitHeader(fileName: string, all: unknown[][]): RawTable {
   const numbered = all
     .map((row, index) => ({ row, number: index + 1 }))
-    .filter(({ row }) => !row.every(isBlank));
+    .filter(({ row }) => !row.every(isBlankCell));
   if (numbered.length === 0) throw new ImportError("empty");
   const rows = numbered.map(({ row }) => row);
   const index = rows

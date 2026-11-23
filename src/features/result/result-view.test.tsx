@@ -411,6 +411,56 @@ describe("trip list", () => {
   });
 });
 
+describe("incomplete and partial months", () => {
+  /** The first row of trips-2025.csv (returned 15.12.2025) without its amounts. */
+  function unbilledFile() {
+    const text = readFileSync(resolve(FIXTURES, "trips-2025.csv"), "utf8");
+    const [header, first] = text.split("\r\n");
+    const cells = (first ?? "").split(";");
+    cells[15] = "";
+    cells[16] = "";
+    const csv = `${header}\r\n${cells.join(";")}\r\n`;
+    return new File([csv], "open.csv", { type: "text/csv" });
+  }
+
+  it("marks the first and last month of the fixtures as probably partial", async () => {
+    await withFixtures();
+    const marks = screen.getAllByTestId("month-partial");
+    expect(marks).toHaveLength(2);
+    const headers = screen.getAllByTestId("month-header");
+    expect(headers[0]).toContainElement(marks[0] as HTMLElement);
+    expect(headers[17]).toContainElement(marks[1] as HTMLElement);
+    expect(marks[0]).toHaveAccessibleName(
+      "Dieser Monat ist im Export vermutlich nicht vollständig enthalten",
+    );
+    expect(screen.queryByTestId("month-incomplete")).not.toBeInTheDocument();
+    expect(screen.getByTestId("warnings")).toHaveTextContent(
+      "Vermutlich nur teilweise im Export enthalten: Dez. 2024, Mai 2026.",
+    );
+  });
+
+  it("marks a month with a not yet billed row as incomplete", async () => {
+    const store = createStore();
+    await store.set(importFilesAtom, [
+      fixture("trips-2025.csv"),
+      fixture("trips-2026.csv"),
+      unbilledFile(),
+    ]);
+    await renderResult(store);
+    const marks = screen.getAllByTestId("month-incomplete");
+    expect(marks).toHaveLength(1);
+    const headers = screen.getAllByTestId("month-header");
+    const december = headers.findIndex((h) => h.getAttribute("abbr") === "Dezember 2025");
+    expect(headers[december]).toContainElement(marks[0] as HTMLElement);
+    expect(marks[0]).toHaveAccessibleName(
+      "In diesem Monat gibt es noch nicht abgerechnete Fahrten",
+    );
+    expect(screen.getByTestId("warnings")).toHaveTextContent(
+      "In Dez. 2025 gibt es noch nicht abgerechnete Fahrten. Sie fehlen in der Auswertung.",
+    );
+  });
+});
+
 describe("settings bar", () => {
   it("disables the under-26 switch while there are additional drivers", async () => {
     const { user } = await withFixtures();
@@ -421,6 +471,16 @@ describe("settings bar", () => {
     expect(under26).toBeEnabled();
     await user.click(under26);
     expect(screen.getAllByTestId("tariff-row").map((r) => r.dataset.tariff)).toContain("CAMPUS");
+  });
+
+  it("shows the under-26 switch on and locked while the export has Campus trips", async () => {
+    const { store } = await withTrips([trip("CAMPUS", 2025, 1, 10), trip("BASIS", 2025, 2, 10)]);
+    expect(store.get(settingsAtom).under26).toBe(false);
+    expect(store.get(analysisAtom)?.tariffs).toContain("CAMPUS");
+    const under26 = screen.getByRole("switch", { name: "Ich bin unter 26" });
+    expect(under26).toBeChecked();
+    expect(under26).toBeDisabled();
+    expect(under26).toHaveAccessibleDescription("Dein Export enthält Fahrten im Campus-Tarif.");
   });
 
   it("keeps the period ordered when from is moved past to", async () => {
@@ -438,10 +498,26 @@ describe("settings bar", () => {
 });
 
 describe("empty state", () => {
-  it("explains an empty period and offers the whole period again", async () => {
-    const { user } = await withFixtures();
+  it("shows the fees of a chosen period without trips", async () => {
+    const { store, user } = await withFixtures();
     await user.selectOptions(screen.getByLabelText("Von"), "2026-02");
     await user.selectOptions(screen.getByLabelText("Bis"), "2026-03");
+    expect(screen.queryByTestId("result-empty")).not.toBeInTheDocument();
+    expect(screen.getByTestId("summary")).toHaveTextContent("0 Fahrten");
+    // Two inherited Aktiv months: 2 × (11.00 € + 3.00 € for the one additional driver found).
+    expect(store.get(settingsAtom).additionalDrivers).toBe(1);
+    expect(store.get(analysisAtom)?.actualTotal).toBe(2800);
+    expect(screen.getByTestId("total-actual-amount").textContent).toBe(euro(2800));
+  });
+
+  it("explains a period outside the data and offers the whole period again", async () => {
+    const { store, user } = await withFixtures();
+    act(() =>
+      store.set(settingsAtom, {
+        ...store.get(settingsAtom),
+        period: { from: "2023-01", to: "2023-02" },
+      }),
+    );
     expect(screen.getByTestId("result-empty")).toHaveTextContent(
       "Im gewählten Zeitraum gibt es keine Fahrten.",
     );

@@ -183,6 +183,7 @@ function Warnings({ analysis }: { analysis: Analysis }) {
     .filter((m) => m.actualTariffSource === "inherited")
     .map((m) => m.month);
   const incomplete = analysis.months.filter((m) => m.incomplete).map((m) => m.month);
+  const partial = analysis.months.filter((m) => m.partial).map((m) => m.month);
   const open = analysis.verification.estimated + analysis.verification["not-reproducible"];
 
   const items: string[] = [];
@@ -204,6 +205,9 @@ function Warnings({ analysis }: { analysis: Analysis }) {
   }
   if (incomplete.length > 0) {
     items.push(t("result.summary.warnings.incomplete", { months: list(incomplete) }));
+  }
+  if (partial.length > 0) {
+    items.push(t("result.summary.warnings.partial", { months: list(partial) }));
   }
   if (items.length === 0) return null;
 

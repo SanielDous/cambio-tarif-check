@@ -1,5 +1,5 @@
 import { useId, useMemo } from "react";
-import { useAtom, useAtomValue } from "jotai";
+import { useAtom, useAtomValue, useSetAtom } from "jotai";
 import { ArrowRight, Minus, Plus, RotateCcw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,13 @@ import { Switch } from "@/components/ui/switch";
 import { monthRange } from "@/domain/analysis/months";
 import { monthKey } from "@/domain/pricing/local-time";
 import { formatMonth } from "@/lib/format";
-import { autoDriversAtom, settingsAtom, tripsAtom } from "@/state/atoms";
+import {
+  analysisAtom,
+  autoDriversAtom,
+  setAdditionalDriversAtom,
+  settingsAtom,
+  tripsAtom,
+} from "@/state/atoms";
 
 const MAX_DRIVERS = 9;
 
@@ -25,11 +31,10 @@ export function useAvailableMonths(): string[] {
 
 function DriversStepper() {
   const { t } = useTranslation("common");
-  const [settings, setSettings] = useAtom(settingsAtom);
+  const n = useAtomValue(settingsAtom).additionalDrivers;
+  const set = useSetAtom(setAdditionalDriversAtom);
   const autoDrivers = useAtomValue(autoDriversAtom);
   const id = useId();
-  const n = settings.additionalDrivers;
-  const set = (value: number) => setSettings({ ...settings, additionalDrivers: value });
   return (
     <div className="flex flex-col gap-1.5">
       <span id={id} className="text-sm font-medium">
@@ -74,25 +79,35 @@ function DriversStepper() {
 function Under26Switch() {
   const { t } = useTranslation("common");
   const [settings, setSettings] = useAtom(settingsAtom);
+  const analysis = useAtomValue(analysisAtom);
   const id = useId();
-  const disabled = settings.additionalDrivers > 0;
+  const drivers = settings.additionalDrivers > 0;
+  // Campus trips in the export make Campus a compared tariff whatever the switch says.
+  const campusTrips =
+    !drivers && (analysis?.trips.some((r) => r.trip.tariff === "CAMPUS") ?? false);
+  const disabled = drivers || campusTrips;
+  const hint = drivers
+    ? t("result.settings.under26Hint")
+    : campusTrips
+      ? t("result.settings.under26Campus")
+      : null;
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex h-9 items-center gap-2 sm:mt-[1.625rem]">
         <Switch
           id={id}
-          checked={settings.under26 && !disabled}
+          checked={campusTrips || (settings.under26 && !drivers)}
           disabled={disabled}
-          aria-describedby={disabled ? `${id}-hint` : undefined}
+          aria-describedby={hint ? `${id}-hint` : undefined}
           onCheckedChange={(checked) => setSettings({ ...settings, under26: checked })}
         />
         <label htmlFor={id} className="text-sm font-medium has-disabled:opacity-50">
           {t("result.settings.under26")}
         </label>
       </div>
-      {disabled && (
+      {hint && (
         <span id={`${id}-hint`} className="max-w-56 text-xs text-muted-foreground">
-          {t("result.settings.under26Hint")}
+          {hint}
         </span>
       )}
     </div>

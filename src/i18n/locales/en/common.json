@@ -125,6 +125,9 @@
       "busy": "Reading files …",
       "inputLabel": "Choose trip export (CSV or Excel)"
     },
+    "pageDrop": {
+      "hint": "CSV or Excel (.xlsx) from the trip archive; the trips are added to those already loaded."
+    },
     "privacy": {
       "title": "Your data stays with you",
       "text": "The analysis runs entirely in your browser. Your trips are neither uploaded nor stored."
@@ -166,6 +169,10 @@
       "too-large": "The file is larger than 5 MB and was not read."
     },
     "skipped": "Skipped – the columns were not mapped.",
+    "noTrips": {
+      "title": "This file contains no trips that can be analysed.",
+      "headerOnly": "It contains only the header row and no rows below it."
+    },
     "mapping": {
       "title": "Map columns",
       "description": "Not all columns in “{{file}}” could be recognised. Choose the matching column for each field.",
@@ -271,9 +278,10 @@
         "surcharge_other": "For {{count, number}} trips, the fuel surcharge was derived from the billed distance amount.",
         "mixed": "In {{months}}, trips were billed in more than one tariff. Your tariff is taken from the month's last trip.",
         "inherited": "There were no trips in {{months}}. The previous month's tariff is assumed – you can change it in the table.",
-        "incomplete": "Trips may be missing for {{months}}.",
+        "incomplete": "There are trips in {{months}} that are not billed yet. They are left out of the analysis.",
         "afterPrices_one": "{{count, number}} trip is after the price date ({{date}}) and was priced with the latest known prices.",
-        "afterPrices_other": "{{count, number}} trips are after the price date ({{date}}) and were priced with the latest known prices."
+        "afterPrices_other": "{{count, number}} trips are after the price date ({{date}}) and were priced with the latest known prices.",
+        "partial": "Probably only partly contained in the export: {{months}}. These months may come out too low."
       }
     },
     "settings": {
@@ -284,6 +292,7 @@
       "driversAuto": "taken from the export",
       "under26": "I am under 26",
       "under26Hint": "The Campus tariff is only available without additional drivers.",
+      "under26Campus": "Your export contains trips in the Campus tariff.",
       "period": "Period",
       "from": "From",
       "to": "To",
@@ -316,7 +325,9 @@
         "cheapest": "Cheapest tariff of the month",
         "actual": "Your tariff",
         "path": "Optimal path in hindsight (with switching fees)",
-        "switch": "Tariff switch, {{amount}} fee"
+        "switch": "Tariff switch, {{amount}} fee",
+        "incomplete": "Trips not billed yet in the month",
+        "partial": "Month probably only partly in the export"
       },
       "source": {
         "inherited": "assumed",
@@ -332,7 +343,9 @@
       "menuLabel": "Your tariff in {{month}}",
       "change": "Your tariff in {{month}}: {{tariff}}. Change",
       "resetOverride": "Determine from the trips again",
-      "notCompared": "not compared"
+      "notCompared": "not compared",
+      "incomplete": "This month has trips that are not billed yet",
+      "partial": "This month is probably not fully contained in the export"
     },
     "chart": {
       "title": "Monthly cost over time",
@@ -441,7 +454,7 @@
   "router": {
     "error": {
       "title": "Something went wrong",
-      "text": "The page could not be displayed. Your trips stay in the browser’s memory."
+      "text": "The page could not be displayed. Your trips stay loaded as long as you do not close this page."
     },
     "notFound": {
       "title": "This page does not exist.",
