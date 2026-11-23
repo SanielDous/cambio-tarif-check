@@ -25,6 +25,47 @@ const COLUMN_RULES = {
   Kostenstelle: { kind: "empty" },
 };
 
+/** The exact header of the portal export. Anything else needs a human to review the rules above. */
+const EXPECTED_HEADER = [
+  "Datum",
+  "fahrende Person",
+  "Buchungsobjekt",
+  "Kennzeichen",
+  "Stadt",
+  "Station",
+  "Wagenklasse",
+  "Buchungsbeginn",
+  "Buchungsende",
+  "Fahrtbeginn",
+  "Fahrtende",
+  "Kilometer",
+  "CO² Emission der Fahrt in Gramm",
+  "Kraftstoffart",
+  "CO² Emission Fahrzeug in g/km",
+  "Betrag Zeit",
+  "Betrag Kilometer",
+  "Betrag Gesamt",
+  "Währung",
+  "Mehrwertsteuer",
+  "Tarif",
+  "Rechnungsdatum",
+  "Rechnungnummer",
+  "Verarbeitungsstatus",
+  "Kommentar",
+  "KommentarKundenService",
+  "Abteilung",
+  "Kostenstelle",
+];
+
+function assertHeader(header) {
+  if (JSON.stringify(header) !== JSON.stringify(EXPECTED_HEADER)) {
+    throw new Error(
+      `Unexpected header row (${header.length} columns, expected ${EXPECTED_HEADER.length} ` +
+        "with the exact known names). Review the anonymisation rules before continuing.",
+    );
+  }
+}
+
 /** 1 -> A, 26 -> Z, 27 -> AA, ... */
 function letters(n) {
   let out = "";
@@ -103,7 +144,13 @@ function anonymizeCsv(buffer) {
   const hasBom = buffer[0] === 0xef && buffer[1] === 0xbb && buffer[2] === 0xbf;
   const text = buffer.subarray(hasBom ? 3 : 0).toString("utf8");
   const records = parseCsv(text);
-  const header = records[0].fields.map((f) => f.value);
+  const header = (records[0]?.fields ?? []).map((f) => f.value);
+  assertHeader(header);
+  records.forEach(({ fields }, i) => {
+    if (fields.length !== header.length) {
+      throw new Error(`CSV record ${i + 1} has ${fields.length} fields, expected ${header.length}`);
+    }
+  });
   const replace = createReplacer();
   let out = hasBom ? "﻿" : "";
   records.forEach(({ fields, eol }, rowIndex) => {
@@ -132,8 +179,21 @@ const unescapeXml = (s) =>
   );
 const escapeXml = (s) => s.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
-const CELL = /<x:c(\s[^>]*?)?(?:\/>|>([\s\S]*?)<\/x:c>)/g;
-const ROW = /<x:row(?:\s[^>]*)?>[\s\S]*?<\/x:row>/g;
+const columnIndex = (letters) =>
+  [...letters].reduce((n, ch) => n * 26 + ch.charCodeAt(0) - 64, 0) - 1;
+
+const xmlAttr = (attrs, name) => new RegExp(String.raw`\s${name}="([^"]*)"`).exec(attrs)?.[1];
+
+/** Removes references to docProps/ parts; returns the original bytes if there are none. */
+function withoutDocProps(data, element, attribute) {
+  const pattern = new RegExp(
+    String.raw`<(?:\w+:)?${element}\b[^>]*${attribute}="/?docProps/[^"]*"[^>]*/>`,
+    "g",
+  );
+  const text = strFromU8(data);
+  const stripped = text.replace(pattern, "");
+  return stripped === text ? data : strToU8(stripped);
+}
 
 function anonymizeXlsx(buffer) {
   const files = unzipSync(buffer);
@@ -142,36 +202,79 @@ function anonymizeXlsx(buffer) {
   if (!sheet || Object.keys(files).filter((k) => k.startsWith("xl/worksheets/")).length !== 1) {
     throw new Error("Expected exactly one worksheet at " + sheetPath);
   }
+  if ("xl/sharedStrings.xml" in files) {
+    throw new Error("Shared strings are not supported; review the anonymiser before continuing.");
+  }
   const xml = strFromU8(sheet);
+  const prefixMatch = /<(?:([A-Za-z_][\w.-]*):)?worksheet[\s>]/.exec(xml);
+  if (!prefixMatch) throw new Error("No worksheet element found");
+  const p = prefixMatch[1] ? `${prefixMatch[1]}:` : "";
+  const ROW = new RegExp(String.raw`<${p}row(?:\s[^>]*)?>[\s\S]*?</${p}row>`, "g");
+  const CELL = new RegExp(String.raw`<${p}c(\s[^>]*?)?(?:/>|>([\s\S]*?)</${p}c>)`, "g");
+  const VALUE = new RegExp(String.raw`^<${p}v>([\s\S]*)</${p}v>$`);
+  // Columns come from the r attribute; positions are only a fallback if no cell has one.
+  const usesRefs = new RegExp(String.raw`<${p}c\s[^>]*\sr="`).test(xml);
+
   const replace = createReplacer();
   let header = null;
+  let rowCount = 0;
+  let cellCount = 0;
   const result = xml.replace(ROW, (row) => {
-    let col = 0;
+    rowCount++;
+    let position = 0;
     const cells = [];
     const newRow = row.replace(CELL, (cell, attrs = "", inner = "") => {
-      const index = col++;
-      const isString = /\st="str"/.test(attrs);
-      const valueMatch = /^<x:v>([\s\S]*)<\/x:v>$/.exec(inner);
-      if (!isString && inner !== "" && !valueMatch) return cell;
-      const value = isString && valueMatch ? unescapeXml(valueMatch[1]) : "";
-      cells.push(value);
-      if (header === null) return cell;
-      const name = header[index] ?? "";
+      cellCount++;
+      let index = position++;
+      if (usesRefs) {
+        const ref = /^([A-Z]+)\d+$/.exec(xmlAttr(attrs, "r") ?? "");
+        if (!ref) throw new Error("Cell without a valid r attribute in a sheet that uses them");
+        index = columnIndex(ref[1]);
+      }
+      const type = xmlAttr(attrs, "t");
+      const valueMatch = VALUE.exec(inner);
+      if (header === null) {
+        // Header row: only plain string cells are understood.
+        if (type !== "str" || !valueMatch) throw new Error("Unsupported header cell");
+        cells[index] = unescapeXml(valueMatch[1]);
+        return cell;
+      }
+      const name = header[index];
+      if (name === undefined)
+        throw new Error(`Cell outside the header columns (column ${index + 1})`);
       if (!(name in COLUMN_RULES)) return cell;
-      if (!isString && valueMatch) throw new Error(`Column "${name}" holds a non-string cell`);
+      if (inner !== "" && !(type === "str" && valueMatch)) {
+        throw new Error(`Column "${name}" holds a cell of an unsupported type (t="${type ?? ""}")`);
+      }
+      const value = valueMatch ? unescapeXml(valueMatch[1]) : "";
       const replaced = replace(name, value);
       if (replaced === value) return cell;
+      const keep = ["r", "s"]
+        .map((a) => (xmlAttr(attrs, a) === undefined ? "" : ` ${a}="${xmlAttr(attrs, a)}"`))
+        .join("");
       return replaced === ""
-        ? '<x:c t="str" />'
-        : `<x:c t="str"><x:v>${escapeXml(replaced)}</x:v></x:c>`;
+        ? `<${p}c${keep} t="str" />`
+        : `<${p}c${keep} t="str"><${p}v>${escapeXml(replaced)}</${p}v></${p}c>`;
     });
-    if (header === null) header = cells;
+    if (header === null) {
+      header = cells;
+      assertHeader(header);
+    }
     return newRow;
   });
+  if (rowCount === 0 || cellCount === 0) throw new Error("No rows or cells found in the worksheet");
+
   const entries = {};
   const mtime = new Date(2000, 0, 1);
   for (const [name, data] of Object.entries(files)) {
-    entries[name] = [name === sheetPath ? strToU8(result) : data, { mtime, level: 9 }];
+    // Document properties (author, application, ...) are dropped, with their references.
+    if (name.startsWith("docProps/")) continue;
+    let content = data;
+    if (name === sheetPath) content = strToU8(result);
+    else if (name === "[Content_Types].xml")
+      content = withoutDocProps(data, "Override", "PartName");
+    else if (name === "_rels/.rels") content = withoutDocProps(data, "Relationship", "Target");
+    entries[name] = [content, { mtime, level: 9 }];
   }
   return Buffer.from(zipSync(entries));
 }

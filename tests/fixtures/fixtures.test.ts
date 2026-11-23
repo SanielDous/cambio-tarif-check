@@ -66,16 +66,39 @@ const unescapeXml = (s: string) =>
     .replaceAll("&apos;", "'")
     .replaceAll("&amp;", "&");
 
-/** Rows of text cells (numbers and dates become empty strings) of the single worksheet. */
-function readXlsxStrings(path: string): string[][] {
-  const xml = strFromU8(unzipSync(readFileSync(path))["xl/worksheets/sheet1.xml"]!);
+const unzip = (path: string) => unzipSync(readFileSync(path));
+
+interface XlsxCell {
+  /** `str` for string cells, `n` for numeric (incl. date serial) cells, `other` for the rest. */
+  type: "str" | "n" | "other";
+  /** Decoded text, empty if the cell has no value. */
+  text: string;
+  hasValue: boolean;
+}
+
+/** Rows of cells of the single worksheet (the portal's workbook uses the `x:` prefix). */
+function readXlsxCells(path: string): XlsxCell[][] {
+  const xml = strFromU8(unzip(path)["xl/worksheets/sheet1.xml"]!);
   return (xml.match(/<x:row[\s>][\s\S]*?<\/x:row>/g) ?? []).map((row) =>
-    (row.match(/<x:c(?:\s[^>]*?)?(?:\/>|>[\s\S]*?<\/x:c>)/g) ?? []).map((cell) => {
-      if (!/\st="str"/.test(cell)) return "";
-      return unescapeXml(/<x:v>([\s\S]*?)<\/x:v>/.exec(cell)?.[1] ?? "");
+    (row.match(/<x:c(?:\s[^>]*?)?(?:\/>|>[\s\S]*?<\/x:c>)/g) ?? []).map((cell): XlsxCell => {
+      const t = /\st="(\w+)"/.exec(cell)?.[1] ?? "n";
+      const value = /<x:v>([\s\S]*?)<\/x:v>/.exec(cell)?.[1];
+      return {
+        type: t === "str" || t === "n" ? t : "other",
+        text: unescapeXml(value ?? ""),
+        hasValue: value !== undefined,
+      };
     }),
   );
 }
+
+/** Rows of the string cells' text (other cells become empty strings). */
+const readXlsxStrings = (path: string): string[][] =>
+  readXlsxCells(path).map((row) => row.map((c) => (c.type === "str" ? c.text : "")));
+
+/** Decoded text of every part of the workbook. */
+const xlsxPartTexts = (path: string): string[] =>
+  Object.values(unzip(path)).map((data) => unescapeXml(strFromU8(data)));
 
 /** All distinct non-empty values of the personal columns of the given tables. */
 function personalValues(tables: string[][][]): string[] {
@@ -103,32 +126,86 @@ describe("trip fixtures", () => {
     for (const row of rows) expect(row).toHaveLength(28);
   });
 
-  it("trips-2025.xlsx has the same 84 rows as the CSV", () => {
-    const [header, ...rows] = readXlsxStrings(fixture("trips-2025.xlsx"));
-    expect(header).toHaveLength(28);
-    expect(rows).toHaveLength(84);
+  describe("trips-2025.xlsx", () => {
+    const [header, ...rows] = readXlsxCells(fixture("trips-2025.xlsx"));
+    const names = header!.map((c) => c.text);
+    const column = (name: string) => {
+      const index = names.indexOf(name);
+      expect(index, `column ${name}`).toBeGreaterThanOrEqual(0);
+      return rows.map((row) => row[index]!);
+    };
+
+    it("has the same 84 rows and 28 columns as the CSV", () => {
+      expect(names).toEqual(readCsv(fixture("trips-2025.csv"))[0]);
+      expect(rows).toHaveLength(84);
+      for (const row of rows) expect(row).toHaveLength(28);
+    });
+
+    it("has no document properties and no shared strings", () => {
+      const parts = Object.keys(unzip(fixture("trips-2025.xlsx")));
+      expect(parts.filter((p) => p.startsWith("docProps/"))).toEqual([]);
+      expect(parts).not.toContain("xl/sharedStrings.xml");
+    });
+
+    it.each([
+      "Buchungsbeginn",
+      "Buchungsende",
+      "Rechnungsdatum",
+      "Betrag Zeit",
+      "Betrag Kilometer",
+      "Betrag Gesamt",
+      "Kilometer",
+    ])("%s is a numeric cell in all rows", (name) => {
+      const cells = column(name);
+      expect(cells[0]).toMatchObject({ type: "n", hasValue: true });
+      expect(cells.filter((c) => c.type === "n" && c.hasValue)).toHaveLength(84);
+    });
+
+    it.each(["Datum", "Stadt", "Wagenklasse", "Tarif"])(
+      "%s is a string cell in all rows",
+      (name) => {
+        const cells = column(name);
+        expect(cells[0]).toMatchObject({ type: "str", hasValue: true });
+        expect(cells.filter((c) => c.type === "str" && c.hasValue)).toHaveLength(84);
+      },
+    );
+
+    it("has Fahrtbeginn as a numeric cell in exactly 7 rows", () => {
+      expect(column("Fahrtbeginn").filter((c) => c.type === "n" && c.hasValue)).toHaveLength(7);
+    });
   });
 
-  const originalsPresent = [...ORIGINALS.csv, ...ORIGINALS.xlsx].every((name) =>
-    existsSync(resolve(root, name)),
-  );
+  describe("personal data", () => {
+    const present = (names: string[]) => names.filter((n) => existsSync(resolve(root, n)));
+    const csvOriginals = present(ORIGINALS.csv);
+    const xlsxOriginals = present(ORIGINALS.xlsx);
 
-  it.skipIf(!originalsPresent)("contains no personal value of the local originals", () => {
-    const values = personalValues([
-      ...ORIGINALS.csv.map((name) => readCsv(resolve(root, name))),
-      ...ORIGINALS.xlsx.map((name) => readXlsxStrings(resolve(root, name))),
-    ]);
-    expect(values.length).toBeGreaterThan(0);
-    const fixtures = [
-      readFileSync(fixture("trips-2025.csv"), "utf8"),
-      readFileSync(fixture("trips-2026.csv"), "utf8"),
-      readXlsxStrings(fixture("trips-2025.xlsx"))
-        .map((row) => row.join(";"))
-        .join("\n"),
-    ];
-    // Report only the count: the values themselves are personal data.
-    const leaked = values.filter((value) => fixtures.some((text) => text.includes(value)));
-    expect(leaked.length).toBe(0);
+    it.skipIf(csvOriginals.length + xlsxOriginals.length === 0)(
+      "does not leak any value of the local originals into a fixture",
+      () => {
+        const values = personalValues([
+          ...csvOriginals.map((name) => readCsv(resolve(root, name))),
+          ...xlsxOriginals.map((name) => readXlsxStrings(resolve(root, name))),
+        ]);
+        expect(values.length).toBeGreaterThan(0);
+
+        // Long values are searched as substrings anywhere (every zip part for the XLSX), short
+        // ones only as whole fields or cells to avoid false positives from common short words.
+        const texts = [
+          ...["trips-2025.csv", "trips-2026.csv"].map((n) => readFileSync(fixture(n), "utf8")),
+          ...xlsxPartTexts(fixture("trips-2025.xlsx")),
+        ];
+        const fields = new Set([
+          ...["trips-2025.csv", "trips-2026.csv"].flatMap((n) => readCsv(fixture(n)).flat()),
+          ...readXlsxStrings(fixture("trips-2025.xlsx")).flat(),
+        ]);
+        const leaked = values.filter((value) =>
+          value.length >= 6 ? texts.some((t) => t.includes(value)) : fields.has(value),
+        );
+        // Report only the count: the values themselves are personal data.
+        expect(leaked.length).toBe(0);
+      },
+    );
   });
 });
 
@@ -137,7 +214,7 @@ const TARIFFS = ["AKTIV", "BASIS", "CAMPUS", "COMFORT"];
 describe("calculator fixtures", () => {
   interface Entry {
     surchargeCents: number;
-    costs: Record<string, { time: number; km: number | null; total: number }>;
+    costs: Record<string, { time: number; km: number; total: number }>;
   }
   const entries = JSON.parse(readFileSync(fixture("calculator-fixtures.json"), "utf8")) as Entry[];
 
@@ -150,7 +227,8 @@ describe("calculator fixtures", () => {
     for (const entry of entries) {
       expect(Object.keys(entry.costs)).toEqual(expect.arrayContaining(TARIFFS));
       for (const { time, km, total } of Object.values(entry.costs)) {
-        expect(Math.abs(total - (time + (km ?? 0)))).toBeLessThanOrEqual(0.005);
+        for (const amount of [time, km, total]) expect(typeof amount).toBe("number");
+        expect(Math.abs(total - (time + km))).toBeLessThanOrEqual(0.005);
       }
     }
   });

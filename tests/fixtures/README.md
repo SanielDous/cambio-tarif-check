@@ -73,7 +73,7 @@ timestamp so the output is deterministic.
 `calculator-fixtures.json` is an array of
 `{ group, city, vehicleClass, priceClass, start, end, km, recordedAt, surchargeCents, costs }`,
 where `start` and `end` are `DD.MM.YYYY HH:mm`, amounts in `costs` are euros as recorded
-(`{ [tariff]: { time, km, total } }`, `km` is `null` when the request had 0 km) and
+(`{ [tariff]: { time, km, total } }`, `km` is `0` when the request had 0 km) and
 `surchargeCents` is `3`.
 
 - **Recorded on 2026-11-23** from the public price calculator, via `tools/record-calculator.py`.
