@@ -319,7 +319,7 @@ A second export covering 2026 contains a single trip (BASIS, class L, a Tuesday 
 Open questions:
 
 - How the 50 % charge interacts with day/week caps and night hours.
-- Whether the portal or the invoice PDF shows the originally booked period.
+- (answered: the invoice shows the booked period, see "Findings from invoices")
 
 Booking reconstruction in the app (`src/domain/analysis/reconstruct-booking.ts`), 85 trips of
 both exports (2026-11-23):
@@ -346,6 +346,72 @@ Open questions:
   Night hours in the unused part (one trip, 00:11 → 01:15) are charged at 50 % of 0.50/h.
 - Whether the portal or the invoice PDF shows the originally booked period.
 - The exact rounding rule of invoiced time amounts (see above).
+
+## Findings from invoices
+
+The account owner provided 30 invoices (2024-11 to 2026-05) covering 90 trips; they stay local and
+are not part of the repository. An invoice lists every trip with separate line items, each with
+net amount, VAT and gross amount. (invoice)
+
+### Line items of a trip
+
+- **"Normalfahrt Zeit"** from booking start to the return time **rounded up to the quarter hour**,
+  at the full time price.
+- **"kurzfristig stornierte Zeit"** from that point to the booked end, at 50 % of the time price.
+  This confirms the reconstruction model and shows that the booked end is printed on the invoice.
+- **"Normalfahrt Kilometer"** with the km driven. Electric cars additionally show the booked range
+  ("eMobil: Km in Reichweite x Km von y Km gebuchte Reichweite"); the amount is the normal km price.
+- The export column "Betrag Zeit" is the sum of all time-related line items of the trip.
+- Night hours are charged at 0.50 in both kinds of line item (cancelled night time at 0.25/h).
+- A booking cancelled less than 24 h before start appears as a single "kurzfristig stornierte
+  Zeit" item over the whole booking; a booking neither cancelled nor used as "Normalfahrt Zeit"
+  over the whole booking plus "Normalfahrt Kilometer 0 Kilometer".
+
+### Late return
+
+Two different line items exist, each seen once:
+
+- **"Verspätung"**: return 3 minutes after the booked end → one further quarter hour at the
+  **regular** time price (AKTIV S: 15 min = 0.52). No flat fee was charged.
+- **"Überziehung"**: return 13 minutes after the booked end → the 13 minutes **per minute at
+  double the time price** (AKTIV S: 13 × 2.10 / 60 × 2 = 0.91). No flat fee was charged either,
+  only a service note on the invoice asking to keep to the booked time. This explains the one trip
+  that was "billed above the full price of its booking".
+
+When which of the two applies is not known (possibly: whether a following booking was affected,
+or a tolerance of a few minutes).
+
+### Rounding
+
+- Every line item is rounded to cents on its own; the trip total is the sum of the rounded items.
+- The net amount is always round(gross / 1.19), VAT = gross − net (130 of 130 time items, 70 of
+  70 km items). So the gross amount is computed first.
+- Only gross amounts that are **exactly half a cent** are affected by the open question. 40 of 130
+  time items are such amounts: 29 were rounded up, 11 down. The direction is a fixed function of
+  hour price and duration (e.g. AKTIV S: 75 min up, 105 min down, 135 min down, 165 min up,
+  555 min down; a 30-minute cancelled item 0.525 always down). All other amounts follow ordinary
+  rounding. This is the signature of binary floating-point arithmetic.
+- No formula tried reproduces all 40 (best: 4 misses, e.g. price × minutes / 60 in double
+  precision, with the 50 % item computed as half the difference of two costs). Plain half-up
+  rounding misses 11. The exact formula stays **open**; the tolerance of one cent stays.
+
+### Day and week caps
+
+- 34 h 15 min in COMFORT M: 28.20 (first 24 hours, capped) + 10.25 h × 2.35 = 52.29. Matches the
+  model.
+- 8 days 45 min in COMFORT M (returned 3 h 15 min early): "Normalfahrt Zeit" 197.40 = week price
+  169.20 + one day 28.20; the 45 minutes after the eighth 24-hour block were **not charged**. The
+  model expects 1.76 more. The cancelled 3 h 15 min were charged at 50 % of the uncapped price
+  (3.82). One observation; cause unknown (**open**).
+
+### Fees
+
+- Monthly fee lines confirm 11.00 (AKTIV) and 27.00 (COMFORT) plus 3.00 for one additional
+  authorised driver ("2 Fahrberechtigte"), charged around the 15th for the current month.
+- "Tarifwechselgebühr" 5.00, dated on the 1st of the month of the change. A change to BASIS is
+  charged as well.
+- Trip costs can be offset by a credit balance ("Fahrtguthaben - Gutschrift"); this is independent
+  of the tariff and not modelled.
 
 ## Price calculator
 
