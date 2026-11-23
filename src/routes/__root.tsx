@@ -9,10 +9,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { REPOSITORY_URL } from "@/lib/links";
 
 type Theme = "light" | "dark" | "system";
-
-const REPOSITORY_URL = "https://github.com/SanielDous/cambio-tarif-check";
 
 function useTheme() {
   const [theme, setTheme] = useState<Theme>("system");

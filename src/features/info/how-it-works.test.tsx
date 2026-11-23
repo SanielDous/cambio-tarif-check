@@ -1,0 +1,124 @@
+// @vitest-environment jsdom
+import { act, cleanup, render, screen, within } from "@testing-library/react";
+import "@testing-library/jest-dom/vitest";
+import { afterEach, describe, expect, it } from "vitest";
+import i18n from "@/i18n/bootstrap";
+import { PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
+import type { PriceClass, TariffId } from "@/domain/pricing/types";
+import { formatCurrency, formatDate } from "@/lib/format";
+import { REPOSITORY_URL } from "@/lib/links";
+import { HowItWorksView } from "./how-it-works-view";
+
+afterEach(async () => {
+  cleanup();
+  await act(() => i18n.changeLanguage("de"));
+});
+
+/** Intl output uses non-breaking spaces; jest-dom normalizes the element, not the expectation. */
+const spaced = (text: string | null) => (text ?? "").replace(/\s+/g, " ");
+
+const TARIFFS = Object.keys(PRICE_DATA.tariffs) as TariffId[];
+
+describe.each(["de", "en"])("how it works page in %s", (lang) => {
+  const setup = async () => {
+    await act(() => i18n.changeLanguage(lang));
+    render(<HowItWorksView />);
+    return screen.getByTestId("price-tables");
+  };
+  const money = (cents: number) => spaced(formatCurrency(cents, lang));
+
+  it("shows every tariff, price class, surcharge period and the switching fee of the price data", async () => {
+    const tables = await setup();
+    const page = document.body;
+    for (const id of TARIFFS) {
+      const tariff = PRICE_DATA.tariffs[id];
+      const row = tables.querySelector<HTMLElement>(`tr[data-tariff="${id}"]`);
+      expect(row, id).not.toBeNull();
+      expect(within(row as HTMLElement).getByText(i18n.t(`tariffs.${id}`))).toBeInTheDocument();
+      expect(row).toHaveTextContent(money(tariff.monthlyFee));
+      const group = tables.querySelector<HTMLElement>(`tbody[data-tariff="${id}"]`);
+      expect(group, id).not.toBeNull();
+      const classes = Object.keys(tariff.prices) as PriceClass[];
+      expect(classes.length).toBeGreaterThan(0);
+      const rows = within(group as HTMLElement).getAllByRole("row");
+      expect(rows).toHaveLength(classes.length);
+      for (const c of classes) {
+        const price = tariff.prices[c];
+        const classRow = rows.find((r) => within(r).queryByRole("rowheader", { name: c }));
+        expect(classRow, `${id} ${c}`).toBeDefined();
+        const text = classRow?.textContent ?? "";
+        const fullDay = PRICE_DATA.dayCapHours * (price?.hourWeekday ?? 0);
+        for (const cents of [
+          price?.hourWeekday,
+          price?.dayCap ?? fullDay,
+          PRICE_DATA.weekCapDays * fullDay,
+          price?.kmTier1,
+          price?.kmTier2,
+        ]) {
+          expect(spaced(text), `${id} ${c}`).toContain(money(cents ?? NaN));
+        }
+        if (price && price.hourWeekend !== price.hourWeekday) {
+          expect(spaced(text)).toContain(money(price.hourWeekend));
+        }
+      }
+    }
+    for (const period of PRICE_DATA.fuelSurcharges) {
+      const row = tables.querySelector<HTMLElement>(`tr[data-from="${period.from}"]`);
+      expect(row?.textContent).toContain(formatDate(parseIsoDate(period.from), lang));
+      expect(row?.textContent).toContain(String(period.cents));
+    }
+    expect(page).toHaveTextContent(
+      i18n.t("howItWorks.prices.switching", { fee: money(PRICE_DATA.switchingFee) }),
+    );
+    expect(page).toHaveTextContent(formatDate(parseIsoDate(PRICE_DATA.pricesAsOf), lang));
+    expect(screen.getByRole("link", { name: i18n.t("footer.repository") })).toHaveAttribute(
+      "href",
+      REPOSITORY_URL,
+    );
+  });
+
+  it("interpolates the numbers from the price data", async () => {
+    await setup();
+    const trip = screen.getByText(/^(Nacht|Night)/);
+    expect(spaced(trip.textContent)).toContain(money(PRICE_DATA.nightHourPrice));
+    expect(trip).toHaveTextContent("00:00");
+    expect(trip).toHaveTextContent("06:00");
+    expect(document.body).toHaveTextContent(money(PRICE_DATA.switchingFee));
+    expect(screen.getByText(/^(Deckel|Caps)/)).toHaveTextContent(`${PRICE_DATA.dayCapHours}`);
+    expect(document.body.textContent).not.toMatch(/\{\{|undefined|NaN/);
+  });
+
+  it("uses real tables with header scopes, one h1 and ordered headings", async () => {
+    const tables = await setup();
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+    const levels = screen.getAllByRole("heading").map((h) => Number(h.tagName.slice(1)));
+    levels.forEach((level, i) => {
+      if (i > 0) expect(level - (levels[i - 1] ?? 0)).toBeLessThanOrEqual(1);
+    });
+    expect(within(tables).getAllByRole("table")).toHaveLength(3);
+    for (const th of tables.querySelectorAll("th")) expect(th).toHaveAttribute("scope");
+    const regions = tables.querySelectorAll('div[role="region"]');
+    expect(regions).toHaveLength(3);
+    for (const region of regions) {
+      expect(region).toHaveAttribute("tabindex", "0");
+      expect(region).toHaveClass("overflow-x-auto");
+    }
+  });
+
+  it("explains every reconstruction kind with the labels of the result page", async () => {
+    await setup();
+    const list = screen.getByTestId("kinds-list");
+    for (const kind of [
+      "verified",
+      "verified-rounding",
+      "estimated",
+      "manual",
+      "cancelled",
+      "unused",
+      "not-reproducible",
+    ]) {
+      expect(list).toHaveTextContent(i18n.t(`result.kinds.${kind}.label`));
+      expect(list).toHaveTextContent(i18n.t(`result.kinds.${kind}.text`));
+    }
+  });
+});

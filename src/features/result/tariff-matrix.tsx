@@ -6,6 +6,7 @@ import type { Analysis } from "@/domain/analysis/analyze";
 import { monthlyFee } from "@/domain/analysis/months";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
 import { formatCurrency, formatMonth, formatMonthName } from "@/lib/format";
+import { scrollBehavior } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { MatrixLegend } from "./matrix-legend";
 import { ActualRows, stickyLeft, stickyRight, TariffRow } from "./matrix-rows";
@@ -32,7 +33,10 @@ function useScrollEdges() {
     return () => observer.disconnect();
   }, [update]);
   const scrollBy = (direction: 1 | -1) =>
-    ref.current?.scrollBy({ left: direction * ref.current.clientWidth * 0.7, behavior: "smooth" });
+    ref.current?.scrollBy({
+      left: direction * ref.current.clientWidth * 0.7,
+      behavior: scrollBehavior(),
+    });
   return { ref, edges, update, scrollBy };
 }
 

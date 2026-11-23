@@ -12,6 +12,7 @@ import en from "@/i18n/locales/en/common.json";
 import type { Analysis } from "@/domain/analysis/analyze";
 import type { Trip } from "@/domain/import/fields";
 import { toLocalMinute } from "@/domain/pricing/local-time";
+import { PRICE_DATA } from "@/domain/pricing/price-data";
 import type { TariffId } from "@/domain/pricing/types";
 import { analysisAtom, importFilesAtom, settingsAtom, tripsAtom } from "@/state/atoms";
 import { formatCurrency } from "@/lib/format";
@@ -178,6 +179,20 @@ describe("result summary", () => {
       <SummaryCard analysis={{ ...a, optimalPath: { ...a.optimalPath, total: a.actualTotal } }} />,
     );
     expect(sub()).toHaveTextContent(/Ein Wechsel lohnt sich nach diesen Zahlen nicht/);
+  });
+
+  it("warns about trips after the price date, with their number", async () => {
+    const day = (n: number) => {
+      const [y, m, d] = PRICE_DATA.pricesAsOf.split("-").map(Number) as [number, number, number];
+      return trip("BASIS", y, m, d + n);
+    };
+    await withTrips([trip("BASIS", 2025, 1, 10), day(0), day(1), day(2)]);
+    expect(screen.getByTestId("warnings")).toHaveTextContent(
+      /2 Fahrten liegen nach dem Preisstand \(.+\) und wurden mit den zuletzt bekannten Preisen berechnet/,
+    );
+    cleanup();
+    await withTrips([trip("BASIS", 2025, 1, 10), day(0)]);
+    expect(screen.queryByText(/nach dem Preisstand/)).not.toBeInTheDocument();
   });
 
   it("leaves no German text in the summary in English", async () => {
