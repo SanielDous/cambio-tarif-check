@@ -317,6 +317,66 @@ describe("normalizeRows", () => {
   });
 });
 
+describe("trip end (Fahrtende)", () => {
+  const headers = [
+    "Stadt",
+    "Wagenklasse",
+    "Buchungsbeginn",
+    "Buchungsende",
+    "Kilometer",
+    "Betrag Zeit",
+    "Betrag Kilometer",
+    "Tarif",
+    "Fahrtende",
+  ];
+  const run = (tripEnd: unknown) =>
+    normalizeRows(
+      {
+        fileName: "t.csv",
+        headers,
+        rows: [
+          [
+            "Aachen",
+            "S Kleinwagen",
+            "09.05.2025 15:00:00",
+            "09.05.2025 20:00:00",
+            "22",
+            "11,41",
+            "5,72",
+            "AKTIV",
+            tripEnd,
+          ],
+        ],
+        rowNumbers: [2],
+      },
+      detectColumns(headers).mapping,
+      PRICE_DATA,
+    );
+
+  it("reads a valid trip end and leaves the id unchanged", () => {
+    const { trips, problems } = run("09.05.2025 20:13:00");
+    expect(problems).toEqual([]);
+    expect(trips[0]?.tripEnd).toBe(parseLocal("09.05.2025 20:13"));
+    expect(trips[0]?.id).toBe(run("").trips[0]?.id);
+    expect(dedupeTrips([...run("09.05.2025 20:13:00").trips, ...run("").trips]).duplicates).toBe(1);
+  });
+
+  it("leaves an empty or unreadable trip end out without a problem", () => {
+    for (const cell of ["", "  ", undefined, "kaputt"]) {
+      const { trips, problems } = run(cell);
+      expect(problems).toEqual([]);
+      expect(trips[0]).not.toHaveProperty("tripEnd");
+    }
+  });
+
+  it("is empty for the late-returned fixture trip of 2025-05-09", async () => {
+    const { trips } = await importFixture("trips-2025.csv");
+    const late = trips.find((t) => t.billedTime === 1141);
+    expect(late?.end).toBe(parseLocal("09.05.2025 20:00"));
+    expect(late?.tripEnd).toBeUndefined();
+  });
+});
+
 describe("dedupeTrips", () => {
   it("drops trips imported twice", async () => {
     const { trips } = await importFixture("trips-2025.csv");

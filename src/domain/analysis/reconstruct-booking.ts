@@ -2,7 +2,7 @@ import type { Trip } from "@/domain/import/fields";
 import { kmCost } from "@/domain/pricing/km-cost";
 import { surchargeAt } from "@/domain/pricing/price-data";
 import { roundHalfUp } from "@/domain/pricing/rounding";
-import { timeCost } from "@/domain/pricing/time-cost";
+import { overrunCost, timeCost } from "@/domain/pricing/time-cost";
 import type { LocalMinute, PriceClass, PriceData, TariffId } from "@/domain/pricing/types";
 
 export type ReconstructionKind =
@@ -12,13 +12,24 @@ export type ReconstructionKind =
   | "manual"
   | "cancelled"
   | "unused"
+  | "overrun"
   | "not-reproducible";
 
 export interface Reconstruction {
   kind: ReconstructionKind;
-  /** Return rounded up to the quarter hour; up to here the full time price applies. */
+  /**
+   * Return rounded up to the quarter hour; up to here the full time price applies. For a late
+   * return (`overrunMinutes` > 0) the booked end.
+   */
   chargedUntil: LocalMinute;
   bookedEnd: LocalMinute;
+  /** Minutes the car was returned after the booked end, charged at twice the time price; else 0. */
+  overrunMinutes: number;
+  /**
+   * True if the export holds only the booked end and the overrun minutes were fitted to the billed
+   * amount, with no return time to confirm them. Such a trip is not reproduced to the cent.
+   */
+  overrunInferred: boolean;
   /** 0.5 only for "cancelled". */
   share: 1 | 0.5;
   /** Fuel surcharge per km: from the table, or derived from the billed km amount. */
@@ -33,6 +44,8 @@ const QUARTER = 15;
 const DAY = 24 * 60;
 /** The longest booking: 30 days after the start. The booked-end search ends here. */
 export const MAX_BOOKING_MINUTES = 30 * DAY;
+/** The longest overrun searched for when the booked-end search finds nothing. */
+export const MAX_OVERRUN_MINUTES = 120;
 /** Surcharges tried when the table surcharge does not reproduce the billed km amount. */
 const MAX_DERIVED_SURCHARGE = 10;
 
@@ -54,6 +67,80 @@ export function bookingTimeCost(
   const unused =
     bookedEnd > chargedUntil ? timeCost(start, bookedEnd, tariff, cls, data) - used : 0;
   return roundHalfUp(share * used) + roundHalfUp(0.5 * unused);
+}
+
+/**
+ * Time cost of a reconstructed booking in any tariff, in integer cents: `bookingTimeCost`, plus
+ * for a late return the overrun minutes at twice the time price, rounded as a line item of its own.
+ */
+export function reconstructedTimeCost(
+  trip: Trip,
+  r: Pick<Reconstruction, "chargedUntil" | "bookedEnd" | "share" | "overrunMinutes">,
+  tariff: TariffId,
+  data: PriceData,
+): number {
+  const cls = trip.priceClass;
+  const booking = bookingTimeCost(
+    trip.start,
+    r.chargedUntil,
+    r.bookedEnd,
+    r.share,
+    tariff,
+    cls,
+    data,
+  );
+  if (r.overrunMinutes === 0) return booking;
+  const returned = r.bookedEnd + r.overrunMinutes;
+  return booking + roundHalfUp(overrunCost(r.bookedEnd, returned, tariff, cls, data));
+}
+
+interface Overrun {
+  bookedEnd: LocalMinute;
+  minutes: number;
+  inferred: boolean;
+}
+
+/**
+ * The late return that explains the billed time amount, if any. Two readings of the export are
+ * tried, each with booked ends on the quarter-hour grid:
+ * 1. The export's end is the return, and the booking ended at a quarter hour before it (latest
+ *    first, up to `MAX_OVERRUN_MINUTES` before). An exact match wins over one within 1 cent.
+ * 2. The export's end is the booked end itself (as observed on an invoice). With a trip end
+ *    (`tripEnd`) after it, only its minutes (±1, the export drops seconds) are tried and a match is
+ *    confirmed; a trip end not after it rules this reading out. Without a trip end the return is
+ *    fitted, 1 to `MAX_OVERRUN_MINUTES` minutes later, and the result is only inferred. Matches
+ *    count only exactly here, since a free minute count fits almost any amount within 1 cent.
+ */
+function findOverrun(trip: Trip, data: PriceData): Overrun | undefined {
+  const { start, end, tariff, priceClass: cls } = trip;
+  const deviation = (bookedEnd: LocalMinute, minutes: number) =>
+    roundHalfUp(timeCost(start, bookedEnd, tariff, cls, data)) +
+    roundHalfUp(overrunCost(bookedEnd, bookedEnd + minutes, tariff, cls, data)) -
+    trip.billedTime;
+
+  let near: Overrun | undefined;
+  const latestBefore = Math.floor((end - 1) / QUARTER) * QUARTER;
+  for (let b = latestBefore; b > start && end - b <= MAX_OVERRUN_MINUTES; b -= QUARTER) {
+    const d = deviation(b, end - b);
+    if (d === 0) return { bookedEnd: b, minutes: end - b, inferred: false };
+    if (Math.abs(d) === 1) near ??= { bookedEnd: b, minutes: end - b, inferred: false };
+  }
+  if (end % QUARTER === 0 && end > start) {
+    const { tripEnd } = trip;
+    if (tripEnd === undefined) {
+      for (let minutes = 1; minutes <= MAX_OVERRUN_MINUTES; minutes++) {
+        if (deviation(end, minutes) === 0) return { bookedEnd: end, minutes, inferred: true };
+      }
+    } else if (tripEnd > end) {
+      const measured = tripEnd - end;
+      for (const minutes of [measured, measured - 1, measured + 1]) {
+        if (minutes > 0 && deviation(end, minutes) === 0) {
+          return { bookedEnd: end, minutes, inferred: false };
+        }
+      }
+    }
+  }
+  return near;
 }
 
 function kmCheck(
@@ -111,17 +198,25 @@ export function reconstructBooking(
     kind: ReconstructionKind,
     bookedEnd: LocalMinute,
     share: 1 | 0.5 = 1,
-  ): Reconstruction => ({
-    // A km amount that no surcharge explains makes the whole trip unreproducible; the booked end
-    // found from the time amount is kept as the best estimate. A manual booked end still wins.
-    kind: km.kmDeviation !== 0 && kind !== "manual" ? "not-reproducible" : kind,
-    chargedUntil,
-    bookedEnd,
-    share,
-    ...km,
-    timeDeviation:
-      bookingTimeCost(start, chargedUntil, bookedEnd, share, tariff, cls, data) - trip.billedTime,
-  });
+    overrunMinutes = 0,
+    overrunInferred = false,
+  ): Reconstruction => {
+    const booking = {
+      chargedUntil: overrunMinutes > 0 ? bookedEnd : chargedUntil,
+      bookedEnd,
+      overrunMinutes,
+      overrunInferred,
+      share,
+    };
+    return {
+      // A km amount that no surcharge explains makes the whole trip unreproducible; the booked end
+      // found from the time amount is kept as the best estimate. A manual booked end still wins.
+      kind: km.kmDeviation !== 0 && kind !== "manual" ? "not-reproducible" : kind,
+      ...booking,
+      ...km,
+      timeDeviation: reconstructedTimeCost(trip, booking, tariff, data) - trip.billedTime,
+    };
+  };
 
   if (trip.km === 0) {
     const full = timeCost(start, chargedUntil, tariff, cls, data);
@@ -131,12 +226,12 @@ export function reconstructBooking(
     }
   }
 
-  if (
-    manualBookedEnd !== undefined &&
-    manualBookedEnd >= chargedUntil &&
-    manualBookedEnd % QUARTER === 0
-  ) {
-    return result("manual", manualBookedEnd);
+  if (manualBookedEnd !== undefined && manualBookedEnd % QUARTER === 0) {
+    if (manualBookedEnd >= chargedUntil) return result("manual", manualBookedEnd);
+    // A booked end before the return: the time after it was an overrun.
+    if (manualBookedEnd > start && manualBookedEnd < trip.end) {
+      return result("manual", manualBookedEnd, 1, trip.end - manualBookedEnd);
+    }
   }
 
   const exact: LocalMinute[] = [];
@@ -157,5 +252,12 @@ export function reconstructBooking(
     return result(verified ? "verified" : "estimated", earliest);
   }
   if (firstNearMatch !== undefined) return result("verified-rounding", firstNearMatch);
+
+  // Only what the booked-end search cannot explain may be a late return.
+  // With an unexplained km amount the trip is priced as the plain booking, without an overrun.
+  const overrun = trip.km > 0 && km.kmDeviation === 0 ? findOverrun(trip, data) : undefined;
+  if (overrun) {
+    return result("overrun", overrun.bookedEnd, 1, overrun.minutes, overrun.inferred);
+  }
   return result("not-reproducible", chargedUntil);
 }
