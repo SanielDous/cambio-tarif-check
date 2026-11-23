@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { Trip } from "@/domain/import/fields";
 import { toLocalMinute } from "@/domain/pricing/local-time";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
-import type { TariffId } from "@/domain/pricing/types";
+import type { PriceData, TariffId } from "@/domain/pricing/types";
 import { analyze, comparedTariffs, type Settings } from "./analyze";
 import { breakEven } from "./break-even";
 
@@ -470,5 +470,80 @@ describe("analyze: actual tariff of a month", () => {
     expect(forward?.actualTariff).toBe("COMFORT");
     expect(backward?.actualTariff).toBe("COMFORT");
     expect(backward?.actualTariffMixed).toBe(true);
+  });
+});
+
+describe("analyze: hand-derived figures", () => {
+  // Wednesday 2025-01-15 10:00–11:00, AKTIV S, 10 km. Fuel surcharge 1 ct/km since 2024-07-01.
+  // AKTIV: 1 h × 2.10 + 10 × (0.25 + 0.01) = 2.10 + 2.60, billed exactly like that.
+  const wednesday = (month: number, extra: Partial<Trip> = {}): Trip =>
+    trip(2025, month, 15, "AKTIV", {
+      start: toLocalMinute(2025, month, 15, 10, 0),
+      end: toLocalMinute(2025, month, 15, 11, 0),
+      km: 10,
+      billedTime: 210,
+      billedKm: 260,
+      ...extra,
+    });
+
+  it("prices a month as its trips in the tariff plus the fee", () => {
+    const a = analyze([wednesday(1)], SETTINGS, PRICE_DATA);
+    expect(a?.trips[0]?.reconstruction.kind).toBe("verified");
+    // BASIS S weekday 3.30/h, km 0.28 + 0.01; COMFORT S 1.85/h, km 0.22 + 0.01.
+    expect(a?.months[0]?.costs).toEqual({
+      BASIS: 330 + 290,
+      AKTIV: 210 + 260 + 1100,
+      COMFORT: 185 + 230 + 2700,
+    });
+    expect(a?.months[0]?.cheapest).toBe("BASIS");
+    expect(a?.months[0]?.actualCost).toBe(210 + 260 + 1100);
+  });
+
+  it("signs the recomputation deviation as model minus billed, within the period only", () => {
+    // January billed 3 ct more km than the model (2.63), March 5 ct less (2.55).
+    const trips = [wednesday(1, { billedKm: 263 }), wednesday(3, { billedKm: 255 })];
+    expect(analyze(trips, SETTINGS, PRICE_DATA)?.recomputationDeviation).toBe(-3 + 5);
+    const march = { ...SETTINGS, period: { from: "2025-02", to: "2025-03" } };
+    expect(analyze(trips, march, PRICE_DATA)?.recomputationDeviation).toBe(5);
+    const january = { ...SETTINGS, period: { from: "2025-01", to: "2025-01" } };
+    expect(analyze(trips, january, PRICE_DATA)?.recomputationDeviation).toBe(-3);
+  });
+
+  it("drops a compared tariff that has no price for a trip's class", () => {
+    const data: PriceData = structuredClone(PRICE_DATA);
+    delete data.tariffs.COMFORT.prices.S;
+    const a = analyze([wednesday(1)], SETTINGS, data);
+    expect(a?.tariffs).toEqual(["BASIS", "AKTIV"]);
+    expect(a?.months[0]?.costs).not.toHaveProperty("COMFORT");
+  });
+
+  it("prefers the lower fee when two tariffs cost the same in total", () => {
+    // Trips: BASIS 6.20, AKTIV 4.70. An AKTIV fee of 1.50 makes both 6.20.
+    const tie: PriceData = structuredClone(PRICE_DATA);
+    tie.tariffs.AKTIV.monthlyFee = 150;
+    const a = analyze([wednesday(1)], SETTINGS, tie);
+    expect(a?.totals.BASIS).toBe(620);
+    expect(a?.totals.AKTIV).toBe(620);
+    expect(a?.bestSingle.tariff).toBe("BASIS");
+    expect(a?.months[0]?.cheapest).toBe("BASIS");
+    tie.tariffs.AKTIV.monthlyFee = 149;
+    expect(analyze([wednesday(1)], SETTINGS, tie)?.bestSingle).toMatchObject({
+      tariff: "AKTIV",
+      total: 619,
+    });
+  });
+
+  it("does not change its inputs", () => {
+    const trips = [wednesday(1), wednesday(3, { billedKm: 255, driver: "A" })];
+    const settings: Settings = {
+      ...SETTINGS,
+      period: { from: "2025-01", to: "2025-03" },
+      manualBookedEnds: { [trips[1]?.id ?? ""]: toLocalMinute(2025, 3, 15, 12, 0) },
+      actualTariffOverrides: { "2025-02": "COMFORT" },
+    };
+    const context = { unbilledMonths: ["2025-02"] };
+    const before = structuredClone({ trips, settings, data: PRICE_DATA, context });
+    analyze(trips, settings, PRICE_DATA, context);
+    expect({ trips, settings, data: PRICE_DATA, context }).toEqual(before);
   });
 });
