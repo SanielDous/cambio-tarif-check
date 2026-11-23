@@ -28,6 +28,9 @@ function weekdayName(weekday: number, language: string): string {
   );
 }
 
+const listOf = (items: string[], lang: string) =>
+  new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(items);
+
 /** Tariffs that have a separate weekend price for at least one class. */
 function weekendTariffs(data: PriceData): TariffId[] {
   return (Object.keys(data.tariffs) as TariffId[]).filter((id) =>
@@ -61,6 +64,7 @@ export function HowItWorksView({ data = PRICE_DATA }: { data?: PriceData }) {
     weekendTariffs: new Intl.ListFormat(lang, { style: "long", type: "conjunction" }).format(
       weekendTariffs(data).map((id) => t(`tariffs.${id}`)),
     ),
+    holidayCities: listOf(data.holidayCities, lang),
     nightFrom: hourLabel(data.nightStartHour),
     nightTo: hourLabel(data.nightEndHour),
     nightPrice: formatCurrency(data.nightHourPrice, lang),

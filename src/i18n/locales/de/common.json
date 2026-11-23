@@ -36,7 +36,7 @@
       "intro": "Jede Fahrt wird minutengenau mit den hinterlegten Preisen berechnet:",
       "time": "Zeit: Jede Minute kostet ein Sechzigstel des Stundenpreises der Wagenklasse im jeweiligen Tarif.",
       "night": "Nacht: Von {{nightFrom}} bis {{nightTo}} Uhr kostet die Stunde in jedem Tarif {{nightPrice}}.",
-      "weekend": "Wochenende: Von {{weekendFromDay}} {{weekendFromTime}} Uhr bis {{weekendToDay}} {{weekendToTime}} Uhr und an Feiertagen gilt der Wochenendpreis. Den gibt es nur in {{weekendTariffs}}; in den anderen Tarifen ist der Stundenpreis immer gleich. Die Stunden von {{nightFrom}} bis {{nightTo}} Uhr kosten auch am Wochenende und an Feiertagen den Nachtpreis.",
+      "weekend": "Wochenende: Von {{weekendFromDay}} {{weekendFromTime}} Uhr bis {{weekendToDay}} {{weekendToTime}} Uhr gilt der Wochenendpreis. Den gibt es nur in {{weekendTariffs}}; in den anderen Tarifen ist der Stundenpreis immer gleich. Feiertage zählen nur in einigen Regionen wie Wochenenden, nämlich in {{holidayCities}}. In allen anderen Städten kosten Feiertage den normalen Preis. Die Stunden von {{nightFrom}} bis {{nightTo}} Uhr kosten auch am Wochenende und an Feiertagen den Nachtpreis.",
       "caps": "Deckel: Jeder 24-Stunden-Block ab Buchungsbeginn kostet höchstens den Preis für {{dayCapHours}} Stunden, jeder 7-Tage-Block höchstens den Preis für {{weekCapDays}} volle Tage.",
       "km": "Kilometer: Die ersten {{kmBoundary}} km kosten den höheren Preis, jeder weitere Kilometer den günstigeren. Dazu kommt ein Kraftstoffzuschlag je Kilometer, der sich im Lauf der Zeit ändert."
     },
@@ -69,13 +69,14 @@
       "credit": "Fahrtguthaben, die cambio mit den Fahrtkosten verrechnet – sie hängen nicht vom Tarif ab",
       "business": "Geschäftskunden-Tarife",
       "before": "Fahrten vor dem {{date}}",
-      "holidays": "Feiertage folgen einer festen Liste, die vom Kalender von cambio abweichen kann.",
+      "holidays": "Feiertage folgen einer festen Liste, die vom Kalender von cambio abweichen kann. Die regionale Regel stammt aus dem Preisrechner von cambio und ist nur für Aachen durch eine Rechnung bestätigt.",
       "cap": "Wie die 50 %-Berechnung mit dem Tagesdeckel zusammenspielt, ist eine Annahme."
     },
     "prices": {
       "title": "Preisstand",
       "asOf": "Die Preise stammen vom {{date}}.",
       "outdated": "Preise können sich ändern; diese Seite kennt nur den genannten Stand. Prüfe vor einem Wechsel die aktuellen Preise bei cambio.",
+      "holidayCities": "Feiertage zum Wochenendpreis in: {{cities}}",
       "vat": "Alle Beträge sind in Euro und enthalten die Mehrwertsteuer. Die Kilometerpreise gelten ohne Kraftstoffzuschlag.",
       "tariffs": {
         "title": "Tarife und Gebühren",
