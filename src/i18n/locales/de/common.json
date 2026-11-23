@@ -289,6 +289,7 @@
       "driversAuto": "aus dem Export übernommen",
       "under26": "Ich bin unter 26",
       "under26Hint": "Den Campus-Tarif gibt es nur ohne weitere Fahrer:innen.",
+      "under26Campus": "Dein Export enthält Fahrten im Campus-Tarif.",
       "period": "Zeitraum",
       "from": "Von",
       "to": "Bis",

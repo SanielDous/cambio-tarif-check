@@ -473,6 +473,16 @@ describe("settings bar", () => {
     expect(screen.getAllByTestId("tariff-row").map((r) => r.dataset.tariff)).toContain("CAMPUS");
   });
 
+  it("shows the under-26 switch on and locked while the export has Campus trips", async () => {
+    const { store } = await withTrips([trip("CAMPUS", 2025, 1, 10), trip("BASIS", 2025, 2, 10)]);
+    expect(store.get(settingsAtom).under26).toBe(false);
+    expect(store.get(analysisAtom)?.tariffs).toContain("CAMPUS");
+    const under26 = screen.getByRole("switch", { name: "Ich bin unter 26" });
+    expect(under26).toBeChecked();
+    expect(under26).toBeDisabled();
+    expect(under26).toHaveAccessibleDescription("Dein Export enthält Fahrten im Campus-Tarif.");
+  });
+
   it("keeps the period ordered when from is moved past to", async () => {
     const { store, user } = await withFixtures();
     const from = screen.getByLabelText<HTMLSelectElement>("Von");
