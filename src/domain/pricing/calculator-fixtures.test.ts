@@ -10,6 +10,8 @@ import type { PriceClass, TariffId } from "./types";
 
 interface Fixture {
   group: string;
+  /** cambio's numeric city id in the recorded calculator requests. */
+  city: number;
   priceClass: PriceClass;
   start: string;
   end: string;
@@ -47,6 +49,13 @@ const isExcluded = (f: Fixture, tariff: TariffId) =>
   (tariff === "BASIS" || tariff === "CAMPUS") &&
   UNMAINTAINED_HOLIDAYS.includes(f.start.slice(0, 10));
 
+const CITY_NAMES: Record<number, string> = { 1: "Aachen", 21: "Köln", 16: "Hamburg" };
+const cityOf = (f: Fixture) => {
+  const name = CITY_NAMES[f.city];
+  if (name === undefined) throw new Error(`Unknown fixture city ${f.city}`);
+  return name;
+};
+
 const toCents = (euros: number) => Math.round(euros * 100);
 const tariffsOf = (f: Fixture) =>
   Object.keys(f.costs).filter((t): t is TariffId => t in PRICE_DATA.tariffs);
@@ -73,7 +82,7 @@ describe("calculator fixtures", () => {
         for (const tariff of tariffsOf(f)) {
           if (isExcluded(f, tariff)) continue;
           const expected = toCents(f.costs[tariff]!.time);
-          const raw = timeCost(start, end, tariff, f.priceClass, PRICE_DATA);
+          const raw = timeCost(start, end, tariff, f.priceClass, PRICE_DATA, cityOf(f));
           compared++;
           for (const [name, round] of Object.entries(ROUNDINGS)) {
             if (round(raw) === expected) exactMatches[name] = (exactMatches[name] ?? 0) + 1;
