@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   release:
-    if: github.event.workflow_run.conclusion == 'success'
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -35,7 +35,7 @@ jobs:
 
   deploy:
     needs: release
-    if: github.event.workflow_run.conclusion == 'success' && vars.PAGES_ENABLED == 'true'
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'push' && vars.PAGES_ENABLED == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -54,9 +54,11 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build
+      - name: Build
         env:
-          APP_VERSION: ${{ needs.release.outputs.version != '' && needs.release.outputs.version || format('dev-{0}', substr(github.event.workflow_run.head_sha, 0, 7)) }}
+          RELEASE_VERSION: ${{ needs.release.outputs.version }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: APP_VERSION="${RELEASE_VERSION:-dev-${HEAD_SHA:0:7}}" pnpm build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
