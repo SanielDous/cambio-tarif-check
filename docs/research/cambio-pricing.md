@@ -229,7 +229,16 @@ Findings from recomputing all 84 trips:
   match with a different rounding (parts summed before rounding, or the full-price part rounded
   down). 2.625 is billed as 2.62 and 4.725 as 4.72 in some trips. The exact rule still has to be
   derived (candidates: rounding on net amounts before VAT, half-even, per quarter-hour slot).
-- **Unexplained trips** (open):
+- Further rounding tests (16 decimal schemes, several floating-point formulas, several
+  net-before-VAT schemes) found no single rule for the billed amounts. The calculator samples
+  above (0.525 → 0.52, 1.575 → 1.57, 2.625 → 2.63) are all explained by "round the net amount
+  (price / 1.19) to cents, add 19 % VAT, round again", but that rule fits the billed trips worse
+  than separate half-up rounding. Calculator and invoicing seem to round differently.
+- The two 0 km rows below were explained by the account owner: a booking cancelled less than 24 h
+  before start is billed at 50 % of the time price, a booking neither cancelled nor used at 100 %.
+- Monthly fees (11.00 / 27.00), the additional-driver fee (3.00) and the switching fee (5.00) are
+  the same in the price lists of 2024-05, 2025-03 and 2026.
+- **Unexplained trips** (one remains open):
   - Class L, 7 hours, 0 km, billed 17.85 = exactly 50 % of the full price 35.70. Probably a
     cancelled or unused booking; cancellations therefore seem to appear as ordinary rows with 0 km.
   - Class XL, 9 hours, 0 km, billed 55.08 = the full price.
