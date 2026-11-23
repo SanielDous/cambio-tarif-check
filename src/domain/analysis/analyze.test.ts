@@ -208,10 +208,44 @@ describe("breakEven", () => {
         { BASIS: 10000, START: 8000, AKTIV: 9000 },
         { BASIS: 0, START: 0, AKTIV: 1100 },
       ),
-    ).toEqual([{ lower: "START", higher: "AKTIV", monthlyTripCost: null }]);
+    ).toEqual([
+      { lower: "START", higher: "AKTIV", monthlyTripCost: null, monthsAbove: 0, months: [] },
+    ]);
     expect(
       breakEven(["BASIS", "AKTIV"], { BASIS: 10000, AKTIV: 8000 }, { BASIS: 0, AKTIV: 1100 }),
-    ).toEqual([{ lower: "BASIS", higher: "AKTIV", monthlyTripCost: 5500 }]);
+    ).toEqual([
+      { lower: "BASIS", higher: "AKTIV", monthlyTripCost: 5500, monthsAbove: 0, months: [] },
+    ]);
+  });
+  it("counts the months above the threshold in the lower tariff", () => {
+    const [r] = breakEven(
+      ["BASIS", "AKTIV"],
+      { BASIS: 10000, AKTIV: 8000 },
+      { BASIS: 0, AKTIV: 1100 },
+      [
+        { month: "2025-01", tripsCost: { BASIS: 5500, AKTIV: 4400 } },
+        { month: "2025-02", tripsCost: { BASIS: 5501, AKTIV: 4401 } },
+        { month: "2025-03", tripsCost: { BASIS: 0, AKTIV: 0 } },
+      ],
+    );
+    expect(r?.monthsAbove).toBe(1);
+    expect(r?.months).toEqual([
+      { month: "2025-01", above: false },
+      { month: "2025-02", above: true },
+      { month: "2025-03", above: false },
+    ]);
+  });
+  it("puts no month above a threshold that is never reached", () => {
+    const [r] = breakEven(["BASIS", "AKTIV"], { BASIS: 0, AKTIV: 0 }, { BASIS: 0, AKTIV: 1100 }, [
+      { month: "2025-01", tripsCost: { BASIS: 0, AKTIV: 0 } },
+    ]);
+    expect(r).toMatchObject({ monthlyTripCost: null, monthsAbove: 0 });
+    expect(r?.months).toEqual([{ month: "2025-01", above: false }]);
+  });
+  it("lists every month of the analysis, also months without trips", () => {
+    const a = analyze([trip(2025, 1, 10), trip(2025, 3, 10)], SETTINGS, PRICE_DATA);
+    expect(a?.breakEven[0]?.months.map((m) => m.month)).toEqual(["2025-01", "2025-02", "2025-03"]);
+    expect(a?.breakEven[0]?.months[1]?.above).toBe(false);
   });
   it("is null without trip cost", () => {
     const r = breakEven(["BASIS", "AKTIV"], { BASIS: 0, AKTIV: 0 }, { BASIS: 0, AKTIV: 1100 });

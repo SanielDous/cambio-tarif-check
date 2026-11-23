@@ -1,7 +1,7 @@
 import type { Trip } from "@/domain/import/fields";
 import { monthKey } from "@/domain/pricing/local-time";
 import type { LocalMinute, PriceData, TariffId } from "@/domain/pricing/types";
-import { breakEven } from "./break-even";
+import { breakEven, type BreakEven } from "./break-even";
 import { buildMonths, comparedTariffs, monthlyFee } from "./months";
 import {
   reconstructBooking,
@@ -60,7 +60,7 @@ export interface Analysis {
   /** Σ model cost in the trip's own tariff − Σ billed time and km. */
   recomputationDeviation: number;
   verification: Record<ReconstructionKind, number>;
-  breakEven: { lower: TariffId; higher: TariffId; monthlyTripCost: number | null }[];
+  breakEven: BreakEven[];
   suggestedAdditionalDrivers: number;
   surchargeDerivedTrips: number;
 }
@@ -143,6 +143,16 @@ export function analyze(trips: Trip[], settings: Settings, data: PriceData): Ana
     fees[t] = monthlyFee(t, settings.additionalDrivers, data);
   }
 
+  const monthly = months.map((m) => {
+    const cost: Partial<Record<TariffId, number>> = {};
+    for (const t of tariffs) {
+      cost[t] = results
+        .filter((r) => r.month === m.month)
+        .reduce((sum, r) => sum + (r.costs[t]?.time ?? 0) + (r.costs[t]?.km ?? 0), 0);
+    }
+    return { month: m.month, tripsCost: cost };
+  });
+
   const drivers = new Set(inPeriod.map((t) => t.driver?.trim() ?? "").filter((d) => d !== ""));
 
   return {
@@ -155,7 +165,7 @@ export function analyze(trips: Trip[], settings: Settings, data: PriceData): Ana
     optimalPath: { tariffs: pathTariffs, total: path.total, switches },
     recomputationDeviation,
     verification,
-    breakEven: breakEven(tariffs, tripsCost, fees),
+    breakEven: breakEven(tariffs, tripsCost, fees, monthly),
     suggestedAdditionalDrivers: Math.max(0, drivers.size - 1),
     surchargeDerivedTrips: results.filter((r) => r.reconstruction.surchargeDerived).length,
   };
