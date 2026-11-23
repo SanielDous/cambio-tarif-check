@@ -187,4 +187,18 @@ describe("XLSX reading of ordinary workbooks", () => {
     expect(error).toBeInstanceOf(ImportError);
     expect(error).toMatchObject({ code: "too-large" });
   });
+
+  it("stops inflating at 100 MB even when the declared sizes lie", async () => {
+    // 101 MB of spaces deflate to about 100 KB; the archive claims 1 KB for the entry.
+    const huge = new Uint8Array(101 * 1024 * 1024).fill(0x20);
+    const bytes = zipSync({ "xl/worksheets/sheet1.xml": [huge, { level: 1 }] });
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    for (let i = 0; i + 4 < bytes.length; i++) {
+      if (view.getUint32(i, true) === 0x02014b50) view.setUint32(i + 24, 1024, true);
+    }
+    expect(bytes.length).toBeLessThan(5 * 1024 * 1024);
+    const error = await addMissingCellReferences(bytes).catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(ImportError);
+    expect(error).toMatchObject({ code: "too-large" });
+  });
 });

@@ -16,11 +16,34 @@ const SIGNATURE_END = 0x06054b50;
 const SIGNATURE_CENTRAL = 0x02014b50;
 const SIGNATURE_LOCAL = 0x04034b50;
 
-async function inflateRaw(data: Uint8Array): Promise<Uint8Array> {
-  const stream = new Blob([data as BlobPart])
+/**
+ * Inflates a raw deflate stream, counting the bytes as they come out: past `limit` bytes it stops
+ * and throws "too-large", whatever size the archive declared.
+ */
+async function inflateRaw(data: Uint8Array, limit: number): Promise<Uint8Array> {
+  const reader = new Blob([data as BlobPart])
     .stream()
-    .pipeThrough(new DecompressionStream("deflate-raw"));
-  return new Uint8Array(await new Response(stream).arrayBuffer());
+    .pipeThrough(new DecompressionStream("deflate-raw"))
+    .getReader();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.length;
+    if (size > limit) {
+      await reader.cancel();
+      throw new ImportError("too-large");
+    }
+    chunks.push(value);
+  }
+  const result = new Uint8Array(size);
+  let position = 0;
+  for (const chunk of chunks) {
+    result.set(chunk, position);
+    position += chunk.length;
+  }
+  return result;
 }
 
 /** Reads all entries of a ZIP archive (stored or deflated). Throws on anything else. */
@@ -37,6 +60,9 @@ async function readZip(bytes: Uint8Array): Promise<Map<string, Uint8Array>> {
   const count = view.getUint16(end + 10, true);
   let offset = view.getUint32(end + 16, true);
   const entries = new Map<string, Uint8Array>();
+  // Declared sizes, checked first so that an honest ZIP bomb is never inflated at all.
+  let declared = 0;
+  // Bytes actually produced, which a forged archive cannot hide.
   let inflated = 0;
   for (let n = 0; n < count; n++) {
     if (view.getUint32(offset, true) !== SIGNATURE_CENTRAL) throw new Error("Broken ZIP archive");
@@ -45,9 +71,8 @@ async function readZip(bytes: Uint8Array): Promise<Map<string, Uint8Array>> {
     const nameLength = view.getUint16(offset + 28, true);
     const extraLength = view.getUint16(offset + 30, true);
     const commentLength = view.getUint16(offset + 32, true);
-    // Check the declared size first so that a ZIP bomb is never inflated.
-    inflated += view.getUint32(offset + 24, true);
-    if (inflated > MAX_INFLATED_BYTES) throw new ImportError("too-large");
+    declared += view.getUint32(offset + 24, true);
+    if (declared > MAX_INFLATED_BYTES) throw new ImportError("too-large");
     const localOffset = view.getUint32(offset + 42, true);
     const name = decoder.decode(bytes.subarray(offset + 46, offset + 46 + nameLength));
     if (view.getUint32(localOffset, true) !== SIGNATURE_LOCAL)
@@ -58,9 +83,13 @@ async function readZip(bytes: Uint8Array): Promise<Map<string, Uint8Array>> {
       view.getUint16(localOffset + 26, true) +
       view.getUint16(localOffset + 28, true);
     const raw = bytes.subarray(start, start + compressedSize);
-    if (method === 0) entries.set(name, raw);
-    else if (method === 8) entries.set(name, await inflateRaw(raw));
+    let data: Uint8Array;
+    if (method === 0) data = raw;
+    else if (method === 8) data = await inflateRaw(raw, MAX_INFLATED_BYTES - inflated);
     else throw new Error(`Unsupported ZIP compression method ${method}`);
+    inflated += data.length;
+    if (inflated > MAX_INFLATED_BYTES) throw new ImportError("too-large");
+    entries.set(name, data);
     offset += 46 + nameLength + extraLength + commentLength;
   }
   return entries;
