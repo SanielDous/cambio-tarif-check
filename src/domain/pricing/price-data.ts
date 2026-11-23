@@ -45,7 +45,9 @@ export const PRICE_DATA: PriceData = {
         XS: withWeekend(250, 325, 28, 21),
         S: withWeekend(330, 415, 28, 21),
         M: withWeekend(430, 520, 29, 21),
-        L: withWeekend(715, 820, 39, 23),
+        // The calculator caps a BASIS L day at 85.50, not 12 × 7.15 = 85.80; the week cap is
+        // still 6 × 85.80 = 514.80 (recorded calculator responses).
+        L: { ...withWeekend(715, 820, 39, 23), dayCap: 8550 },
         XL: withWeekend(858, 1066, 42, 24),
       },
     },

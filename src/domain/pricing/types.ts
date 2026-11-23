@@ -10,6 +10,8 @@ export interface ClassPrice {
   hourWeekend: number;
   kmTier1: number;
   kmTier2: number;
+  /** Day cap, only where the calculator deviates from `dayCapHours × hourWeekday`. */
+  dayCap?: number;
 }
 
 export interface Tariff {

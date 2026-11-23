@@ -66,7 +66,7 @@ describe("PRICE_DATA", () => {
       XS: { hourWeekday: 250, hourWeekend: 325, kmTier1: 28, kmTier2: 21 },
       S: { hourWeekday: 330, hourWeekend: 415, kmTier1: 28, kmTier2: 21 },
       M: { hourWeekday: 430, hourWeekend: 520, kmTier1: 29, kmTier2: 21 },
-      L: { hourWeekday: 715, hourWeekend: 820, kmTier1: 39, kmTier2: 23 },
+      L: { hourWeekday: 715, hourWeekend: 820, kmTier1: 39, kmTier2: 23, dayCap: 8550 },
       XL: { hourWeekday: 858, hourWeekend: 1066, kmTier1: 42, kmTier2: 24 },
     });
     expect(12 * PRICE_DATA.tariffs.AKTIV.prices.S!.hourWeekday).toBe(2520);
