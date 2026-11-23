@@ -54,6 +54,11 @@ function MappingForm({ pending }: { pending: PendingMapping }) {
   const { table, detection } = pending;
   const [mapping, setMapping] = useState<ColumnMapping>(detection.mapping);
 
+  // Fields that still need an answer come first; the order is fixed when the form opens.
+  const [requiredOrder] = useState(() => [
+    ...REQUIRED_FIELDS.filter((id) => detection.mapping[id] === undefined),
+    ...REQUIRED_FIELDS.filter((id) => detection.mapping[id] !== undefined),
+  ]);
   const duplicated = duplicatedFields(mapping);
   const complete = REQUIRED_FIELDS.every((id) => mapping[id] !== undefined);
   const valid = complete && duplicated.length === 0;
@@ -63,8 +68,11 @@ function MappingForm({ pending }: { pending: PendingMapping }) {
 
   const select = (id: FieldId) => {
     const value = mapping[id];
+    const required = REQUIRED_FIELDS.includes(id);
     const ambiguous = detection.ambiguous.includes(id) && value === undefined;
-    const invalid = duplicated.includes(id);
+    const duplicate = duplicated.includes(id);
+    const missing = required && value === undefined;
+    const invalid = duplicate || missing;
     const selectId = `mapping-${id}`;
     return (
       <div key={id} className="grid gap-1.5">
@@ -75,7 +83,7 @@ function MappingForm({ pending }: { pending: PendingMapping }) {
           id={selectId}
           value={value === undefined ? "" : String(value)}
           aria-invalid={invalid || undefined}
-          aria-describedby={ambiguous || invalid ? `${selectId}-note` : undefined}
+          aria-describedby={invalid ? `${selectId}-note` : undefined}
           onChange={(event) => {
             const next = { ...mapping };
             if (event.target.value === "") delete next[id];
@@ -94,9 +102,13 @@ function MappingForm({ pending }: { pending: PendingMapping }) {
             </option>
           ))}
         </NativeSelect>
-        {(ambiguous || invalid) && (
+        {invalid && (
           <p id={`${selectId}-note`} className="text-xs text-destructive">
-            {invalid ? t("import.mapping.duplicate") : t("import.mapping.ambiguous")}
+            {duplicate
+              ? t("import.mapping.duplicate")
+              : ambiguous
+                ? t("import.mapping.ambiguous")
+                : t("import.mapping.pick")}
           </p>
         )}
       </div>
@@ -114,7 +126,7 @@ function MappingForm({ pending }: { pending: PendingMapping }) {
 
       <fieldset className="grid gap-4 sm:grid-cols-2">
         <legend className="sr-only">{t("import.mapping.required")}</legend>
-        {REQUIRED_FIELDS.map(select)}
+        {requiredOrder.map(select)}
       </fieldset>
 
       <Collapsible className="grid gap-3">
@@ -186,7 +198,7 @@ export function MappingDialog() {
     <Dialog open={pending !== undefined} onOpenChange={(open) => !open && cancel()}>
       {pending && (
         <DialogContent closeLabel={t("import.mapping.close")} className="sm:max-w-2xl">
-          <MappingForm key={pending.table.fileName} pending={pending} />
+          <MappingForm key={pending.id} pending={pending} />
         </DialogContent>
       )}
     </Dialog>

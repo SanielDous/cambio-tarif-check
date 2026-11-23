@@ -21,3 +21,7 @@ export function formatMonth(key: string, language: string): string {
     timeZone: "UTC",
   }).format(utcDate(Number(key.slice(0, 4)), Number(key.slice(5, 7)), 1));
 }
+
+export function formatNumber(value: number, language: string): string {
+  return new Intl.NumberFormat(language).format(value);
+}

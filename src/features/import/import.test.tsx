@@ -7,12 +7,23 @@ import "@testing-library/jest-dom/vitest";
 import { createStore, Provider, useAtomValue } from "jotai";
 import { afterEach, describe, expect, it } from "vitest";
 import "@/i18n/bootstrap";
-import { importReportAtom, settingsAtom, tripsAtom } from "@/state/atoms";
+import {
+  importFilesAtom,
+  importReportAtom,
+  pendingMappingsAtom,
+  resetAtom,
+  settingsAtom,
+  tripsAtom,
+} from "@/state/atoms";
 import { ImportSummary } from "./import-summary";
 import { ImportView } from "./import-view";
 
 const fixtureText = readFileSync(
   resolve(import.meta.dirname, "../../../tests/fixtures/trips-2025.csv"),
+  "utf8",
+);
+const fixture2026 = readFileSync(
+  resolve(import.meta.dirname, "../../../tests/fixtures/trips-2026.csv"),
   "utf8",
 );
 const csvFile = (text = fixtureText, name = "export.csv") =>
@@ -88,7 +99,7 @@ describe("import", () => {
     const city = within(dialog).getByLabelText("Stadt");
     await user.selectOptions(city, "Vertrag");
     expect(within(dialog).getByRole("button", { name: "Zuordnung übernehmen" })).toBeDisabled();
-    expect(within(dialog).getAllByText(/nur einem Feld/)).not.toHaveLength(0);
+    expect(within(dialog).getAllByText(/schon vergeben/)).not.toHaveLength(0);
   });
 
   it("skips the file when the mapping dialog is cancelled", async () => {
@@ -170,5 +181,75 @@ describe("import", () => {
     expect(localStorage).toHaveLength(0);
     expect(sessionStorage).toHaveLength(0);
     expect(document.cookie).toBe("");
+  });
+
+  it("marks unmapped required fields and lists them first", async () => {
+    const { user, input } = setup();
+    await user.upload(input(), csvFile(fixtureText.replace(";Tarif;", ";Vertrag;")));
+    const dialog = await screen.findByRole("dialog");
+    const tariff = within(dialog).getByLabelText("Tarif");
+    expect(tariff).toHaveAttribute("aria-invalid", "true");
+    expect(within(dialog).getByText("Bitte Spalte wählen")).toBeInTheDocument();
+    const selects = within(dialog).getAllByRole("combobox");
+    expect(selects[0]).toBe(tariff);
+  });
+
+  it("imports three files dropped at once and reports the unsupported one", async () => {
+    const { store, user, input } = setup();
+    await user.upload(input(), [
+      csvFile(fixtureText, "a.csv"),
+      csvFile(fixture2026, "b.csv"),
+      new File(["%PDF-1.7"], "c.pdf"),
+    ]);
+    await waitFor(() => expect(store.get(importReportAtom).files).toHaveLength(3));
+    expect(store.get(tripsAtom)).toHaveLength(85);
+    expect(store.get(importReportAtom).files.filter((file) => file.error)).toHaveLength(1);
+    expect(await screen.findByText(/nicht unterstützt/)).toBeInTheDocument();
+  });
+
+  it("accepts a second drop while the first is still being read", async () => {
+    const { store, user, input } = setup();
+    await user.upload(input(), csvFile(fixtureText, "a.csv"));
+    await user.upload(input(), csvFile(fixture2026, "b.csv"));
+    await waitFor(() => expect(store.get(tripsAtom)).toHaveLength(85));
+    expect(store.get(importReportAtom).files).toHaveLength(2);
+  });
+
+  it("keeps two files with the same name apart", async () => {
+    const { store, user, input } = setup();
+    const shorter = fixtureText
+      .split("\r\n")
+      .filter((_, index) => index !== 1)
+      .join("\r\n");
+    await user.upload(input(), csvFile(fixtureText, "export.csv"));
+    await screen.findByTestId("trip-count");
+    await user.upload(input(), csvFile(shorter, "export.csv"));
+    await waitFor(() => expect(store.get(importReportAtom).files).toHaveLength(2));
+    const [first, second] = store.get(importReportAtom).files;
+    expect(first?.id).not.toBe(second?.id);
+    expect(first?.tripCount).toBe(84);
+    expect(second?.tripCount).toBe(83);
+    expect(screen.getAllByText("export.csv")).toHaveLength(2);
+  });
+});
+
+describe("reset while reading", () => {
+  it("drops files that finish after the reset", async () => {
+    const store = createStore();
+    const pending = store.set(importFilesAtom, [csvFile()]);
+    store.set(resetAtom);
+    await pending;
+    expect(store.get(tripsAtom)).toHaveLength(0);
+    expect(store.get(importReportAtom).files).toHaveLength(0);
+  });
+
+  it("does not queue a mapping for a file read before the reset", async () => {
+    const store = createStore();
+    const pending = store.set(importFilesAtom, [
+      csvFile(fixtureText.replace(";Tarif;", ";Vertrag;")),
+    ]);
+    store.set(resetAtom);
+    await pending;
+    expect(store.get(pendingMappingsAtom)).toHaveLength(0);
   });
 });

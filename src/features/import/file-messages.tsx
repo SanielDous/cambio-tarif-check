@@ -11,8 +11,8 @@ export function FileMessages() {
   const failed = files.filter((file) => file.error !== undefined || file.skipped);
   return (
     <div aria-live="polite" className="space-y-3" data-testid="file-messages">
-      {failed.map((file, index) => (
-        <Alert key={`${file.fileName}-${index}`} variant={file.error ? "destructive" : "default"}>
+      {failed.map((file) => (
+        <Alert key={file.id} variant={file.error ? "destructive" : "default"}>
           {file.error ? <CircleAlert aria-hidden="true" /> : <SkipForward aria-hidden="true" />}
           <AlertTitle className="break-all">{file.fileName}</AlertTitle>
           <AlertDescription>

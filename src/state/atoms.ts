@@ -15,6 +15,8 @@ import { readTable } from "@/domain/import/read-table";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
 
 export interface FileReport {
+  /** Unique per imported file, also for files with the same name. */
+  id: number;
   fileName: string;
   /** Trips read from the file, before duplicates were removed. */
   tripCount: number;
@@ -31,6 +33,7 @@ export interface ImportReport {
 }
 
 export interface PendingMapping {
+  id: number;
   table: RawTable;
   detection: Detection;
 }
@@ -43,6 +46,8 @@ export const DEFAULT_SETTINGS: Settings = {
   actualTariffOverrides: {},
 };
 
+let nextFileId = 0;
+
 const EMPTY_REPORT: ImportReport = { files: [], duplicates: 0 };
 
 /** All imported trips of all files, deduplicated. Held in memory only. */
@@ -52,6 +57,8 @@ export const settingsAtom = atom<Settings>(DEFAULT_SETTINGS);
 /** Files whose columns could not be detected; the mapping dialog works off the first one. */
 export const pendingMappingsAtom = atom<PendingMapping[]>([]);
 /** Number of files currently being read. */
+/** Bumped by a reset; results of reads started before it are dropped. */
+const generationAtom = atom(0);
 export const importBusyAtom = atom(0);
 /** Number of additional drivers set automatically on the first import, 0 if none. */
 export const autoDriversAtom = atom(0);
@@ -80,32 +87,43 @@ const addResultAtom = atom(null, (get, set, result: { trips: Trip[]; report: Fil
   }
 });
 
-const addErrorAtom = atom(null, (get, set, fileName: string, error: ImportError["code"]) => {
-  const report = get(importReportAtom);
-  set(importReportAtom, {
-    ...report,
-    files: [...report.files, { fileName, tripCount: 0, problems: [], error }],
-  });
-});
+const addErrorAtom = atom(
+  null,
+  (get, set, file: { id: number; fileName: string }, error: ImportError["code"]) => {
+    const report = get(importReportAtom);
+    set(importReportAtom, {
+      ...report,
+      files: [...report.files, { ...file, tripCount: 0, problems: [], error }],
+    });
+  },
+);
 
 /** Reads the given files; each one either becomes trips, an error entry or a pending mapping. */
 export const importFilesAtom = atom(null, async (get, set, files: File[]) => {
   set(importBusyAtom, (n) => n + files.length);
+  const generation = get(generationAtom);
   for (const file of files) {
+    const id = nextFileId++;
     try {
       const table = await readTable(file);
+      if (get(generationAtom) !== generation) continue; // reset while reading
       const detection = detectColumns(table.headers);
       if (detection.missing.length === 0 && detection.ambiguous.length === 0) {
         const { trips, problems } = normalizeRows(table, detection.mapping, PRICE_DATA);
         set(addResultAtom, {
           trips,
-          report: { fileName: file.name, tripCount: trips.length, problems },
+          report: { id, fileName: file.name, tripCount: trips.length, problems },
         });
       } else {
-        set(pendingMappingsAtom, [...get(pendingMappingsAtom), { table, detection }]);
+        set(pendingMappingsAtom, [...get(pendingMappingsAtom), { id, table, detection }]);
       }
     } catch (error) {
-      set(addErrorAtom, file.name, error instanceof ImportError ? error.code : "unreadable");
+      if (get(generationAtom) !== generation) continue;
+      set(
+        addErrorAtom,
+        { id, fileName: file.name },
+        error instanceof ImportError ? error.code : "unreadable",
+      );
     } finally {
       set(importBusyAtom, (n) => n - 1);
     }
@@ -117,11 +135,14 @@ export const confirmMappingAtom = atom(null, (get, set, mapping: ColumnMapping) 
   const [pending, ...rest] = get(pendingMappingsAtom);
   if (!pending) return;
   set(pendingMappingsAtom, rest);
-  const { trips, problems } = normalizeRows(pending.table, mapping, PRICE_DATA);
-  set(addResultAtom, {
-    trips,
-    report: { fileName: pending.table.fileName, tripCount: trips.length, problems },
-  });
+  const { id } = pending;
+  const fileName = pending.table.fileName;
+  try {
+    const { trips, problems } = normalizeRows(pending.table, mapping, PRICE_DATA);
+    set(addResultAtom, { trips, report: { id, fileName, tripCount: trips.length, problems } });
+  } catch {
+    set(addErrorAtom, { id, fileName }, "unreadable");
+  }
 });
 
 /** Drops the first pending file and records it as skipped. */
@@ -134,13 +155,20 @@ export const cancelMappingAtom = atom(null, (get, set) => {
     ...report,
     files: [
       ...report.files,
-      { fileName: pending.table.fileName, tripCount: 0, problems: [], skipped: true },
+      {
+        id: pending.id,
+        fileName: pending.table.fileName,
+        tripCount: 0,
+        problems: [],
+        skipped: true,
+      },
     ],
   });
 });
 
 /** Clears trips, report and settings. */
 export const resetAtom = atom(null, (_get, set) => {
+  set(generationAtom, (n) => n + 1);
   set(tripsAtom, []);
   set(importReportAtom, EMPTY_REPORT);
   set(settingsAtom, DEFAULT_SETTINGS);

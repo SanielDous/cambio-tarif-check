@@ -19,12 +19,13 @@ import { monthKey } from "@/domain/pricing/local-time";
 import {
   autoDriversAtom,
   importReportAtom,
+  type FileReport,
   resetAtom,
   settingsAtom,
   tripsAtom,
 } from "@/state/atoms";
 import { FileMessages } from "./file-messages";
-import { formatDate, formatMonth } from "./format";
+import { formatDate, formatMonth, formatNumber } from "./format";
 import { MappingDialog } from "./mapping-dialog";
 import { useImportFiles } from "./use-import-files";
 
@@ -33,20 +34,22 @@ const MAX_LISTED_ROWS = 25;
 type Reason = RowProblem["reason"];
 
 /** Problems by reason, then by file, with their row numbers in ascending order. */
-function groupProblems(problems: RowProblem[]) {
-  const byReason = new Map<Reason, Map<string, number[]>>();
-  for (const problem of problems) {
-    const files = byReason.get(problem.reason) ?? new Map<string, number[]>();
-    files.set(problem.fileName, [...(files.get(problem.fileName) ?? []), problem.rowNumber]);
-    byReason.set(problem.reason, files);
+function groupProblems(reports: FileReport[]) {
+  const byReason = new Map<Reason, Map<number, { fileName: string; rows: number[] }>>();
+  for (const report of reports) {
+    for (const problem of report.problems) {
+      const files =
+        byReason.get(problem.reason) ?? new Map<number, { fileName: string; rows: number[] }>();
+      const entry = files.get(report.id) ?? { fileName: report.fileName, rows: [] };
+      entry.rows.push(problem.rowNumber);
+      files.set(report.id, entry);
+      byReason.set(problem.reason, files);
+    }
   }
   return [...byReason].map(([reason, files]) => ({
     reason,
-    count: [...files.values()].reduce((sum, rows) => sum + rows.length, 0),
-    files: [...files].map(([fileName, rows]) => ({
-      fileName,
-      rows: rows.sort((a, b) => a - b),
-    })),
+    count: [...files.values()].reduce((sum, file) => sum + file.rows.length, 0),
+    files: [...files].map(([id, file]) => ({ id, ...file, rows: file.rows.sort((x, y) => x - y) })),
   }));
 }
 
@@ -135,7 +138,7 @@ export function ImportSummary() {
     };
   }, [trips]);
 
-  const problems = useMemo(() => groupProblems(report.files.flatMap((f) => f.problems)), [report]);
+  const problems = useMemo(() => groupProblems(report.files), [report]);
   const readFiles = report.files.filter((file) => file.error === undefined && !file.skipped);
 
   return (
@@ -169,8 +172,8 @@ export function ImportSummary() {
 
       <div aria-live="polite" className="space-y-4">
         <ul className="grid gap-1.5 text-sm" aria-label={t("import.summary.files")}>
-          {readFiles.map((file, index) => (
-            <li key={`${file.fileName}-${index}`} className="flex items-center gap-2">
+          {readFiles.map((file) => (
+            <li key={file.id} className="flex items-center gap-2">
               <FileText className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
               <span className="min-w-0 flex-1 break-all">{file.fileName}</span>
               <Badge variant="secondary">
@@ -208,12 +211,15 @@ export function ImportSummary() {
                     </span>{" "}
                     ({t("import.summary.rows", { count })})
                     <ul className="text-xs">
-                      {files.map(({ fileName, rows }) => (
-                        <li key={fileName}>
+                      {files.map(({ id, fileName, rows }) => (
+                        <li key={id}>
                           <span className="break-all">{fileName}</span>: {t("import.summary.row")}{" "}
-                          {rows.slice(0, MAX_LISTED_ROWS).join(", ")}
+                          {rows
+                            .slice(0, MAX_LISTED_ROWS)
+                            .map((row) => formatNumber(row, language))
+                            .join(", ")}
                           {rows.length > MAX_LISTED_ROWS &&
-                            ` … (+${rows.length - MAX_LISTED_ROWS})`}
+                            ` ${t("import.summary.moreRows", { count: rows.length - MAX_LISTED_ROWS })}`}
                         </li>
                       ))}
                     </ul>
