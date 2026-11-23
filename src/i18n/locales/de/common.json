@@ -18,9 +18,6 @@
     "dark": "Dunkel",
     "system": "System"
   },
-  "home": {
-    "placeholder": "Hier kannst du bald deinen Fahrten-Export ablegen."
-  },
   "howItWorks": {
     "title": "So funktioniert’s",
     "placeholder": "Die Erklärung folgt."
@@ -29,5 +26,100 @@
     "version": "Version {{version}}",
     "disclaimer": "Kein offizielles Angebot von cambio",
     "repository": "Quellcode auf GitHub"
+  },
+  "import": {
+    "dropzone": {
+      "title": "Fahrten-Export hier ablegen",
+      "hint": "oder Dateien auswählen – CSV oder Excel (.xlsx), auch mehrere",
+      "choose": "Dateien auswählen",
+      "release": "Zum Einlesen loslassen",
+      "busy": "Dateien werden gelesen …",
+      "inputLabel": "Fahrten-Export auswählen (CSV oder Excel)"
+    },
+    "privacy": {
+      "title": "Deine Daten bleiben bei dir",
+      "text": "Die Auswertung läuft komplett in deinem Browser. Deine Fahrten werden weder hochgeladen noch gespeichert."
+    },
+    "where": {
+      "title": "Wo bekomme ich den Export?",
+      "text": "Du findest den Export im cambio-Kundenportal unter „Fahrtenarchiv“. Wähle dort den gewünschten Zeitraum und lade die Tabelle als CSV oder Excel herunter."
+    },
+    "completeness": "Die Auswertung stimmt nur, wenn der Export alle Fahrten des Zeitraums enthält – auch die aller weiteren Fahrer:innen.",
+    "fields": {
+      "city": "Stadt",
+      "vehicleClass": "Wagenklasse",
+      "start": "Buchungsbeginn",
+      "end": "Buchungsende",
+      "km": "Kilometer",
+      "billedTime": "Betrag Zeit",
+      "billedKm": "Betrag Kilometer",
+      "tariff": "Tarif",
+      "driver": "Fahrende Person",
+      "tripStart": "Fahrtbeginn",
+      "tripEnd": "Fahrtende",
+      "billedTotal": "Betrag gesamt",
+      "status": "Verarbeitungsstatus",
+      "invoiceDate": "Rechnungsdatum"
+    },
+    "reasons": {
+      "invalid-date": "Datum oder Uhrzeit nicht lesbar",
+      "invalid-number": "Zahl nicht lesbar oder negativ",
+      "end-before-start": "Buchungsende liegt vor dem Beginn",
+      "unknown-tariff": "Tarif nicht bekannt",
+      "unknown-class": "Wagenklasse nicht bekannt",
+      "before-price-data": "Fahrt liegt vor den hinterlegten Preisen",
+      "not-billed": "Fahrt noch nicht abgerechnet"
+    },
+    "errors": {
+      "empty": "Die Datei ist leer.",
+      "unsupported": "Dieses Dateiformat oder diese Tabelle wird nicht unterstützt. Bitte nimm eine CSV- oder Excel-Datei (.xlsx) aus dem Fahrtenarchiv.",
+      "unreadable": "Die Datei konnte nicht gelesen werden. Vielleicht ist sie beschädigt oder anders aufgebaut als erwartet.",
+      "too-large": "Die Datei ist größer als 5 MB und wird nicht eingelesen."
+    },
+    "skipped": "Übersprungen – die Spalten wurden nicht zugeordnet.",
+    "mapping": {
+      "title": "Spalten zuordnen",
+      "description": "In „{{file}}“ konnten nicht alle Spalten erkannt werden. Wähle für jedes Feld die passende Spalte.",
+      "required": "Pflichtfelder",
+      "optional": "Weitere Felder (optional)",
+      "placeholder": "Spalte wählen …",
+      "none": "Nicht zuordnen",
+      "ambiguous": "Mehrere Spalten passen – bitte wähle eine.",
+      "duplicate": "Diese Spalte ist schon vergeben",
+      "preview": "Vorschau der ersten Zeilen",
+      "confirm": "Zuordnung übernehmen",
+      "cancel": "Datei überspringen",
+      "close": "Schließen",
+      "column": "Spalte {{n}}",
+      "pick": "Bitte Spalte wählen"
+    },
+    "summary": {
+      "title": "Eingelesene Fahrten",
+      "trips_one": "{{count, number}} Fahrt",
+      "trips_other": "{{count, number}} Fahrten",
+      "period": "Zeitraum",
+      "files": "Dateien",
+      "fileTrips_one": "{{count, number}} Fahrt",
+      "fileTrips_other": "{{count, number}} Fahrten",
+      "duplicates_one": "{{count, number}} doppelte Fahrt entfernt",
+      "duplicates_other": "{{count, number}} doppelte Fahrten entfernt",
+      "problems": "Nicht übernommene Zeilen",
+      "row": "Zeile",
+      "rows_one": "{{count, number}} Zeile",
+      "rows_other": "{{count, number}} Zeilen",
+      "missingMonths": "Monate ohne Fahrten",
+      "driversHint_one": "Im Export kommt {{count, number}} weitere fahrende Person vor. Sie ist in den Einstellungen als zusätzliche Fahrer:in eingetragen.",
+      "driversHint_other": "Im Export kommen {{count, number}} weitere fahrende Personen vor. Sie sind in den Einstellungen als zusätzliche Fahrer:innen eingetragen.",
+      "addFile": "Datei hinzufügen",
+      "startOver": "Neu starten",
+      "confirmTitle": "Neu starten?",
+      "confirmText": "Alle eingelesenen Fahrten und Einstellungen werden aus dem Browser entfernt. Deine Dateien bleiben unverändert.",
+      "confirmYes": "Ja, neu starten",
+      "confirmNo": "Abbrechen",
+      "moreRows": "… und {{count, number}} weitere"
+    }
+  },
+  "result": {
+    "placeholder": "Die Auswertung erscheint hier."
   }
 }

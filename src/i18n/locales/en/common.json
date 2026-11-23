@@ -18,9 +18,6 @@
     "dark": "Dark",
     "system": "System"
   },
-  "home": {
-    "placeholder": "Soon you will be able to drop your trip export here."
-  },
   "howItWorks": {
     "title": "How it works",
     "placeholder": "The explanation is coming."
@@ -29,5 +26,100 @@
     "version": "Version {{version}}",
     "disclaimer": "Not an official offer from cambio",
     "repository": "Source code on GitHub"
+  },
+  "import": {
+    "dropzone": {
+      "title": "Drop your trip export here",
+      "hint": "or choose files – CSV or Excel (.xlsx), several at once",
+      "choose": "Choose files",
+      "release": "Release to read the files",
+      "busy": "Reading files …",
+      "inputLabel": "Choose trip export (CSV or Excel)"
+    },
+    "privacy": {
+      "title": "Your data stays with you",
+      "text": "The analysis runs entirely in your browser. Your trips are neither uploaded nor stored."
+    },
+    "where": {
+      "title": "Where do I get the export?",
+      "text": "You can find the export in the cambio customer portal under “Fahrtenarchiv” (trip archive). Pick the period you want there and download the table as CSV or Excel."
+    },
+    "completeness": "The analysis is only correct if the export contains all trips of the period – including those of any additional drivers.",
+    "fields": {
+      "city": "City",
+      "vehicleClass": "Vehicle class",
+      "start": "Booking start",
+      "end": "Booking end",
+      "km": "Kilometres",
+      "billedTime": "Time amount",
+      "billedKm": "Kilometre amount",
+      "tariff": "Tariff",
+      "driver": "Driver",
+      "tripStart": "Trip start",
+      "tripEnd": "Trip end",
+      "billedTotal": "Total amount",
+      "status": "Processing status",
+      "invoiceDate": "Invoice date"
+    },
+    "reasons": {
+      "invalid-date": "Date or time not readable",
+      "invalid-number": "Number not readable or negative",
+      "end-before-start": "Booking end is before its start",
+      "unknown-tariff": "Tariff not known",
+      "unknown-class": "Vehicle class not known",
+      "before-price-data": "Trip is older than the stored prices",
+      "not-billed": "Trip not billed yet"
+    },
+    "errors": {
+      "empty": "The file is empty.",
+      "unsupported": "This file type or table is not supported. Please use a CSV or Excel (.xlsx) file from the trip archive.",
+      "unreadable": "The file could not be read. It may be damaged or structured differently than expected.",
+      "too-large": "The file is larger than 5 MB and was not read."
+    },
+    "skipped": "Skipped – the columns were not mapped.",
+    "mapping": {
+      "title": "Map columns",
+      "description": "Not all columns in “{{file}}” could be recognised. Choose the matching column for each field.",
+      "required": "Required fields",
+      "optional": "More fields (optional)",
+      "placeholder": "Choose column …",
+      "none": "Do not map",
+      "ambiguous": "Several columns match – please pick one.",
+      "duplicate": "This column is already taken",
+      "preview": "Preview of the first rows",
+      "confirm": "Use this mapping",
+      "cancel": "Skip file",
+      "close": "Close",
+      "column": "Column {{n}}",
+      "pick": "Please choose a column"
+    },
+    "summary": {
+      "title": "Imported trips",
+      "trips_one": "{{count, number}} trip",
+      "trips_other": "{{count, number}} trips",
+      "period": "Period",
+      "files": "Files",
+      "fileTrips_one": "{{count, number}} trip",
+      "fileTrips_other": "{{count, number}} trips",
+      "duplicates_one": "{{count, number}} duplicate trip removed",
+      "duplicates_other": "{{count, number}} duplicate trips removed",
+      "problems": "Rows not imported",
+      "row": "Row",
+      "rows_one": "{{count, number}} row",
+      "rows_other": "{{count, number}} rows",
+      "missingMonths": "Months without trips",
+      "driversHint_one": "The export contains {{count, number}} other driver. It has been entered as an additional driver in the settings.",
+      "driversHint_other": "The export contains {{count, number}} other drivers. They have been entered as additional drivers in the settings.",
+      "addFile": "Add file",
+      "startOver": "Start over",
+      "confirmTitle": "Start over?",
+      "confirmText": "All imported trips and settings are removed from the browser. Your files stay untouched.",
+      "confirmYes": "Yes, start over",
+      "confirmNo": "Cancel",
+      "moreRows": "… and {{count, number}} more"
+    }
+  },
+  "result": {
+    "placeholder": "The analysis will appear here."
   }
 }
