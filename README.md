@@ -1,29 +1,71 @@
 # cambio Tarif-Check
 
-A small static web app for car-sharing customers: drop your trip export (CSV or XLSX) from the
-cambio customer portal ("Fahrtenarchiv") and see, month by month, what you paid and what every other
-tariff would have cost for the same trips, using the prices that were valid at the time.
+Finde heraus, ob deine cambio-Fahrten in einem anderen Tarif günstiger gewesen wären.
 
-## What it does and does not do
+**➜ Zur App: [sanieldous.github.io/cambio-tarif-check](https://sanieldous.github.io/cambio-tarif-check/)**
 
-- It recomputes every trip minute by minute (night, weekend and holiday prices, day and week caps,
-  kilometre tiers, fuel surcharge), reconstructs the booked end from the billed amount, and compares
-  the tariffs per month including monthly fees and tariff change fees. The page "So funktioniert's"
-  / "How it works" explains the details and shows the complete price table.
-- It does not consider partner discounts and city offers, the sign-up fee, SiPack, penalties,
-  business tariffs or trips before 2024-05-02. Public holidays follow a fixed list. The price data
-  can be out of date.
-- It is an unofficial tool and is not affiliated with cambio. There is no guarantee that the
-  results are correct.
+## Was die App macht
 
-## Privacy
+- Sie vergleicht, was deine Fahrten tatsächlich gekostet haben, mit dem, was sie in den anderen
+  cambio-Tarifen gekostet hätten – Monat für Monat, mit den Preisen, die zum Zeitpunkt der Fahrt
+  galten, samt Monatsgebühren und Tarifwechselgebühren.
+- Sie nennt den günstigsten einzelnen Tarif für deinen Zeitraum und wie viel du darin gespart
+  hättest.
+- Sie zeigt im Rückblick den besten Weg mit Tarifwechseln: für jeden Monat den Tarif, bei dem die
+  Summe samt Wechselgebühren am kleinsten gewesen wäre.
+- Sie zeigt für jede Fahrt, wie verlässlich sie nachgerechnet werden konnte.
 
-Everything is calculated in the browser. Trip data is never uploaded and never stored. The app only
-downloads its own static files (and loads further parts of itself on demand); it sets no cookies and
-writes nothing to browser storage (no local storage, session storage or IndexedDB). Reloading the
-page discards the imported trips.
+Das Ergebnis ist ein Rückblick auf deine bisherigen Fahrten, keine Vorhersage.
+
+## So benutzt du sie
+
+1. Lade deine Fahrten im cambio-Kundenportal unter „Fahrtenarchiv“ als CSV oder Excel herunter.
+2. Öffne die [App](https://sanieldous.github.io/cambio-tarif-check/) und zieh die Datei in das
+   Ablagefeld oder wähle sie aus. Mehrere Dateien (zum Beispiel ein Export je Jahr) sind kein
+   Problem.
+3. Lies das Ergebnis: oben die Antwort, darunter die Tabelle mit allen Tarifen je Monat, ein
+   Diagramm und die Liste der Fahrten. Die Zahl der weiteren Fahrer:innen, „unter 26“ und den
+   Zeitraum kannst du anpassen. Stimmt der Tarif, den die App für einen Monat annimmt, nicht,
+   korrigierst du ihn direkt in der Tabelle.
+
+Die Seite „So funktioniert’s“ in der App erklärt, wie gerechnet wird, und zeigt die vollständige
+Preistabelle.
+
+## Deine Daten
+
+Alles wird in deinem Browser berechnet. Deine Fahrten werden nie hochgeladen und nie gespeichert;
+sobald du die Seite neu lädst oder schließt, sind sie weg. Die Seite lädt nur ihre eigenen Dateien.
+
+## Was du wissen solltest
+
+- Die App ist ein unabhängiges, inoffizielles Werkzeug und steht in keiner Verbindung zu cambio.
+  Für die Richtigkeit der Ergebnisse gibt es keine Gewähr.
+- Die Preise haben den Stand, der in der App genannt ist, und können veraltet sein. Prüfe vor
+  einem Wechsel die aktuellen Preise bei cambio.
+- Nicht berücksichtigt sind unter anderem Partnerrabatte, Fahrtguthaben, die Anmeldegebühr, das
+  SiPack und pauschale Verspätungsgebühren.
+- Wie cambio genau rundet, ist nicht bekannt; ein Unterschied von einem Cent im Zeitbetrag gilt
+  deshalb als nachgerechnet.
+- Feiertage zählen nur in einigen Regionen wie Wochenenden.
+
+**In English:** cambio Tarif-Check is an independent, unofficial tool for customers of the German
+car-sharing provider cambio. Export your trips from the cambio customer portal ("Fahrtenarchiv")
+as CSV or Excel, drop the file into the app and see, month by month, what you paid and what every
+other tariff would have cost, the cheapest single tariff and the best switching path in hindsight.
+Everything is computed in your browser; no trip data leaves your device. The app is available in
+German and English: [sanieldous.github.io/cambio-tarif-check](https://sanieldous.github.io/cambio-tarif-check/).
+
+---
 
 ## Development
+
+What the app computes, in detail: it recomputes every trip minute by minute (night, weekend and
+holiday prices, day and week caps, kilometre tiers, fuel surcharge), reconstructs the booked end
+from the billed amount, and compares the tariffs per month including monthly fees and tariff
+change fees. It does not consider partner discounts and city offers, the sign-up fee, SiPack,
+penalties, business tariffs or trips before 2024-05-02. The app only downloads its own static
+files (and loads further parts of itself on demand); it sets no cookies and writes nothing to
+browser storage (no local storage, session storage or IndexedDB).
 
 Requirements: Node.js 22 or newer and pnpm.
 
@@ -44,8 +86,8 @@ Before the first end-to-end run, install the browser once:
 pnpm exec playwright install chromium
 ```
 
-The build uses relative asset paths and hash routing (`#/`, `#/how-it-works`), so `dist/` works
-from any path: the site root, a GitHub Pages project path or a fork under another name. The
+The build uses a relative base path (`./`) and hash routing (`#/`, `#/how-it-works`), so `dist/`
+works from any path: the site root, a GitHub Pages project path or a fork under another name. The
 end-to-end tests serve the same build at the root and under a sub-path it was not built for
 (`e2e/preview.mjs`).
 
@@ -72,12 +114,18 @@ and locally. Personal source data (portal exports, invoices) belongs in the git-
 
 ## Releases and deployment
 
-Releases are made by semantic-release from Conventional Commits: pushes to `main` create the
-version and the release notes on GitHub (no changelog file is written) and, once enabled, deploy
-to GitHub Pages. To go live:
+The app is live on GitHub Pages at <https://sanieldous.github.io/cambio-tarif-check/>. Deployment
+is fully automatic:
 
-1. In the repository settings, enable GitHub Pages with the source "GitHub Actions".
-2. Set the repository variable `PAGES_ENABLED` to `true`.
+1. A pull request is merged into `main`.
+2. The CI workflow (`.github/workflows/ci.yml`) runs lint, type check, unit tests, build and the
+   end-to-end tests.
+3. When CI succeeds on `main`, the release workflow (`.github/workflows/release.yml`) runs
+   semantic-release: Conventional Commits decide whether a new version is due, and if so it is
+   tagged and the release notes are published on GitHub (no changelog file is written).
+4. The same workflow then builds the app with that version (or, without a new release, the latest
+   released version plus the distance to it) and deploys `dist/` to GitHub Pages. The deploy job
+   runs only while the repository variable `PAGES_ENABLED` is `true`.
 
 ## Documentation
 

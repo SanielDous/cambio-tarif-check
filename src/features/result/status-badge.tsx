@@ -54,7 +54,7 @@ export function StatusBadge({
         asChild
         variant={open ? "outline" : "secondary"}
         className={cn(
-          "cursor-help outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+          "cursor-help outline-none focus-visible:ring-[3px] focus-visible:ring-ring",
           open && "border-foreground/40 border-dashed",
         )}
       >

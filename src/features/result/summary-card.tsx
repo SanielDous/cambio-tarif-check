@@ -45,7 +45,9 @@ function Total({
     <div
       className={cn(
         "flex flex-col gap-1 rounded-lg border p-3 sm:p-4",
-        emphasis ? "border-foreground/25 bg-background" : "bg-muted/40",
+        emphasis
+          ? "border-primary/50 bg-background shadow-[inset_3px_0_0_var(--primary)]"
+          : "bg-muted/40",
       )}
       data-testid={testId}
     >
@@ -167,7 +169,7 @@ export function SummaryCard({ analysis }: { analysis: Analysis }) {
         <Hint content={t("result.summary.verificationHint")}>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-sm text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="inline-flex items-center gap-2 rounded-sm text-left outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
             data-testid="verification"
           >
             <CircleCheck className="size-4 shrink-0 text-best" aria-hidden="true" />

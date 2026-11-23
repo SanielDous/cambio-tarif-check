@@ -99,7 +99,7 @@ export function PageDrop({ onFiles }: { onFiles?: () => void }) {
       className="pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-6 backdrop-blur-sm"
     >
       <div className="flex flex-col items-center gap-3 rounded-xl border-2 border-dashed border-primary bg-card px-10 py-8 text-center text-card-foreground shadow-lg">
-        <span className="flex size-14 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+        <span className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
           <FileSpreadsheet className="size-7" />
         </span>
         <span className="text-lg font-medium">{t("import.dropzone.release")}</span>

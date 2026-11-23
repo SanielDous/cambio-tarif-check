@@ -58,7 +58,7 @@ export function TripList({
             >
               <h3>
                 <CollapsibleTrigger
-                  className="group flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:ring-inset sm:px-5"
+                  className="group flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-4 py-3 text-left outline-none hover:bg-accent/50 focus-visible:ring-[3px] focus-visible:ring-ring focus-visible:ring-inset sm:px-5"
                   data-month={row.month}
                 >
                   <ChevronRight

@@ -48,7 +48,7 @@ function DialogContent({
       >
         {children}
         <DialogPrimitive.Close
-          className="absolute top-4 right-4 rounded-xs opacity-70 transition-opacity outline-none hover:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring/50 [&_svg]:size-4"
+          className="absolute top-4 right-4 rounded-xs opacity-70 transition-opacity outline-none hover:opacity-100 focus-visible:ring-[3px] focus-visible:ring-ring [&_svg]:size-4"
           aria-label={closeLabel}
         >
           <XIcon />

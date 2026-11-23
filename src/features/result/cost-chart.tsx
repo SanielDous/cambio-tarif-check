@@ -155,8 +155,10 @@ export default function CostChart({
               aria-pressed={mode === m}
               onClick={() => setMode(m)}
               className={cn(
-                "rounded-sm px-2.5 py-1 outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
-                mode === m ? "bg-secondary font-medium" : "text-muted-foreground hover:bg-accent",
+                "rounded-sm px-2.5 py-1 outline-none focus-visible:ring-[3px] focus-visible:ring-ring",
+                mode === m
+                  ? "bg-primary font-medium text-primary-foreground focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+                  : "text-muted-foreground hover:bg-accent",
               )}
             >
               {t(`result.chart.${m}`)}

@@ -121,7 +121,7 @@ function MappingForm({ pending }: { pending: PendingMapping }) {
       </fieldset>
 
       <Collapsible className="grid gap-3">
-        <CollapsibleTrigger className="group flex w-fit items-center gap-1 rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50">
+        <CollapsibleTrigger className="group flex w-fit items-center gap-1 rounded-md text-sm font-medium outline-none focus-visible:ring-[3px] focus-visible:ring-ring">
           <ChevronRight
             className="size-4 transition-transform group-data-[state=open]:rotate-90"
             aria-hidden="true"

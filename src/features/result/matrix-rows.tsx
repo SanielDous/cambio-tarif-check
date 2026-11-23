@@ -49,7 +49,7 @@ function Cell({
         column={column}
         breakdown={breakdown}
         className={cn(
-          "flex w-full cursor-help items-center justify-end gap-1 rounded-md px-2 py-1.5 whitespace-nowrap tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+          "flex w-full cursor-help items-center justify-end gap-1 rounded-md px-2 py-1.5 whitespace-nowrap tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-ring",
           cheapest && "bg-best-surface font-semibold",
           actual && "ring-2 ring-foreground/75 ring-inset focus-visible:ring-[3px]",
         )}
@@ -165,7 +165,7 @@ export function ActualRows({ analysis }: { analysis: Analysis }) {
               row={analysis.tariffs.length}
               column={i}
               breakdown={<ActualBreakdown row={m} />}
-              className="inline-flex w-full cursor-help items-center justify-end gap-1 rounded-md px-2 py-0.5 font-semibold whitespace-nowrap tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+              className="inline-flex w-full cursor-help items-center justify-end gap-1 rounded-md px-2 py-0.5 font-semibold whitespace-nowrap tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-ring"
             >
               {m.switched && (
                 <>

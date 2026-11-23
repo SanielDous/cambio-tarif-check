@@ -54,7 +54,7 @@ export function ActualTariffMenu({ row, compared }: { row: MonthRow; compared: T
         <button
           type="button"
           className={cn(
-            "flex w-full flex-col items-end rounded-md px-2 py-1 text-right outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[state=open]:bg-accent",
+            "flex w-full flex-col items-end rounded-md px-2 py-1 text-right outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring data-[state=open]:bg-accent",
             row.actualTariffSource === "inherited" && "text-muted-foreground",
           )}
           aria-label={t("result.matrix.change", {
