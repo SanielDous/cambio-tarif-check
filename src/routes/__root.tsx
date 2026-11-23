@@ -80,7 +80,7 @@ function RootLayout() {
   const { t } = useTranslation("common");
   const [, setTheme] = useTheme();
   return (
-    <div className="mx-auto flex min-h-screen max-w-4xl flex-col gap-6 px-4">
+    <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4">
       <header className="flex items-center justify-between gap-4 border-b py-4">
         <nav className="flex gap-4 text-sm">
           <Link to="/" className="[&.active]:font-semibold">

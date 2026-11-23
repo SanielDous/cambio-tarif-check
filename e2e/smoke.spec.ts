@@ -32,6 +32,28 @@ test("imports a trip export and shows the summary, without overflow at 390 px", 
 
   await page.locator('input[type="file"]').setInputFiles("tests/fixtures/trips-2025.csv");
   await expect(page.getByTestId("trip-count")).toHaveText("84 Fahrten");
-  await expect(page.getByTestId("result-placeholder")).toBeVisible();
+  await expect(page.getByTestId("headline")).toBeVisible();
+  await expect(page.getByRole("table", { name: /Kosten je Tarif und Monat/ })).toBeVisible();
   expect(await hasHorizontalOverflow(page)).toBe(false);
 });
+
+for (const width of [1280, 390]) {
+  test(`shows the result with summary, matrix and chart at ${width} px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("./");
+    await page.locator('input[type="file"]').setInputFiles("tests/fixtures/trips-2025.csv");
+
+    const summary = page.getByTestId("summary");
+    await expect(summary.getByTestId("headline")).toContainText(/Basis|Aktiv|Comfort/);
+    await expect(summary.getByTestId("total-actual")).toContainText("€");
+    const matrix = page.getByRole("table", { name: /Kosten je Tarif und Monat/ });
+    await expect(matrix).toBeVisible();
+    await expect(page.getByTestId("month-header")).toHaveCount(13);
+    await expect(page.locator(".recharts-surface")).toBeVisible();
+    expect(await hasHorizontalOverflow(page)).toBe(false);
+
+    await page.getByRole("button", { name: "Fahrten im Dezember 2025 anzeigen" }).click();
+    await expect(page.getByTestId("trip-row").first()).toBeVisible();
+    expect(await hasHorizontalOverflow(page)).toBe(false);
+  });
+}

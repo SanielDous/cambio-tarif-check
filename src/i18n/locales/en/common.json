@@ -120,6 +120,201 @@
     }
   },
   "result": {
-    "placeholder": "The analysis will appear here."
+    "summary": {
+      "scope": "{{from}} – {{to}} · {{trips}}",
+      "headline": {
+        "saving": "With the {{tariff}} tariff you would have saved {{amount}}.",
+        "alreadyBest": "You were in the cheapest tariff the whole time: {{tariff}}.",
+        "switchingWon": "Thanks to your switches you paid {{amount}} less than in the best single tariff ({{tariff}}).",
+        "cheaperThanBest": "You paid {{amount}} less than in the best single tariff ({{tariff}})."
+      },
+      "sub": {
+        "saving": "You paid {{actual}}. With {{tariff}}, the same trips would have cost {{best}}.",
+        "alreadyBest": "No other tariff would have been cheaper for your trips. By these numbers, switching does not pay off.",
+        "switchingWon": "No single tariff would have been cheaper over the whole period than what you actually did.",
+        "cheaperThanBest": "No single tariff would have been cheaper over the whole period than what you actually paid."
+      },
+      "actual": {
+        "label": "Actually paid",
+        "note": "incl. monthly and switching fees"
+      },
+      "best": {
+        "label": "Best single tariff: {{tariff}}"
+      },
+      "optimal": {
+        "label": "Optimal in hindsight, {{switches}}",
+        "switches_one": "{{count, number}} switch",
+        "switches_other": "{{count, number}} switches",
+        "note": "you cannot know the month in advance"
+      },
+      "diff": {
+        "more": "{{amount}} more than actually paid",
+        "less": "{{amount}} less than actually paid",
+        "same": "exactly what you paid"
+      },
+      "verification": "{{recomputed, number}} of {{total, number}} trips recomputed to the cent",
+      "verificationHint": "For every trip, the booking is reconstructed from the billed amount and recomputed with the stored prices. If the result matches the invoice, the trip counts as recomputed.",
+      "deviation": "Total recomputation difference: {{amount}}",
+      "warnings": {
+        "title": "Notes",
+        "open_one": "{{count, number}} trip could not be recomputed unambiguously. You can enter its booked end in the trip list.",
+        "open_other": "{{count, number}} trips could not be recomputed unambiguously. You can enter their booked end in the trip list.",
+        "surcharge_one": "For {{count, number}} trip, the fuel surcharge was derived from the billed distance amount.",
+        "surcharge_other": "For {{count, number}} trips, the fuel surcharge was derived from the billed distance amount.",
+        "mixed": "In {{months}}, trips were billed in more than one tariff. Your tariff is taken from the month's last trip.",
+        "inherited": "There were no trips in {{months}}. The previous month's tariff is assumed – you can change it in the table.",
+        "incomplete": "Trips may be missing for {{months}}."
+      }
+    },
+    "settings": {
+      "title": "Your details",
+      "drivers": "Additional drivers",
+      "fewerDrivers": "One additional driver fewer",
+      "moreDrivers": "One additional driver more",
+      "driversAuto": "taken from the export",
+      "under26": "I am under 26",
+      "under26Hint": "The Campus tariff is only available without additional drivers.",
+      "period": "Period",
+      "from": "From",
+      "to": "To",
+      "allMonths": "Whole period",
+      "prices": "Prices and calculation"
+    },
+    "matrix": {
+      "title": "Month by month",
+      "intro": "What each tariff would have cost for your trips, including the monthly fee.",
+      "caption": "Cost per tariff and month in euros, including the monthly fee, plus your actual cost and tariff per month.",
+      "tariff": "Tariff",
+      "sum": "Total",
+      "perMonth": "{{amount}} / month",
+      "actual": "Actual",
+      "yourTariff": "Your tariff",
+      "scrollHint": "Scroll sideways for all months",
+      "scrollLeft": "Show earlier months",
+      "scrollRight": "Show later months",
+      "showTrips": "Show trips in {{month}}",
+      "noTrips": "No trips in {{month}}",
+      "switchFee": "incl. {{amount}} switching fee",
+      "marks": {
+        "cheapest": "cheapest tariff",
+        "actual": "your tariff",
+        "path": "optimal path",
+        "bestTotal": "cheapest tariff overall"
+      },
+      "legend": {
+        "title": "Legend",
+        "cheapest": "Cheapest tariff of the month",
+        "actual": "Your tariff",
+        "path": "Optimal path in hindsight (with switching fees)",
+        "switch": "Tariff switch, €5 fee"
+      },
+      "source": {
+        "inherited": "assumed",
+        "override": "set by you",
+        "mixed": "mixed"
+      },
+      "sourceHint": {
+        "trips": "Taken from your trips.",
+        "inherited": "No trip this month. The previous month's tariff is assumed.",
+        "override": "Set by you.",
+        "mixed": "Trips billed in more than one tariff; the last trip's tariff counts."
+      },
+      "menuLabel": "Your tariff in {{month}}",
+      "change": "Your tariff in {{month}}: {{tariff}}. Change",
+      "resetOverride": "Determine from the trips again"
+    },
+    "chart": {
+      "title": "Monthly cost over time",
+      "note": "All values are also in the “Month by month” table.",
+      "legend": "Lines",
+      "view": "View",
+      "monthly": "Per month",
+      "cumulative": "Cumulative",
+      "loading": "Loading chart …"
+    },
+    "breakEven": {
+      "title": "When does which tariff pay off?",
+      "intro": "From these monthly trip costs on, the pricier tariff makes up for its higher monthly fee through lower prices – based on your trips.",
+      "pays": "{{higher}} pays off compared with {{lower}} from {{amount}} of trip cost per month (at {{lower}} prices).",
+      "never": "{{higher}} never pays off compared with {{lower}} for your trips: its prices are not low enough to make up for the fee.",
+      "months": "{{count, number}} of {{total, number}} months were above",
+      "above": "above",
+      "below": "below",
+      "none": "Only one tariff is compared."
+    },
+    "trips": {
+      "title": "Your trips",
+      "intro": "By month, newest first. For every trip: what was billed and what it would have cost in each tariff.",
+      "toCheck_one": "{{count, number}} to check",
+      "toCheck_other": "{{count, number}} to check",
+      "paid": "paid incl. fees",
+      "bookedUntil": "booked until {{time}}",
+      "booked": "booked {{duration}}",
+      "deviation": "Recomputed {{amount}}",
+      "deviationHint": "Difference between the recomputed and the billed amount in the trip's tariff",
+      "columns": {
+        "trip": "Trip",
+        "duration": "Duration",
+        "km": "km",
+        "vehicle": "Vehicle class, tariff",
+        "billed": "Billed",
+        "status": "Recomputation"
+      }
+    },
+    "kinds": {
+      "verified": {
+        "label": "recomputed",
+        "text": "With the stored prices, the trip costs exactly the billed amount, to the cent."
+      },
+      "verified-rounding": {
+        "label": "recomputed (1 cent rounding)",
+        "text": "The recomputation differs by one cent only – a matter of rounding."
+      },
+      "estimated": {
+        "label": "estimated",
+        "text": "Several booked ends match the amount; the earliest one is used. If you know the booked end, enter it."
+      },
+      "manual": {
+        "label": "added by hand",
+        "text": "The booked end you entered is used."
+      },
+      "cancelled": {
+        "label": "cancelled at short notice (50 %)",
+        "text": "The booking was cancelled at short notice; half of the time price is charged."
+      },
+      "unused": {
+        "label": "not started (100 %)",
+        "text": "The booking was not used; the full time price is charged."
+      },
+      "not-reproducible": {
+        "label": "not reproducible",
+        "text": "No booked end yields the billed amount. The trip is priced up to the return; enter the booked end if you know it."
+      }
+    },
+    "bookedEnd": {
+      "open": "Enter booked end",
+      "edit": "Change booked end",
+      "title": "Booked end",
+      "description": "Until when was the trip booked? No earlier than {{time}} (the return, rounded up to the quarter hour).",
+      "date": "Date",
+      "time": "Time",
+      "apply": "Apply",
+      "clear": "Remove entry",
+      "tooEarly": "The booked end cannot be before {{time}}.",
+      "invalid": "Please choose a valid date."
+    },
+    "empty": {
+      "title": "No result possible",
+      "period": "There are no trips in the chosen period.",
+      "tariffs": "No tariff can price all of your trips.",
+      "reset": "Show the whole period"
+    }
+  },
+  "tariffs": {
+    "CAMPUS": "Campus",
+    "BASIS": "Basis",
+    "START": "Start",
+    "AKTIV": "Aktiv",
+    "COMFORT": "Comfort"
   }
 }
