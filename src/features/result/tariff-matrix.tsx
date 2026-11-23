@@ -204,7 +204,7 @@ export function TariffMatrix({
                             <button
                               type="button"
                               onClick={() => onShowMonth(m.month)}
-                              className="ml-auto flex rounded-md px-2 py-1 outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                              className="flex rounded-md px-2 py-1 outline-none hover:bg-accent focus-visible:ring-[3px] focus-visible:ring-ring/50"
                               aria-label={t("result.matrix.showTrips", { month: long })}
                               title={t("result.matrix.showTrips", { month: long })}
                             >
