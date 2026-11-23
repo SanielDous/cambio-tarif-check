@@ -125,6 +125,9 @@
       "busy": "Dateien werden gelesen …",
       "inputLabel": "Fahrten-Export auswählen (CSV oder Excel)"
     },
+    "pageDrop": {
+      "hint": "CSV oder Excel (.xlsx) aus dem Fahrtenarchiv; die Fahrten kommen zu den bereits geladenen hinzu."
+    },
     "privacy": {
       "title": "Deine Daten bleiben bei dir",
       "text": "Die Auswertung läuft komplett in deinem Browser. Deine Fahrten werden weder hochgeladen noch gespeichert."

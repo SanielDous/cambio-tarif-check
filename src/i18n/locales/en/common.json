@@ -125,6 +125,9 @@
       "busy": "Reading files …",
       "inputLabel": "Choose trip export (CSV or Excel)"
     },
+    "pageDrop": {
+      "hint": "CSV or Excel (.xlsx) from the trip archive; the trips are added to those already loaded."
+    },
     "privacy": {
       "title": "Your data stays with you",
       "text": "The analysis runs entirely in your browser. Your trips are neither uploaded nor stored."

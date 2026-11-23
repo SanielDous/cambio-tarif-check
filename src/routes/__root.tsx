@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { createRootRoute, Link, Outlet } from "@tanstack/react-router";
+import { useCallback, useEffect, useState } from "react";
+import { createRootRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
 import { Languages, Monitor, Moon, Sun } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { PageDrop } from "@/features/import/page-drop";
 import { REPOSITORY_URL } from "@/lib/links";
 
 type Theme = "light" | "dark" | "system";
@@ -78,8 +79,12 @@ function ThemeSwitch({ onChange }: { onChange: (theme: Theme) => void }) {
 function RootLayout() {
   const { t } = useTranslation("common");
   const [, setTheme] = useTheme();
+  const navigate = useNavigate();
+  // Files dropped on another page are read all the same; the result is on the start page.
+  const showResult = useCallback(() => void navigate({ to: "/" }), [navigate]);
   return (
     <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-6 px-4">
+      <PageDrop onFiles={showResult} />
       <header className="flex items-center justify-between gap-4 border-b py-4">
         <nav className="flex gap-4 text-sm">
           <Link to="/" className="[&.active]:font-semibold">
