@@ -228,6 +228,40 @@ So the calendar is not simply "nationwide holidays": All Saints counts, Corpus C
 although both are holidays in North Rhine-Westphalia. Whether the calendar differs by city was not
 tested (all holiday requests used Aachen). Holidays in past years cannot be queried.
 
+### Billing details confirmed by 166 recorded calculator responses (2026-11-23)
+
+The local implementation (`src/domain/pricing/`) reproduces all 166 recorded responses
+(673 tariff results): every km amount exactly, every time amount to within 1 cent
+(656 of 665 compared time amounts exactly; 8 BASIS/CAMPUS results on 2028 holidays excluded).
+
+- **Holiday hours:** a holiday is the calendar day 00:00–24:00 at the weekend price; 00:00–06:00
+  stays at the night price 0.50. Ascension Day 2027: 22:00 the day before to 02:00 = 2 h weekday +
+  2 h night; 06:00–18:00 is capped at the weekday day price; 22:00 to 02:00 the next day =
+  2 h weekend + 2 h night. (calculator)
+- **BASIS L day cap is 85.50, not 12 × 7.15 = 85.80.** BASIS L 26 h from 06:00 = 99.80
+  (85.50 + 2 × 7.15); 8 days = 600.30 (week 514.80 + day 85.50). The week cap stays
+  514.80 = 6 × 85.80. The hour price 7.15 is confirmed (15 min = 1.79, 3 h = 21.45). All other
+  tested classes cap the day at exactly 12 × the weekday hour price. (calculator)
+
+### Rounding of the time amount in the calculator
+
+- Only amounts of exactly half a cent are affected; all other amounts are rounded to the nearest
+  cent. 58 of 665 recorded time amounts are exact half cents. (calculator)
+- The direction for half cents is **not a function of the amount**: 5.775 is shown as 5.77 for
+  BASIS S 105 min (3.30/h) and as 5.78 for AKTIV S 165 min (2.10/h). (calculator)
+- "Round the net amount (price / 1.19) to cents, add VAT, round again" is ruled out: it turns
+  whole-cent amounts such as 2.10 into 2.09 (550 of 665 match; plain half-up: 642). (calculator)
+- Best rule depending on the amount only: hold the euro amount as a single-precision float
+  (float32) and round half-up – 656 of 665 exact (49 of 58 half cents), used as
+  `roundCalculator`. It gives 0.525 → 0.52 and 2.625 → 2.63, but 1.575 → 1.58 (shown: 1.57).
+  (inferred)
+- Best rule depending on price and duration: hour price in euros as float32 × hours, result as
+  float32, then half-up – 54 of 58 half cents. The four misses are cases where double precision
+  would give the shown value, so this is not the exact rule either. About 4,000 other variants
+  (double precision in every operation order, net prices rounded to 2–8 decimals, per-minute
+  prices, per-segment rounding, per-minute summation, day-based durations, half-even) fit worse.
+  The exact rule is **open**. (inferred)
+
 ### Derived from the trip export
 
 Export format (CSV from the customer portal; an XLSX with the same columns exists):
