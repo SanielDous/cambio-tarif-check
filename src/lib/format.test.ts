@@ -3,6 +3,7 @@ import { toLocalMinute } from "@/domain/pricing/local-time";
 import {
   formatCurrency,
   formatDate,
+  formatHours,
   formatDateTime,
   formatDuration,
   formatMonth,
@@ -86,5 +87,14 @@ describe("formatDuration and formatNumber", () => {
   it("formats numbers per language", () => {
     expect(formatNumber(1234, "de")).toBe("1.234");
     expect(formatNumber(1234, "en")).toBe("1,234");
+  });
+});
+
+describe("formatHours", () => {
+  it("shows minutes as hours with one decimal per language", () => {
+    expect(formatHours(90, "de")).toBe("1,5");
+    expect(formatHours(90, "en")).toBe("1.5");
+    expect(formatHours(0, "de")).toBe("0,0");
+    expect(formatHours(60 * 1234 + 30, "en")).toBe("1,234.5");
   });
 });

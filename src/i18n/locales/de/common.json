@@ -350,6 +350,29 @@
       "change": "Dein Tarif im {{month}}: {{tariff}}. Ändern",
       "resetOverride": "Wieder aus den Fahrten bestimmen",
       "notCompared": "wird nicht verglichen",
+      "breakdown": {
+        "tripCosts": "Fahrtkosten",
+        "tripCostsBilled": "Fahrtkosten laut Rechnung",
+        "time": "davon Zeit",
+        "km": "davon Kilometer",
+        "fee": "Grundgebühr",
+        "drivers": "Weitere Fahrer:innen",
+        "switch": "Tarifwechsel",
+        "sum": "Summe",
+        "usage_one": "{{count, number}} Fahrt · {{km}} km",
+        "usage_other": "{{count, number}} Fahrten · {{km}} km",
+        "tariffSource": {
+          "trips": "{{tariff}}, aus deinen Fahrten",
+          "inherited": "{{tariff}}, angenommen",
+          "override": "{{tariff}}, von Hand festgelegt"
+        }
+      },
+      "usage": {
+        "title": "Deine Nutzung",
+        "trips": "Fahrten",
+        "km": "Kilometer",
+        "hours": "Stunden"
+      },
       "incomplete": "In diesem Monat gibt es noch nicht abgerechnete Fahrten",
       "partial": "Dieser Monat ist im Export vermutlich nicht vollständig enthalten"
     },

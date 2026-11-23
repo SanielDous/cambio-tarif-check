@@ -191,9 +191,7 @@ describe("month breakdown of the fixtures", () => {
   it("counts trips and kilometres per month and sums them to the totals", () => {
     const months = a?.months ?? [];
     expect(months.reduce((s, m) => s + m.tripCount, 0)).toBe(a?.trips.length);
-    expect(months.reduce((s, m) => s + m.km, 0)).toBe(
-      a?.trips.reduce((s, r) => s + r.trip.km, 0),
-    );
+    expect(months.reduce((s, m) => s + m.km, 0)).toBe(a?.trips.reduce((s, r) => s + r.trip.km, 0));
     expect(months.every((m) => m.tripCount === m.tripIds.length)).toBe(true);
   });
 

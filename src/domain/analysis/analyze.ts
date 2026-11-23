@@ -51,7 +51,9 @@ export interface MonthRow {
   /** Model cost per compared tariff incl. fees. */
   costs: Partial<Record<TariffId, number>>;
   /** What `costs` is made of per compared tariff, in cents; the parts add up to `costs`. */
-  breakdown: Partial<Record<TariffId, { time: number; km: number; fee: number; driverFee: number }>>;
+  breakdown: Partial<
+    Record<TariffId, { time: number; km: number; fee: number; driverFee: number }>
+  >;
   /** What `actualCost` is made of, in cents; the parts add up to `actualCost`. */
   actualBreakdown: {
     billedTime: number;
