@@ -76,6 +76,42 @@ describe("analyze", () => {
     expect(jan?.actualCost).toBe(1600 + fee("BASIS"));
   });
 
+  it("breaks a month with a switch and additional drivers into parts that add up", () => {
+    const settings = { ...SETTINGS, additionalDrivers: 2 };
+    const a = analyze(
+      [
+        trip(2025, 1, 10, "BASIS"),
+        trip(2025, 2, 10, "AKTIV"),
+        trip(2025, 2, 12, "AKTIV", { km: 30 }),
+      ],
+      settings,
+      PRICE_DATA,
+    );
+    const feb = a?.months[1];
+    expect(feb?.actualBreakdown).toEqual({
+      billedTime: 2000,
+      billedKm: 1200,
+      fee: fee("AKTIV"),
+      driverFee: 600,
+      switchFee: 500,
+    });
+    expect(feb?.actualCost).toBe(2000 + 1200 + fee("AKTIV") + 600 + 500);
+    expect(feb?.tripCount).toBe(2);
+    expect(feb?.km).toBe(50);
+    // Both trips run 10:00 to 12:00; the charged end is the return rounded to the quarter hour.
+    expect(feb?.chargedMinutes).toBe(240);
+    for (const t of a?.tariffs ?? []) {
+      const b = feb?.breakdown[t];
+      expect(b?.fee).toBe(fee(t));
+      expect(b?.driverFee).toBe(2 * (PRICE_DATA.tariffs[t].additionalDriverFee ?? 0));
+      expect((b?.time ?? 0) + (b?.km ?? 0) + (b?.fee ?? 0) + (b?.driverFee ?? 0)).toBe(
+        feb?.costs[t],
+      );
+    }
+    expect(a?.months[0]?.actualBreakdown.switchFee).toBe(0);
+    expect(a?.months[0]?.chargedMinutes).toBe(120);
+  });
+
   it("uses the last trip of a month and flags mixed tariffs", () => {
     const early = trip(2025, 1, 5, "BASIS");
     const late = trip(2025, 1, 20, "AKTIV");

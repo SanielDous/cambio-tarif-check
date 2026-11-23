@@ -350,6 +350,29 @@
       "change": "Your tariff in {{month}}: {{tariff}}. Change",
       "resetOverride": "Determine from the trips again",
       "notCompared": "not compared",
+      "breakdown": {
+        "tripCosts": "Trip costs",
+        "tripCostsBilled": "Trip costs as billed",
+        "time": "of which time",
+        "km": "of which kilometres",
+        "fee": "Base fee",
+        "drivers": "Additional drivers",
+        "switch": "Tariff change",
+        "sum": "Total",
+        "usage_one": "{{count, number}} trip · {{km}} km",
+        "usage_other": "{{count, number}} trips · {{km}} km",
+        "tariffSource": {
+          "trips": "{{tariff}}, from your trips",
+          "inherited": "{{tariff}}, assumed",
+          "override": "{{tariff}}, set by hand"
+        }
+      },
+      "usage": {
+        "title": "Your usage",
+        "trips": "Trips",
+        "km": "Kilometres",
+        "hours": "Hours"
+      },
       "incomplete": "This month has trips that are not billed yet",
       "partial": "This month is probably not fully contained in the export"
     },

@@ -1,11 +1,14 @@
+import type { ReactNode } from "react";
 import { ArrowLeftRight, Check, UserRound } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import type { Analysis } from "@/domain/analysis/analyze";
+import type { Analysis, MonthRow } from "@/domain/analysis/analyze";
 import { PRICE_DATA } from "@/domain/pricing/price-data";
 import type { TariffId } from "@/domain/pricing/types";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatHours, formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { ActualTariffMenu } from "./actual-tariff-menu";
+import { ActualBreakdown, TariffBreakdown } from "./cell-breakdown";
+import { CellButton } from "./matrix-nav";
 import { PATH_DOT } from "./path-overlay";
 import { tariffColor } from "./tariffs";
 
@@ -21,6 +24,9 @@ function Cell({
   actual,
   pathIndex,
   title,
+  row,
+  column,
+  breakdown,
 }: {
   amount: string;
   cheapest: boolean;
@@ -28,27 +34,32 @@ function Cell({
   /** Month index if the optimal path runs through this cell. */
   pathIndex: number | null;
   title: string | undefined;
+  row: number;
+  column: number;
+  breakdown: ReactNode;
 }) {
   return (
     <td
       className="relative px-1 pt-1 pb-3.5 text-right"
-      title={title}
       data-cheapest={cheapest || undefined}
       data-actual={actual || undefined}
       data-path={pathIndex !== null || undefined}
     >
-      <div
+      <CellButton
+        row={row}
+        column={column}
+        breakdown={breakdown}
         className={cn(
-          "flex items-center justify-end gap-1 rounded-md px-2 py-1.5 whitespace-nowrap tabular-nums",
+          "flex w-full cursor-help items-center justify-end gap-1 rounded-md px-2 py-1.5 whitespace-nowrap tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
           cheapest && "bg-best-surface font-semibold",
-          actual && "ring-2 ring-foreground/75 ring-inset",
+          actual && "ring-2 ring-foreground/75 ring-inset focus-visible:ring-[3px]",
         )}
       >
         {cheapest && <Check className="size-3.5 shrink-0 text-best" aria-hidden="true" />}
         {actual && <UserRound className="size-3.5 shrink-0" aria-hidden="true" />}
         <span>{amount}</span>
         {title && <span className="sr-only">, {title}</span>}
-      </div>
+      </CellButton>
       {pathIndex !== null && (
         <span
           {...{ [PATH_DOT]: pathIndex }}
@@ -63,6 +74,7 @@ function Cell({
 /** One compared tariff: its monthly fee, the cost per month with the marks, and its total. */
 export function TariffRow({
   tariff,
+  rowIndex,
   first,
   fee,
   analysis,
@@ -71,6 +83,7 @@ export function TariffRow({
   marks,
 }: {
   tariff: TariffId;
+  rowIndex: number;
   first: boolean;
   fee: number;
   analysis: Analysis;
@@ -109,6 +122,9 @@ export function TariffRow({
             actual={actual}
             pathIndex={path ? i : null}
             title={marks(cheapest, actual, path)}
+            row={rowIndex}
+            column={i}
+            breakdown={<TariffBreakdown row={m} tariff={tariff} />}
           />
         );
       })}
@@ -144,19 +160,14 @@ export function ActualRows({ analysis }: { analysis: Analysis }) {
         <th scope="row" className={cn(stickyLeft, "border-t-2 px-4 pt-2 pb-1 font-semibold")}>
           {t("result.matrix.actual")}
         </th>
-        {months.map((m) => (
-          <td
-            key={m.month}
-            className="border-t-2 px-3 pt-2 pb-1 text-right font-semibold whitespace-nowrap tabular-nums"
-            title={
-              m.switched
-                ? t("result.matrix.switchFee", {
-                    amount: exact(PRICE_DATA.switchingFee),
-                  })
-                : undefined
-            }
-          >
-            <span className="inline-flex items-center gap-1">
+        {months.map((m, i) => (
+          <td key={m.month} className="border-t-2 px-1 pt-2 pb-1 text-right">
+            <CellButton
+              row={analysis.tariffs.length}
+              column={i}
+              breakdown={<ActualBreakdown row={m} />}
+              className="inline-flex w-full cursor-help items-center justify-end gap-1 rounded-md px-2 py-0.5 font-semibold whitespace-nowrap tabular-nums outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            >
               {m.switched && (
                 <>
                   <ArrowLeftRight className="size-3 text-muted-foreground" aria-hidden="true" />
@@ -169,7 +180,7 @@ export function ActualRows({ analysis }: { analysis: Analysis }) {
                 </>
               )}
               {whole(m.actualCost)}
-            </span>
+            </CellButton>
           </td>
         ))}
         <td
@@ -185,10 +196,7 @@ export function ActualRows({ analysis }: { analysis: Analysis }) {
       <tr>
         <th
           scope="row"
-          className={cn(
-            stickyLeft,
-            "rounded-bl-xl px-4 pt-1 pb-2 text-xs font-normal text-muted-foreground",
-          )}
+          className={cn(stickyLeft, "px-4 pt-1 pb-2 text-xs font-normal text-muted-foreground")}
         >
           {t("result.matrix.yourTariff")}
         </th>
@@ -197,8 +205,90 @@ export function ActualRows({ analysis }: { analysis: Analysis }) {
             <ActualTariffMenu row={m} compared={analysis.tariffs} />
           </td>
         ))}
-        <td className={cn(stickyRight, "rounded-br-xl")} />
+        <td className={stickyRight} />
       </tr>
     </>
+  );
+}
+
+const USAGE = [
+  {
+    id: "trips",
+    value: (m: MonthRow) => m.tripCount,
+    format: (n: number, lang: string) => formatNumber(n, lang),
+  },
+  {
+    id: "km",
+    value: (m: MonthRow) => m.km,
+    format: (n: number, lang: string) => formatNumber(n, lang),
+  },
+  {
+    id: "hours",
+    value: (m: MonthRow) => m.chargedMinutes,
+    format: (n: number, lang: string) => formatHours(n, lang),
+  },
+] as const;
+
+/** How much the user drove per month: trips, kilometres and charged hours, lighter than costs. */
+export function UsageRows({ analysis }: { analysis: Analysis }) {
+  const { t, i18n } = useTranslation("common");
+  const { months } = analysis;
+  const lang = i18n.language;
+  return (
+    <tbody data-testid="usage-rows">
+      <tr>
+        <th
+          scope="rowgroup"
+          className={cn(
+            stickyLeft,
+            "border-t-2 px-4 pt-2 pb-0.5 text-xs font-medium text-muted-foreground",
+          )}
+        >
+          {t("result.matrix.usage.title")}
+        </th>
+        <td colSpan={months.length} className="border-t-2" />
+        <td className={cn(stickyRight, "border-t-2")} />
+      </tr>
+      {USAGE.map((metric, index) => {
+        const last = index === USAGE.length - 1;
+        const total = months.reduce((sum, m) => sum + metric.value(m), 0);
+        return (
+          <tr key={metric.id} data-testid="usage-row" data-metric={metric.id}>
+            <th
+              scope="row"
+              className={cn(
+                stickyLeft,
+                "px-4 py-0.5 text-xs font-normal text-muted-foreground",
+                last && "rounded-bl-xl pb-2",
+              )}
+            >
+              {t(`result.matrix.usage.${metric.id}`)}
+            </th>
+            {months.map((m) => (
+              <td
+                key={m.month}
+                className={cn(
+                  "px-3 py-0.5 text-right text-xs whitespace-nowrap text-muted-foreground tabular-nums",
+                  last && "pb-2",
+                )}
+                data-testid={`usage-${metric.id}`}
+              >
+                {metric.format(metric.value(m), lang)}
+              </td>
+            ))}
+            <td
+              className={cn(
+                stickyRight,
+                "px-4 py-0.5 text-right text-xs whitespace-nowrap text-muted-foreground tabular-nums",
+                last && "rounded-br-xl pb-2",
+              )}
+              data-testid={`usage-total-${metric.id}`}
+            >
+              {metric.format(total, lang)}
+            </td>
+          </tr>
+        );
+      })}
+    </tbody>
   );
 }
