@@ -262,6 +262,36 @@ The local implementation (`src/domain/pricing/`) reproduces all 166 recorded res
   prices, per-segment rounding, per-minute summation, day-based durations, half-even) fit worse.
   The exact rule is **open**. (inferred)
 
+### Holiday pricing differs by regional company (calculator, 2026-11-23)
+
+cambio consists of regional companies; the vehicle options of the calculator carry their number
+("Mandant") as prefix. For every Mandant, BASIS class S was queried for 10:00–12:00 on a normal
+Tuesday (2027-03-02) and on New Year (08:00–10:00, a Friday), Good Friday, Easter Monday,
+Ascension Day, Whit Monday, Corpus Christi and All Saints 2027.
+
+| Mandant | Cities                                                                                                                              | Holidays at the weekend price                                    |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| 15      | Aachen, Düren, Herzogenrath, Jülich, Würselen                                                                                       | yes, incl. All Saints; Corpus Christi no                         |
+| 12      | Bonn, Brühl, Düsseldorf, Erftstadt, Frechen, Hürth, Köln, Sankt Augustin, Siegburg, Euskirchen, Pulheim, Troisdorf, Kerpen          | yes, incl. All Saints; Corpus Christi no                         |
+| 16      | Saarbrücken                                                                                                                         | yes, incl. All Saints; Corpus Christi no                         |
+| 1       | Achim, Bremen, Bremerhaven, Leer, Lilienthal, Verden, Wilhelmshaven, Delmenhorst, Worpswede, Emden, Stuhr, Weyhe, Ganderkesee, Wildeshausen, Aurich | none of the queried days                         |
+| 35      | Berlin                                                                                                                              | none                                                             |
+| 19      | Bielefeld                                                                                                                           | none                                                             |
+| 55      | Flensburg                                                                                                                           | none                                                             |
+| 31      | Hamburg                                                                                                                             | none                                                             |
+| 36      | Lüneburg, Uelzen, Winsen                                                                                                            | none                                                             |
+| 27      | Oldenburg, Bad Zwischenahn                                                                                                          | none                                                             |
+| 37      | Wuppertal                                                                                                                           | none                                                             |
+| 64      | Dortmund                                                                                                                            | not applicable (neither BASIS nor CAMPUS)                        |
+
+- Dormagen, Eschweiler and Bergheim could not be queried (no suitable vehicle option). The app
+  assumes Eschweiler like Aachen, Dormagen and Bergheim like Köln.
+- Eight companies answering "none" consistently, on every holiday, points to a real regional rule
+  rather than unmaintained calendars – but only Aachen is confirmed by an invoice (3 October 2023
+  at the weekend rate).
+- Holidays that fall on a weekend in 2027 (1 May, 3 October, 25/26 December) could not be queried.
+  The app applies all nine nationwide holidays plus All Saints in the holiday cities.
+
 ### Derived from the trip export
 
 Export format (CSV from the customer portal; an XLSX with the same columns exists):
