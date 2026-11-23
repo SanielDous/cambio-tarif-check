@@ -170,3 +170,39 @@ describe("partial months of the fixtures", () => {
     expect(a?.months.some((m) => m.incomplete)).toBe(false);
   });
 });
+
+describe("month breakdown of the fixtures", () => {
+  const a = analyze(trips, SETTINGS, PRICE_DATA);
+
+  it("adds up to the cost of every compared tariff and to the actual cost, in every month", () => {
+    for (const m of a?.months ?? []) {
+      for (const t of a?.tariffs ?? []) {
+        const b = m.breakdown[t];
+        expect(b, `${m.month} ${t}`).toBeDefined();
+        expect((b?.time ?? 0) + (b?.km ?? 0) + (b?.fee ?? 0) + (b?.driverFee ?? 0)).toBe(
+          m.costs[t],
+        );
+      }
+      const x = m.actualBreakdown;
+      expect(x.billedTime + x.billedKm + x.fee + x.driverFee + x.switchFee).toBe(m.actualCost);
+    }
+  });
+
+  it("counts trips and kilometres per month and sums them to the totals", () => {
+    const months = a?.months ?? [];
+    expect(months.reduce((s, m) => s + m.tripCount, 0)).toBe(a?.trips.length);
+    expect(months.reduce((s, m) => s + m.km, 0)).toBe(
+      a?.trips.reduce((s, r) => s + r.trip.km, 0),
+    );
+    expect(months.every((m) => m.tripCount === m.tripIds.length)).toBe(true);
+  });
+
+  it("charges every trip at least its booked time and sums the minutes per month", () => {
+    const minutes = (a?.trips ?? []).map((r) => r.reconstruction.chargedUntil - r.trip.start);
+    expect(minutes.every((x) => x > 0)).toBe(true);
+    expect(a?.months.reduce((s, m) => s + m.chargedMinutes, 0)).toBe(
+      minutes.reduce((s, x) => s + x, 0),
+    );
+    for (const m of a?.months ?? []) expect(m.chargedMinutes > 0).toBe(m.tripCount > 0);
+  });
+});
