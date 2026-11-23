@@ -441,7 +441,7 @@
   "router": {
     "error": {
       "title": "Something went wrong",
-      "text": "The page could not be displayed. Your trips stay in the browser’s memory."
+      "text": "The page could not be displayed. Your trips stay loaded as long as you do not close this page."
     },
     "notFound": {
       "title": "This page does not exist.",

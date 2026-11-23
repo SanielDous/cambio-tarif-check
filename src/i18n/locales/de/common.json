@@ -441,7 +441,7 @@
   "router": {
     "error": {
       "title": "Etwas ist schiefgelaufen",
-      "text": "Die Seite konnte nicht angezeigt werden. Deine Fahrten bleiben dabei im Speicher des Browsers."
+      "text": "Die Seite konnte nicht angezeigt werden. Deine Fahrten bleiben geladen, solange du diese Seite nicht schließt."
     },
     "notFound": {
       "title": "Diese Seite gibt es nicht.",
