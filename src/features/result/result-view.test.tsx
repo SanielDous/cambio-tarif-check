@@ -108,26 +108,35 @@ describe("result summary", () => {
   it("counts only exact recomputations and lists the other kinds", async () => {
     await withFixtures();
     expect(screen.getByTestId("verification")).toHaveTextContent(
-      /^76 von 85 Fahrten auf den Cent nachgerechnet$/,
+      /^75 von 85 Fahrten auf den Cent nachgerechnet$/,
     );
     expect(screen.getByTestId("verification-others")).toHaveTextContent(
-      /^9 mit 1 Cent Rundungsabweichung$/,
+      /^9 mit 1 Cent Rundungsabweichung · 1 verspätet zurückgegeben \(Rückgabezeit aus dem Betrag erschlossen\)$/,
     );
     expect(screen.queryByTestId("warnings")).not.toHaveTextContent(/nicht eindeutig/);
   });
 
-  it("counts a late return as exact at 0 and as rounding at 1 cent deviation", async () => {
+  it("counts a confirmed late return as exact at 0 and as rounding at 1 cent", async () => {
     const { store } = await withFixtures();
     const a = store.get(analysisAtom);
     if (!a) throw new Error("no analysis");
     expect(a.verification.overrun).toBe(1);
     cleanup();
-    const trips = a.trips.map((r) =>
-      r.reconstruction.kind === "overrun"
-        ? { ...r, reconstruction: { ...r.reconstruction, timeDeviation: 1 } }
-        : r,
+    const confirmed = (timeDeviation: number) => ({
+      ...a,
+      trips: a.trips.map((r) =>
+        r.reconstruction.kind === "overrun"
+          ? { ...r, reconstruction: { ...r.reconstruction, overrunInferred: false, timeDeviation } }
+          : r,
+      ),
+    });
+    render(<SummaryCard analysis={confirmed(0)} />);
+    expect(screen.getByTestId("verification")).toHaveTextContent(/^76 von 85 Fahrten/);
+    expect(screen.getByTestId("verification-others")).toHaveTextContent(
+      /^9 mit 1 Cent Rundungsabweichung$/,
     );
-    render(<SummaryCard analysis={{ ...a, trips }} />);
+    cleanup();
+    render(<SummaryCard analysis={confirmed(1)} />);
     expect(screen.getByTestId("verification")).toHaveTextContent(/^75 von 85 Fahrten/);
     expect(screen.getByTestId("verification-others")).toHaveTextContent(
       /^10 mit 1 Cent Rundungsabweichung$/,
@@ -334,7 +343,7 @@ describe("tariff matrix", () => {
 });
 
 describe("trip list", () => {
-  it("shows the late return of May 2025 with its booked end and overrun minutes", async () => {
+  it("shows the inferred late return of May 2025 with its booked end and overrun minutes", async () => {
     const { user } = await withFixtures();
     const may = screen.getByRole("button", { name: /^Mai 2025/ });
     expect(may).not.toHaveTextContent(/zu prüfen/);
@@ -344,13 +353,45 @@ describe("trip list", () => {
     if (!badge) throw new Error("badge not shown");
     expect(badge).toHaveTextContent("verspätet zurückgegeben");
     expect(badge).toHaveAccessibleDescription(
-      "Das Auto wurde 13 Minuten nach dem gebuchten Ende zurückgegeben. Diese Zeit kostet den doppelten Zeitpreis.",
+      "Der Betrag passt zu einer Rückgabe 13 Minuten nach dem gebuchten Ende. Die Rückgabezeit steht nicht im Export und ist aus dem Betrag erschlossen.",
     );
     const row = badge.closest("tr") as HTMLElement;
-    expect(row).toHaveTextContent("gebucht bis 20:00, 13 min später zurückgegeben");
+    expect(row).toHaveTextContent("gebucht bis 20:00, vermutlich 13 min später zurückgegeben");
     expect(row).toHaveTextContent("5 h 13 min");
     expect(row).not.toHaveTextContent("Nachrechnung");
-    expect(within(row).queryByRole("button", { name: /Gebuchtes Ende/ })).not.toBeInTheDocument();
+    expect(within(row).getByRole("button", { name: "Gebuchtes Ende eintragen" })).toBeVisible();
+  });
+
+  it("lets the user overrule an inferred late return", async () => {
+    const { store, user } = await withFixtures();
+    await user.click(screen.getByRole("button", { name: /^Mai 2025/ }));
+    const badge = screen.getAllByTestId("status-badge").find((b) => b.dataset.kind === "overrun");
+    const row = badge?.closest("tr") as HTMLElement;
+    const target = store.get(analysisAtom)?.trips.find((r) => r.reconstruction.overrunInferred);
+    if (!target) throw new Error("no inferred overrun");
+
+    await user.click(within(row).getByRole("button", { name: "Gebuchtes Ende eintragen" }));
+    const description = await screen.findByText(/^Gebucht bis/);
+    expect(description).toHaveTextContent(
+      spaced("Gebucht bis 09.05.2025, 20:00 · zurückgegeben vermutlich 09.05.2025, 20:13"),
+    );
+    expect(screen.queryByText(/Zurückgegeben wurde das Auto am/)).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Keine verspätete Rückgabe" }));
+
+    expect(store.get(settingsAtom).manualBookedEnds).toEqual({ [target.trip.id]: target.trip.end });
+    const manual = store.get(analysisAtom)?.trips.find((r) => r.trip.id === target.trip.id);
+    expect(manual?.reconstruction.kind).toBe("manual");
+    expect(manual?.reconstruction.overrunMinutes).toBe(0);
+    expect(within(row).getByTestId("status-badge")).toHaveAttribute("data-kind", "manual");
+    expect(row).not.toHaveTextContent("später zurückgegeben");
+    // 5 h × 2.10 = 10.50 against 11.41 billed.
+    expect(row).toHaveTextContent(
+      spaced(`Nachrechnung ${formatCurrency(-91, "de", { signed: true })}`),
+    );
+    expect(screen.getByTestId("verification")).toHaveTextContent(/^75 von 85 Fahrten/);
+    expect(screen.getByTestId("verification-others")).toHaveTextContent(
+      /^9 mit 1 Cent Rundungsabweichung · 1 von Hand ergänzt$/,
+    );
   });
 
   /** Monday 2025-12-15, AKTIV S 10:00–11:07, 10 km: a time amount of 1.00 € no booking explains. */

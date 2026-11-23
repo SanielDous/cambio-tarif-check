@@ -37,6 +37,9 @@ function EditorForm({ result, onDone }: { result: TripResult; onDone: () => void
   const [error, setError] = useState<string | null>(null);
   const id = useId();
 
+  // An inferred late return: the export's end is the booked end, the return only a guess.
+  const inferred = reconstruction.kind === "overrun" && reconstruction.overrunInferred;
+
   const save = (value: LocalMinute | null) => {
     const ends = { ...settings.manualBookedEnds };
     if (value === null) delete ends[trip.id];
@@ -58,7 +61,15 @@ function EditorForm({ result, onDone }: { result: TripResult; onDone: () => void
       <div className="space-y-1">
         <p className="text-sm font-medium">{t("result.bookedEnd.title")}</p>
         <p className="text-xs text-muted-foreground">
-          {t("result.bookedEnd.description", { time: formatDateTime(trip.end, lang) })}
+          {inferred
+            ? t("result.bookedEnd.inferred", {
+                booked: formatDateTime(reconstruction.bookedEnd, lang),
+                returned: formatDateTime(
+                  reconstruction.bookedEnd + reconstruction.overrunMinutes,
+                  lang,
+                ),
+              })
+            : t("result.bookedEnd.description", { time: formatDateTime(trip.end, lang) })}
         </p>
       </div>
       <div className="grid grid-cols-[1fr_auto] gap-2">
@@ -109,6 +120,11 @@ function EditorForm({ result, onDone }: { result: TripResult; onDone: () => void
         </p>
       )}
       <div className="flex flex-wrap justify-end gap-2">
+        {inferred && (
+          <Button type="button" variant="outline" size="sm" onClick={() => save(trip.end)}>
+            {t("result.bookedEnd.noOverrun")}
+          </Button>
+        )}
         {current !== undefined && (
           <Button type="button" variant="ghost" size="sm" onClick={() => save(null)}>
             {t("result.bookedEnd.clear")}

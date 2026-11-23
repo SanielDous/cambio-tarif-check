@@ -268,6 +268,8 @@
         "estimated_other": "{{count, number}} estimated",
         "manual_one": "{{count, number}} added by hand",
         "manual_other": "{{count, number}} added by hand",
+        "overrunInferred_one": "{{count, number}} returned late (return time inferred from the amount)",
+        "overrunInferred_other": "{{count, number}} returned late (return time inferred from the amount)",
         "not-reproducible_one": "{{count, number}} not reproducible",
         "not-reproducible_other": "{{count, number}} not reproducible"
       },
@@ -378,6 +380,7 @@
       "bookedUntil": "booked until {{time}}",
       "booked": "booked {{duration}}",
       "overrun": "booked until {{time}}, returned {{minutes}} min later",
+      "overrunInferred": "booked until {{time}}, probably returned {{minutes}} min later",
       "deviation": "Recomputed {{amount}}",
       "deviationHint": "Difference between the recomputed and the billed amount in the trip's tariff",
       "columns": {
@@ -418,6 +421,8 @@
         "label": "returned late",
         "text_one": "The car was returned {{count, number}} minute after the booked end. This time costs double the time price.",
         "text_other": "The car was returned {{count, number}} minutes after the booked end. This time costs double the time price.",
+        "inferred_one": "The amount matches a return {{count, number}} minute after the booked end. The return time is not in the export; it is inferred from the amount.",
+        "inferred_other": "The amount matches a return {{count, number}} minutes after the booked end. The return time is not in the export; it is inferred from the amount.",
         "general": "The car was returned after the booked end. This time costs double the time price."
       },
       "not-reproducible": {
@@ -430,6 +435,8 @@
       "edit": "Change booked end",
       "title": "Booked end",
       "description": "Until when was the trip booked? The car was returned on {{time}}. If the booked end lies before that, the time after it counts as a late return at double the time price.",
+      "inferred": "Booked until {{booked}} · probably returned {{returned}}. The return time is not in the export; it is inferred from the amount. If that is wrong, enter the booked end or compute without a late return.",
+      "noOverrun": "No late return",
       "date": "Date",
       "time": "Time",
       "apply": "Apply",

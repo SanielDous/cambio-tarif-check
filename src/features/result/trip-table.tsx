@@ -14,7 +14,7 @@ import {
 import { cn } from "@/lib/utils";
 import { BookedEndEditor } from "./booked-end-editor";
 import { StatusBadge } from "./status-badge";
-import { EDITABLE_KINDS } from "./tariffs";
+import { isEditable } from "./tariffs";
 
 // Below the md breakpoint each row becomes a card.
 const cell =
@@ -102,7 +102,13 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
                 )}
                 {late && (
                   <span className="block text-xs whitespace-nowrap text-muted-foreground">
-                    {t("result.trips.overrun", { time: bookedEndText, minutes: r.overrunMinutes })}
+                    {t(
+                      r.overrunInferred ? "result.trips.overrunInferred" : "result.trips.overrun",
+                      {
+                        time: bookedEndText,
+                        minutes: r.overrunMinutes,
+                      },
+                    )}
                   </span>
                 )}
               </td>
@@ -158,8 +164,12 @@ export function TripTable({ trips, tariffs }: { trips: TripResult[]; tariffs: Ta
                 className={cn(cell, "max-md:col-span-4 max-md:before:hidden")}
               >
                 <div className="flex flex-wrap items-center gap-1">
-                  <StatusBadge kind={r.kind} overrunMinutes={r.overrunMinutes} />
-                  {EDITABLE_KINDS.includes(r.kind) && <BookedEndEditor result={result} />}
+                  <StatusBadge
+                    kind={r.kind}
+                    overrunMinutes={r.overrunMinutes}
+                    overrunInferred={r.overrunInferred}
+                  />
+                  {isEditable(r) && <BookedEndEditor result={result} />}
                 </div>
               </td>
             </tr>

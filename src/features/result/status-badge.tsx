@@ -27,21 +27,26 @@ const ICONS: Record<ReconstructionKind, LucideIcon> = {
 
 /**
  * How a trip was recomputed, with a plain-language explanation on hover, focus or tap. A late
- * return names its overrun minutes.
+ * return names its overrun minutes and says whether they were only inferred from the amount.
  */
 export function StatusBadge({
   kind,
   overrunMinutes = 0,
+  overrunInferred = false,
 }: {
   kind: ReconstructionKind;
   overrunMinutes?: number;
+  overrunInferred?: boolean;
 }) {
   const { t } = useTranslation("common");
   const Icon = ICONS[kind];
-  const open = kind === "estimated" || kind === "not-reproducible";
+  const inferred = kind === "overrun" && overrunInferred;
+  const open = kind === "estimated" || kind === "not-reproducible" || inferred;
   const text =
     kind === "overrun"
-      ? t("result.kinds.overrun.text", { count: overrunMinutes })
+      ? t(inferred ? "result.kinds.overrun.inferred" : "result.kinds.overrun.text", {
+          count: overrunMinutes,
+        })
       : t(`result.kinds.${kind}.text`);
   return (
     <Hint content={text}>

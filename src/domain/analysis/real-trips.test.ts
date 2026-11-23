@@ -80,5 +80,8 @@ describe("reconstruction of the real, anonymised trips", () => {
       late.map(({ trip, r }) => [fmt(trip.start), fmt(r.bookedEnd), r.overrunMinutes]),
     ).toEqual([["2025-05-09 15:00", "2025-05-09 20:00", 13]]);
     expect(late[0]?.r.timeDeviation).toBe(0);
+    // The export has no trip end for it, so the 13 minutes are fitted to the amount.
+    expect(late[0]?.trip.tripEnd).toBeUndefined();
+    expect(late[0]?.r.overrunInferred).toBe(true);
   });
 });

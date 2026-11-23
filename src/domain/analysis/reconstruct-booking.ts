@@ -25,6 +25,11 @@ export interface Reconstruction {
   bookedEnd: LocalMinute;
   /** Minutes the car was returned after the booked end, charged at twice the time price; else 0. */
   overrunMinutes: number;
+  /**
+   * True if the export holds only the booked end and the overrun minutes were fitted to the billed
+   * amount, with no return time to confirm them. Such a trip is not reproduced to the cent.
+   */
+  overrunInferred: boolean;
   /** 0.5 only for "cancelled". */
   share: 1 | 0.5;
   /** Fuel surcharge per km: from the table, or derived from the billed km amount. */
@@ -89,34 +94,50 @@ export function reconstructedTimeCost(
   return booking + roundHalfUp(overrunCost(r.bookedEnd, returned, tariff, cls, data));
 }
 
+interface Overrun {
+  bookedEnd: LocalMinute;
+  minutes: number;
+  inferred: boolean;
+}
+
 /**
  * The late return that explains the billed time amount, if any. Two readings of the export are
- * tried, each with booked ends on the quarter-hour grid: the export's end is the return, and the
- * booking ended at a quarter hour before it (latest first, up to `MAX_OVERRUN_MINUTES` before);
- * or the export's end is the booked end itself (as observed on an invoice), with the return
- * 1 to `MAX_OVERRUN_MINUTES` minutes later. An exact match wins over one within 1 cent; the second
- * reading counts only exactly, since its unknown return fits almost any amount within 1 cent.
+ * tried, each with booked ends on the quarter-hour grid:
+ * 1. The export's end is the return, and the booking ended at a quarter hour before it (latest
+ *    first, up to `MAX_OVERRUN_MINUTES` before). An exact match wins over one within 1 cent.
+ * 2. The export's end is the booked end itself (as observed on an invoice). With a trip end
+ *    (`tripEnd`) after it, only its minutes (±1, the export drops seconds) are tried and a match is
+ *    confirmed; a trip end not after it rules this reading out. Without a trip end the return is
+ *    fitted, 1 to `MAX_OVERRUN_MINUTES` minutes later, and the result is only inferred. Matches
+ *    count only exactly here, since a free minute count fits almost any amount within 1 cent.
  */
-function findOverrun(
-  trip: Trip,
-  data: PriceData,
-): { bookedEnd: LocalMinute; minutes: number } | undefined {
+function findOverrun(trip: Trip, data: PriceData): Overrun | undefined {
   const { start, end, tariff, priceClass: cls } = trip;
   const deviation = (bookedEnd: LocalMinute, minutes: number) =>
     roundHalfUp(timeCost(start, bookedEnd, tariff, cls, data)) +
     roundHalfUp(overrunCost(bookedEnd, bookedEnd + minutes, tariff, cls, data)) -
     trip.billedTime;
 
-  let near: { bookedEnd: LocalMinute; minutes: number } | undefined;
+  let near: Overrun | undefined;
   const latestBefore = Math.floor((end - 1) / QUARTER) * QUARTER;
   for (let b = latestBefore; b > start && end - b <= MAX_OVERRUN_MINUTES; b -= QUARTER) {
     const d = deviation(b, end - b);
-    if (d === 0) return { bookedEnd: b, minutes: end - b };
-    if (Math.abs(d) === 1) near ??= { bookedEnd: b, minutes: end - b };
+    if (d === 0) return { bookedEnd: b, minutes: end - b, inferred: false };
+    if (Math.abs(d) === 1) near ??= { bookedEnd: b, minutes: end - b, inferred: false };
   }
   if (end % QUARTER === 0 && end > start) {
-    for (let minutes = 1; minutes <= MAX_OVERRUN_MINUTES; minutes++) {
-      if (deviation(end, minutes) === 0) return { bookedEnd: end, minutes };
+    const { tripEnd } = trip;
+    if (tripEnd === undefined) {
+      for (let minutes = 1; minutes <= MAX_OVERRUN_MINUTES; minutes++) {
+        if (deviation(end, minutes) === 0) return { bookedEnd: end, minutes, inferred: true };
+      }
+    } else if (tripEnd > end) {
+      const measured = tripEnd - end;
+      for (const minutes of [measured, measured - 1, measured + 1]) {
+        if (minutes > 0 && deviation(end, minutes) === 0) {
+          return { bookedEnd: end, minutes, inferred: false };
+        }
+      }
     }
   }
   return near;
@@ -178,11 +199,13 @@ export function reconstructBooking(
     bookedEnd: LocalMinute,
     share: 1 | 0.5 = 1,
     overrunMinutes = 0,
+    overrunInferred = false,
   ): Reconstruction => {
     const booking = {
       chargedUntil: overrunMinutes > 0 ? bookedEnd : chargedUntil,
       bookedEnd,
       overrunMinutes,
+      overrunInferred,
       share,
     };
     return {
@@ -231,7 +254,10 @@ export function reconstructBooking(
   if (firstNearMatch !== undefined) return result("verified-rounding", firstNearMatch);
 
   // Only what the booked-end search cannot explain may be a late return.
-  const overrun = trip.km > 0 ? findOverrun(trip, data) : undefined;
-  if (overrun) return result("overrun", overrun.bookedEnd, 1, overrun.minutes);
+  // With an unexplained km amount the trip is priced as the plain booking, without an overrun.
+  const overrun = trip.km > 0 && km.kmDeviation === 0 ? findOverrun(trip, data) : undefined;
+  if (overrun) {
+    return result("overrun", overrun.bookedEnd, 1, overrun.minutes, overrun.inferred);
+  }
   return result("not-reproducible", chargedUntil);
 }

@@ -80,17 +80,29 @@ export function SummaryCard({ analysis }: { analysis: Analysis }) {
   };
 
   const total = analysis.trips.length;
-  // A late return is exact at 0 deviation and a rounding case at ±1 cent, like the search.
+  // A confirmed late return is exact at 0 deviation and a rounding case at ±1 cent, like the
+  // search; one whose return was only inferred from the amount is listed on its own.
   const overrun = analysis.trips.filter((r) => r.reconstruction.kind === "overrun");
-  const overrunExact = overrun.filter((r) => r.reconstruction.timeDeviation === 0).length;
+  const inferred = overrun.filter((r) => r.reconstruction.overrunInferred).length;
+  const overrunExact = overrun.filter(
+    (r) => !r.reconstruction.overrunInferred && r.reconstruction.timeDeviation === 0,
+  ).length;
+  const overrunRounding = overrun.length - inferred - overrunExact;
   const counts: Record<ReconstructionKind, number> = {
     ...analysis.verification,
-    "verified-rounding": analysis.verification["verified-rounding"] + overrun.length - overrunExact,
+    "verified-rounding": analysis.verification["verified-rounding"] + overrunRounding,
   };
   const exact = EXACT_KINDS.reduce((s, k) => s + counts[k], 0) + overrunExact;
   const others = OTHER_KINDS.filter((k) => counts[k] > 0).map((k) =>
     t(`result.summary.verificationParts.${k}`, { count: counts[k] }),
   );
+  if (inferred > 0) {
+    others.splice(
+      others.length - (counts["not-reproducible"] > 0 ? 1 : 0),
+      0,
+      t("result.summary.verificationParts.overrunInferred", { count: inferred }),
+    );
+  }
   const hindsight = actualTotal - optimalPath.total;
   const sub = kind === "alreadyBest" && hindsight > 0 ? "alreadyBestHindsight" : kind;
   const first = months[0]?.month ?? "";
