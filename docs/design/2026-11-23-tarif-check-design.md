@@ -354,3 +354,10 @@ above, this list is authoritative:
 - **Price entries have no validity period yet** (only the fuel surcharges do). This is needed with
   the first real price change and belongs to delivery step 2.
 - **semantic-release** runs through a GitHub Action instead of a local dependency.
+- **The price data starts on 2023-06-01** instead of 2024-05-02: the price list of 2023-06-01 is
+  a further version (flat day and week prices per class, no START, no XL), so the trips of a full
+  export from that date on can be evaluated; all 27 billed trips before 2024-05-02 are reproduced
+  within 1 cent. Older lists are recorded in the research document but not used: until
+  2022-05-14 the night ran from 23:00 to 07:00 and the weekend until Monday 07:00, until
+  2023-05-31 one tariff change per calendar year was free (each further one 15.00), and no
+  invoice exists to verify how these rules were applied.
