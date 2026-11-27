@@ -494,7 +494,7 @@ describe("late return (overrun)", () => {
     // hour moved from the booking into the overrun adds exactly 1 cent. Friday 07:00, returned
     // 12:01: booked end 12:00 gives 0.20 + 0.11 = 0.31, 11:45 gives 0.19 + 0.13 = 0.32 (billed),
     // 11:30 gives 0.18 + 0.15 = 0.33.
-    const basis = PRICES.tariffs.BASIS;
+    const basis = PRICES.tariffs.BASIS!;
     const s = basis.prices.S;
     if (!s) throw new Error("no BASIS S");
     const data: PriceVersionView = {

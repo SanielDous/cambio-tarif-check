@@ -16,15 +16,15 @@ const V2_FROM = "2026-03-15";
 function twoVersions(): PriceData {
   const [v1] = PRICE_DATA.versions as [PriceVersion];
   const v2: PriceVersion = structuredClone({ ...v1, from: V2_FROM });
-  const s = v2.tariffs.AKTIV.prices.S!;
-  v2.tariffs.AKTIV.prices.S = {
+  const s = v2.tariffs.AKTIV!.prices.S!;
+  v2.tariffs.AKTIV!.prices.S = {
     ...s,
     hourWeekday: s.hourWeekday + 100,
     hourWeekend: s.hourWeekend + 100,
     kmTier1: s.kmTier1 + 5,
   };
-  v2.tariffs.AKTIV.monthlyFee += 300;
-  v2.tariffs.COMFORT.monthlyFee += 400;
+  v2.tariffs.AKTIV!.monthlyFee += 300;
+  v2.tariffs.COMFORT!.monthlyFee += 400;
   v2.switchingFee = 900;
   return { ...PRICE_DATA, versions: [v1, v2] };
 }
@@ -129,13 +129,13 @@ describe("prices that change between versions", () => {
   it("charges the fees of a month with the version valid on its first day", () => {
     const [march, aprilRow] = analysis?.months ?? [];
     expect(march?.month).toBe("2026-03");
-    expect(march?.breakdown.AKTIV?.fee).toBe(V1.tariffs.AKTIV.monthlyFee);
-    expect(march?.breakdown.COMFORT?.fee).toBe(V1.tariffs.COMFORT.monthlyFee);
-    expect(march?.actualBreakdown.fee).toBe(V1.tariffs.AKTIV.monthlyFee);
+    expect(march?.breakdown.AKTIV?.fee).toBe(V1.tariffs.AKTIV!.monthlyFee);
+    expect(march?.breakdown.COMFORT?.fee).toBe(V1.tariffs.COMFORT!.monthlyFee);
+    expect(march?.actualBreakdown.fee).toBe(V1.tariffs.AKTIV!.monthlyFee);
     expect(aprilRow?.month).toBe("2026-04");
-    expect(aprilRow?.breakdown.AKTIV?.fee).toBe(V2.tariffs.AKTIV.monthlyFee);
-    expect(aprilRow?.breakdown.COMFORT?.fee).toBe(V2.tariffs.COMFORT.monthlyFee);
-    expect(aprilRow?.actualBreakdown.fee).toBe(V2.tariffs.COMFORT.monthlyFee);
+    expect(aprilRow?.breakdown.AKTIV?.fee).toBe(V2.tariffs.AKTIV!.monthlyFee);
+    expect(aprilRow?.breakdown.COMFORT?.fee).toBe(V2.tariffs.COMFORT!.monthlyFee);
+    expect(aprilRow?.actualBreakdown.fee).toBe(V2.tariffs.COMFORT!.monthlyFee);
   });
 
   it("charges the switching fee of the month switched into", () => {
@@ -156,7 +156,59 @@ describe("prices that change between versions", () => {
   });
 
   it("keeps the monthly fee helper per version", () => {
-    expect(monthlyFee("AKTIV", 0, V2)).toBe(V1.tariffs.AKTIV.monthlyFee + 300);
+    expect(monthlyFee("AKTIV", 0, V2)).toBe(V1.tariffs.AKTIV!.monthlyFee + 300);
+  });
+});
+
+describe("a price version without a tariff", () => {
+  // Synthetic: a first version without START, the latest version (with START) from `V2_FROM`.
+  const latest = PRICE_DATA.versions.at(-1) as PriceVersion;
+  const withoutStart = structuredClone(latest.tariffs);
+  delete withoutStart.START;
+  const data: PriceData = {
+    ...PRICE_DATA,
+    validFrom: "2024-05-02",
+    versions: [
+      { ...structuredClone(latest), from: "2024-05-02", tariffs: withoutStart },
+      { ...structuredClone(latest), from: V2_FROM },
+    ],
+  };
+  const old = pricesAt(data, parseIsoDate(V2_FROM) - 1);
+  const current = pricesAt(data, parseIsoDate(V2_FROM));
+
+  /** A Berlin S trip billed with `billedWith`. */
+  const berlin = (start: number, tariff: TariffId, billedWith: PriceVersionView): Trip => ({
+    id: `b${nextId++}`,
+    city: "Berlin",
+    vehicleClass: "S Kleinwagen",
+    priceClass: "S",
+    start,
+    end: start + 120,
+    km: 10,
+    billedTime: roundHalfUp(timeCost(start, start + 120, tariff, "S", billedWith, "Berlin")),
+    billedKm: kmCost(10, tariff, "S", billedWith, surchargeAt(data, start + 120)),
+    tariff,
+  });
+
+  it("does not compare the tariff while a trip falls into a version without it", () => {
+    const basis = berlin(toLocalMinute(2026, 3, 2, 10), "BASIS", old);
+    const start = berlin(toLocalMinute(2026, 3, 20, 10), "START", current);
+    const a = analyze([basis, start], SETTINGS, data);
+    expect(a?.trips.find((r) => r.trip.id === basis.id)?.costs.START).toBeUndefined();
+    expect(a?.trips.find((r) => r.trip.id === start.id)?.costs.START).toBeDefined();
+    expect(a?.tariffs).toEqual(["BASIS", "AKTIV", "COMFORT"]);
+  });
+
+  it("charges the fee of a tariff missing on a month's first day from the version that adds it", () => {
+    // March starts under the old version, which has no START; the trip is priced with the new one.
+    const start = berlin(toLocalMinute(2026, 3, 20, 10), "START", current);
+    const a = analyze([start], SETTINGS, data);
+    expect(a?.tariffs).toContain("START");
+    expect(a?.trips[0]?.reconstruction.kind).toBe("verified");
+    const [march] = a?.months ?? [];
+    expect(march?.breakdown.START?.fee).toBe(current.tariffs.START?.monthlyFee);
+    expect(march?.actualBreakdown.fee).toBe(current.tariffs.START?.monthlyFee);
+    expect(a?.breakEven.length).toBeGreaterThan(0);
   });
 });
 

@@ -1,5 +1,14 @@
 import { toLocalMinute } from "./local-time";
-import type { ClassPrice, LocalMinute, PriceData, PriceRules, PriceVersionView } from "./types";
+import {
+  TARIFF_IDS,
+  type ClassPrice,
+  type LocalMinute,
+  type PriceData,
+  type PriceRules,
+  type PriceVersionView,
+  type Tariff,
+  type TariffId,
+} from "./types";
 
 // Source: research document "cambio pricing research", price table and fuel surcharge timeline.
 // All amounts in cents including VAT. Km prices are base prices without fuel surcharge.
@@ -210,4 +219,22 @@ export function latestPrices(data: PriceData): PriceVersionView {
 /** The prices that apply to the fees of a month ("YYYY-MM"): those valid on its first day. */
 export function pricesOfMonth(data: PriceData, month: string): PriceVersionView {
   return pricesAt(data, parseIsoDate(`${month}-01`));
+}
+
+/**
+ * The tariffs whose fees apply to a month: each from the version valid on the month's first day
+ * (`pricesOfMonth`), or, for a tariff that version does not have, from the first later version
+ * that has it. So the month in which a tariff is introduced (START on 2024-05-02) charges its fee
+ * as introduced. A tariff no version has is absent.
+ */
+export function tariffsOfMonth(data: PriceData, month: string): Partial<Record<TariffId, Tariff>> {
+  const { views } = resolveVersions(data);
+  const first = pricesOfMonth(data, month);
+  const later = views.slice(views.indexOf(first) + 1);
+  const tariffs: Partial<Record<TariffId, Tariff>> = {};
+  for (const id of TARIFF_IDS) {
+    const tariff = first.tariffs[id] ?? later.find((view) => view.tariffs[id])?.tariffs[id];
+    if (tariff) tariffs[id] = tariff;
+  }
+  return tariffs;
 }

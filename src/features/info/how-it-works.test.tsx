@@ -33,7 +33,7 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
     const tables = await setup();
     const page = document.body;
     for (const id of TARIFFS) {
-      const tariff = PRICES.tariffs[id];
+      const tariff = PRICES.tariffs[id]!;
       const row = tables.querySelector<HTMLElement>(`tr[data-tariff="${id}"]`);
       expect(row, id).not.toBeNull();
       expect(within(row as HTMLElement).getByText(i18n.t(`tariffs.${id}`))).toBeInTheDocument();
@@ -145,7 +145,7 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
     await act(() => i18n.changeLanguage(lang));
     const [v1] = PRICE_DATA.versions as [PriceVersion];
     const v2: PriceVersion = structuredClone({ ...v1, from: "2026-03-15" });
-    v2.tariffs.AKTIV.monthlyFee = 1234;
+    v2.tariffs.AKTIV!.monthlyFee = 1234;
     v2.switchingFee = 900;
     v2.nightHourPrice = 70;
     const data: PriceData = { ...PRICE_DATA, versions: [v1, v2] };
@@ -171,7 +171,7 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
     await user.click(first);
     expect(first).toHaveAttribute("aria-expanded", "true");
     expect(within(tables).getAllByRole("table")).toHaveLength(5);
-    expect(aktiv()[1]).toHaveTextContent(money(v1.tariffs.AKTIV.monthlyFee));
+    expect(aktiv()[1]).toHaveTextContent(money(v1.tariffs.AKTIV!.monthlyFee));
     const levels = screen.getAllByRole("heading").map((h) => Number(h.tagName.slice(1)));
     levels.forEach((level, i) => {
       if (i > 0) expect(level - (levels[i - 1] ?? 0)).toBeLessThanOrEqual(1);

@@ -6,6 +6,7 @@ import { dateParts, parseLocal } from "@/domain/pricing/local-time";
 import { latestPrices, PRICE_DATA } from "@/domain/pricing/price-data";
 import { dedupeTrips } from "./dedupe";
 import { detectColumns } from "./detect-columns";
+import type { PriceData } from "@/domain/pricing/types";
 import { bookingKey, ImportError, type RawTable, type RowProblem, type Trip } from "./fields";
 import { normalizeRows } from "./normalize-rows";
 import { readTable } from "./read-table";
@@ -221,6 +222,44 @@ describe("normalizeRows", () => {
     expect(trips).toEqual([]);
     expect(problems).toHaveLength(1);
     expect(problems[0]).toMatchObject({ fileName: "t.csv", rowNumber: 2, reason });
+  });
+
+  describe("a price version without a tariff or class", () => {
+    // Synthetic: the latest version once more, valid until 2025-12-01, without START and XL.
+    const latest = PRICE_DATA.versions.at(-1)!;
+    const tariffs = structuredClone(latest.tariffs);
+    delete tariffs.START;
+    for (const tariff of Object.values(tariffs)) delete tariff.prices.XL;
+    const data: PriceData = {
+      ...PRICE_DATA,
+      validFrom: "2025-01-01",
+      versions: [
+        { ...latest, from: "2025-01-01", tariffs },
+        { ...latest, from: "2025-12-01" },
+      ],
+    };
+    const runWith = (changes: Record<number, unknown>) =>
+      normalizeRows(table(row(changes)), mapping, data);
+    const november = { 2: "15.11.2025 17:15:00", 3: "15.11.2025 19:21:00" };
+
+    it("reports a tariff the version valid at the return does not have as unknown", () => {
+      const { trips, problems } = runWith({ ...november, 7: "START" });
+      expect(trips).toEqual([]);
+      expect(problems).toMatchObject([{ reason: "unknown-tariff", detail: "START" }]);
+      expect(runWith({ 7: "START" }).trips).toHaveLength(1);
+    });
+
+    it("reports a class no tariff of that version has as unknown", () => {
+      const { trips, problems } = runWith({ ...november, 1: "XL Transporter XL" });
+      expect(trips).toEqual([]);
+      expect(problems).toMatchObject([{ reason: "unknown-class", detail: "XL Transporter XL" }]);
+      expect(runWith({ 1: "XL Transporter XL" }).trips).toHaveLength(1);
+    });
+
+    it("reports a START trip in class XL before both existed as an unknown tariff", () => {
+      const { problems } = runWith({ ...november, 1: "XL Transporter XL", 7: "START" });
+      expect(problems).toMatchObject([{ reason: "unknown-tariff" }]);
+    });
   });
 
   describe("not yet billed rows", () => {

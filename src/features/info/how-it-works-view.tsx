@@ -2,7 +2,12 @@ import type { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import type { ReconstructionKind } from "@/domain/analysis/reconstruct-booking";
 import { latestPrices, PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
-import type { PriceData, PriceVersionView, TariffId } from "@/domain/pricing/types";
+import {
+  TARIFF_IDS,
+  type PriceData,
+  type PriceVersionView,
+  type TariffId,
+} from "@/domain/pricing/types";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { REPOSITORY_URL } from "@/lib/links";
 import { PriceTables } from "./price-table";
@@ -33,8 +38,10 @@ const listOf = (items: string[], lang: string) =>
 
 /** Tariffs that have a separate weekend price for at least one class. */
 function weekendTariffs(data: PriceVersionView): TariffId[] {
-  return (Object.keys(data.tariffs) as TariffId[]).filter((id) =>
-    Object.values(data.tariffs[id].prices).some((price) => price.hourWeekend !== price.hourWeekday),
+  return TARIFF_IDS.filter((id) =>
+    Object.values(data.tariffs[id]?.prices ?? {}).some(
+      (price) => price.hourWeekend !== price.hourWeekday,
+    ),
   );
 }
 

@@ -1,6 +1,6 @@
 import type { Trip } from "@/domain/import/fields";
 import { dateParts, monthKey } from "@/domain/pricing/local-time";
-import { parseIsoDate, pricesAt, pricesOfMonth } from "@/domain/pricing/price-data";
+import { parseIsoDate, pricesAt, pricesOfMonth, tariffsOfMonth } from "@/domain/pricing/price-data";
 import {
   TARIFF_IDS,
   type LocalMinute,
@@ -173,8 +173,8 @@ export function analyze(
     return { trip, reconstruction, month: monthKey(trip.end), costs };
   });
 
-  // Which tariffs to compare, their order and the break-even fees: the prices of the last month.
-  const rangePrices = pricesOfMonth(data, to);
+  // Which tariffs to compare, their order and the break-even fees: the tariffs of the last month.
+  const rangePrices = { tariffs: tariffsOfMonth(data, to) };
   const tariffs = comparedTariffs(inPeriod, settings, rangePrices).filter((t) =>
     results.every((r) => r.costs[t] !== undefined),
   );

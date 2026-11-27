@@ -39,7 +39,7 @@ function trip(
 }
 
 const PRICES = latestPrices(PRICE_DATA);
-const fee = (t: TariffId) => PRICES.tariffs[t].monthlyFee;
+const fee = (t: TariffId) => PRICES.tariffs[t]!.monthlyFee;
 
 describe("analyze", () => {
   it("returns null without trips", () => {
@@ -104,7 +104,7 @@ describe("analyze", () => {
     for (const t of a?.tariffs ?? []) {
       const b = feb?.breakdown[t];
       expect(b?.fee).toBe(fee(t));
-      expect(b?.driverFee).toBe(2 * (PRICES.tariffs[t].additionalDriverFee ?? 0));
+      expect(b?.driverFee).toBe(2 * (PRICES.tariffs[t]!.additionalDriverFee ?? 0));
       expect((b?.time ?? 0) + (b?.km ?? 0) + (b?.fee ?? 0) + (b?.driverFee ?? 0)).toBe(
         feb?.costs[t],
       );
@@ -544,7 +544,7 @@ describe("analyze: hand-derived figures", () => {
 
   it("drops a compared tariff that has no price for a trip's class", () => {
     const data: PriceData = structuredClone(PRICE_DATA);
-    delete data.versions[0]?.tariffs.COMFORT.prices.S;
+    delete data.versions[0]?.tariffs.COMFORT!.prices.S;
     const a = analyze([wednesday(1)], SETTINGS, data);
     expect(a?.tariffs).toEqual(["BASIS", "AKTIV"]);
     expect(a?.months[0]?.costs).not.toHaveProperty("COMFORT");

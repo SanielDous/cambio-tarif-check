@@ -52,6 +52,44 @@ describe("timeCost (literal values from the research document)", () => {
     expect(basisL(tue(10), tue(10) + 8 * DAY)).toBe(60030);
   });
 
+  it("uses a class's own day and week price where the price list sets one", () => {
+    // A flat day price of 23.00 and week price of 138.00 at 1.90 per hour (not 12 × 1.90).
+    const s = PRICES.tariffs.AKTIV!.prices.S!;
+    const flatS = { ...s, hourWeekday: 190, hourWeekend: 190, dayCap: 2300, weekCap: 13800 };
+    const data = {
+      ...PRICES,
+      tariffs: { ...PRICES.tariffs, AKTIV: { ...PRICES.tariffs.AKTIV!, prices: { S: flatS } } },
+    };
+    const cost = (start: number, end: number) =>
+      timeCost(start, end, "AKTIV", "S", data, undefined);
+    expect(cost(tue(6), tue(18))).toBe(2280);
+    expect(cost(tue(6), tue(19))).toBe(2300);
+    expect(cost(tue(6), tue(6) + 26 * HOUR)).toBe(2300 + 2 * 190);
+    expect(cost(tue(6), tue(6) + 6 * DAY)).toBe(13800);
+    expect(cost(tue(6), tue(6) + 7 * DAY)).toBe(13800);
+    expect(cost(tue(6), tue(6) + 8 * DAY)).toBe(13800 + 2300);
+  });
+
+  it("derives the week cap from the hour price, not from a set day cap", () => {
+    const s = PRICES.tariffs.AKTIV!.prices.S!;
+    const data = {
+      ...PRICES,
+      tariffs: {
+        ...PRICES.tariffs,
+        AKTIV: { ...PRICES.tariffs.AKTIV!, prices: { S: { ...s, dayCap: 2400 } } },
+      },
+    };
+    // Day cap 24.00 each, but the week stays at 6 × 12 × 2.10 = 151.20.
+    expect(timeCost(tue(6), tue(6) + 7 * DAY, "AKTIV", "S", data, undefined)).toBe(15120);
+  });
+
+  it("throws for a tariff the version does not have", () => {
+    const tariffs = { ...PRICES.tariffs };
+    delete tariffs.START;
+    const data = { ...PRICES, tariffs };
+    expect(() => timeCost(tue(10), tue(11), "START", "S", data, undefined)).toThrow(/START/);
+  });
+
   it("is pro rata per minute and returns fractional cents", () => {
     expect(aktivS(tue(10), tue(10, 15))).toBeCloseTo(52.5, 9);
     expect(aktivS(tue(10), tue(10, 7))).toBeCloseTo(24.5, 9);
@@ -62,7 +100,7 @@ describe("timeCost (literal values from the research document)", () => {
   it("throws for a class the tariff does not have", () => {
     const data = {
       ...PRICES,
-      tariffs: { ...PRICES.tariffs, AKTIV: { ...PRICES.tariffs.AKTIV, prices: {} } },
+      tariffs: { ...PRICES.tariffs, AKTIV: { ...PRICES.tariffs.AKTIV!, prices: {} } },
     };
     expect(() => timeCost(tue(10), tue(11), "AKTIV", "S", data, undefined)).toThrow(/AKTIV.*S/);
   });

@@ -1,38 +1,33 @@
 import type { Trip } from "@/domain/import/fields";
 import { monthKey } from "@/domain/pricing/local-time";
-import { pricesOfMonth } from "@/domain/pricing/price-data";
-import {
-  TARIFF_IDS,
-  type PriceData,
-  type PriceVersionView,
-  type TariffId,
-} from "@/domain/pricing/types";
+import { pricesOfMonth, tariffsOfMonth } from "@/domain/pricing/price-data";
+import { TARIFF_IDS, type PriceData, type Tariff, type TariffId } from "@/domain/pricing/types";
 import type { MonthRow, Settings, TripResult } from "./analyze";
 
 const normCity = (city: string) => city.trim().toLowerCase();
 
-/** Monthly fee of a tariff including the additional drivers, in cents. */
-export function monthlyFee(
-  tariff: TariffId,
-  additionalDrivers: number,
-  data: PriceVersionView,
-): number {
+/** The tariffs of a price version, or those of a month (`tariffsOfMonth`). */
+interface Tariffs {
+  tariffs: Partial<Record<TariffId, Tariff>>;
+}
+
+/**
+ * Monthly fee of a tariff including the additional drivers, in cents; 0 for a tariff that `data`
+ * does not have (such a tariff is never compared, see `comparedTariffs`).
+ */
+export function monthlyFee(tariff: TariffId, additionalDrivers: number, data: Tariffs): number {
   const t = data.tariffs[tariff];
-  return t.monthlyFee + additionalDrivers * (t.additionalDriverFee ?? 0);
+  return t ? t.monthlyFee + additionalDrivers * (t.additionalDriverFee ?? 0) : 0;
 }
 
 /**
  * Tariffs worth comparing, ordered by monthly fee. Basis, Aktiv and Comfort always; Start if a
  * trip is in one of its cities; Campus for under-26 users or Campus trips, never with additional
- * drivers.
+ * drivers. Only tariffs that `data` has.
  */
-export function comparedTariffs(
-  trips: Trip[],
-  settings: Settings,
-  data: PriceVersionView,
-): TariffId[] {
+export function comparedTariffs(trips: Trip[], settings: Settings, data: Tariffs): TariffId[] {
   const result: TariffId[] = ["BASIS", "AKTIV", "COMFORT"];
-  const startCities = data.tariffs.START.cities;
+  const startCities = data.tariffs.START?.cities;
   if (startCities) {
     const cities = new Set(startCities.map(normCity));
     if (trips.some((t) => cities.has(normCity(t.city)))) result.push("START");
@@ -41,11 +36,10 @@ export function comparedTariffs(
     (settings.under26 || trips.some((t) => t.tariff === "CAMPUS")) &&
     settings.additionalDrivers === 0;
   if (campus) result.push("CAMPUS");
-  return result.sort(
-    (a, b) =>
-      data.tariffs[a].monthlyFee - data.tariffs[b].monthlyFee ||
-      TARIFF_IDS.indexOf(a) - TARIFF_IDS.indexOf(b),
-  );
+  const fee = (id: TariffId) => data.tariffs[id]?.monthlyFee ?? 0;
+  return result
+    .filter((id) => data.tariffs[id] !== undefined)
+    .sort((a, b) => fee(a) - fee(b) || TARIFF_IDS.indexOf(a) - TARIFF_IDS.indexOf(b));
 }
 
 /** Month keys from `first` to `last`, inclusive. */
@@ -94,7 +88,7 @@ function actualTariffOf(
   trips: Trip[],
   previous: TariffId | null,
   settings: Settings,
-  data: PriceVersionView,
+  data: Tariffs,
 ): { tariff: TariffId; source: MonthRow["actualTariffSource"]; mixed: boolean } {
   const override = settings.actualTariffOverrides[month];
   if (override !== undefined && Object.hasOwn(data.tariffs, override)) {
@@ -143,32 +137,37 @@ export function buildMonths(input: MonthInput): MonthRow[] {
   const first = [...tripsByMonth.keys()].sort()[0];
   if (first !== undefined && first < from) {
     for (const month of monthRange(first, previousMonth(from))) {
-      previous = actualTariffOf(
-        month,
-        tripsByMonth.get(month) ?? [],
-        previous,
-        settings,
-        pricesOfMonth(data, month),
-      ).tariff;
+      previous = actualTariffOf(month, tripsByMonth.get(month) ?? [], previous, settings, {
+        tariffs: tariffsOfMonth(data, month),
+      }).tariff;
     }
   }
 
   const keys = monthRange(from, to);
   return keys.map((month, index) => {
     const list = resultsByMonth.get(month) ?? [];
-    // Fees and the switching fee of a month: the prices valid on its first day.
+    // Fees and the switching fee of a month: the prices valid on its first day (the fees of a
+    // tariff introduced later in the month from the version that introduces it).
     const prices = pricesOfMonth(data, month);
-    const actual = actualTariffOf(month, tripsByMonth.get(month) ?? [], previous, settings, prices);
+    const tariffs = { tariffs: tariffsOfMonth(data, month) };
+    const actual = actualTariffOf(
+      month,
+      tripsByMonth.get(month) ?? [],
+      previous,
+      settings,
+      tariffs,
+    );
     const switched = index > 0 && previous !== actual.tariff;
     previous = actual.tariff;
     const billedTime = list.reduce((s, r) => s + r.trip.billedTime, 0);
     const billedKm = list.reduce((s, r) => s + r.trip.billedKm, 0);
+    const feeOf = (t: TariffId) => monthlyFee(t, 0, tariffs);
     const driverFeeOf = (t: TariffId) =>
-      settings.additionalDrivers * (prices.tariffs[t].additionalDriverFee ?? 0);
+      monthlyFee(t, settings.additionalDrivers, tariffs) - feeOf(t);
     const actualBreakdown: MonthRow["actualBreakdown"] = {
       billedTime,
       billedKm,
-      fee: prices.tariffs[actual.tariff].monthlyFee,
+      fee: feeOf(actual.tariff),
       driverFee: driverFeeOf(actual.tariff),
       switchFee: switched ? prices.switchingFee : 0,
     };
@@ -191,7 +190,7 @@ export function buildMonths(input: MonthInput): MonthRow[] {
           km += c.km;
         }
       }
-      const fee = prices.tariffs[t].monthlyFee;
+      const fee = feeOf(t);
       const driverFee = driverFeeOf(t);
       breakdown[t] = { time, km, fee, driverFee };
       costs[t] = time + km + fee + driverFee;
