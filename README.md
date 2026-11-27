@@ -100,11 +100,11 @@ change (hour, km and night prices, monthly and additional-driver fees, the switc
 in `versions`, each valid from a date; rules that are not prices (night and weekend windows, km
 tier, caps, holiday cities) and the fuel surcharge periods are shared. A class may carry its own
 day and week cap (`dayCap`, `weekCap`; the lists before 2024-05-02 have flat day and week prices),
-and a version may lack a tariff that did not exist yet (START before 2024-05-02). A trip is priced with the
-version valid at its return, the fees of a month with the version valid on its first day. To add a
-new price list, append a version with its first day and update `pricesAsOf`; to correct the
-current one, change it in place. The explanation page and its price table are rendered from this
-data, and the tests will tell you what else is affected.
+and a version may lack a tariff that did not exist yet (START before 2024-05-02). A trip is priced
+with the version valid at its return, the fees of a month with the version valid on its first day.
+To add a new price list, append a version with its first day and update `pricesAsOf`; to correct
+the current one, change it in place. The explanation page and its price table are rendered from
+this data, and the tests will tell you what else is affected.
 
 ## Fixtures and tools
 

@@ -489,12 +489,15 @@ Priced by the app with the list of 2023-06-01 (see "Price lists before 2024-05-0
 Research date: 2026-11-27. All private-customer price lists back to 2020-05-01 were recovered as
 original PDFs from the Wayback Machine, and every price in them was confirmed a second time
 against archived tariff web pages of the same period. PDF km prices are base prices without fuel
-surcharge. All prices are EUR including VAT. Week price = 6 × day price in all four lists.
+surcharge. All prices are EUR including VAT. Week price = 6 × day price in all four lists; the
+2020-05-01 PDF prints no week price, so the value for that list comes from the archived web page.
 
-The app uses the list of 2023-06-01 (verified against real invoices and 27 billed trips). The
-three older lists are recorded here but **not used by the app**: they come with different rules
-(night window, weekend end, one free tariff change per year) and no invoice exists to check how
-those rules are applied.
+The app uses the list of 2023-06-01. Its hour and km prices are confirmed by invoices and by the
+27 billed trips before 2024-05-02; its flat day and week prices and the +0.01 surcharge from
+2023-06-01 to 2023-08-14 are not exercised by any trip (see "Verification against all exported
+trips"). The three older lists are recorded here but **not used by the app**: they come with
+different rules (night window, weekend end, one free tariff change per year) and no invoice exists
+to check how those rules are applied.
 
 Before 2024-05-02 the **day price was a flat amount per class**, not 12 × the hour price.
 

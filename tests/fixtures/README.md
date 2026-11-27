@@ -79,8 +79,9 @@ timestamp so the output is deterministic.
 
 `invoice-items.json` holds, for 108 of the 154 trips of `trips-all.csv` (all 85 trips of
 `trips-2025.csv` and `trips-2026.csv`, and 23 trips from 2023-10-03 to 2024-12-30), the time and km
-line items exactly as invoiced. It contains no personal data: no names, vehicles, stations or invoice numbers, only the
-booking start (to match a trip by the export's `Buchungsbeginn`), tariff, class, items and km.
+line items exactly as invoiced. It contains no personal data: no names, vehicles, stations or
+invoice numbers, only the booking start (to match a trip by the export's `Buchungsbeginn`), tariff,
+class, items and km.
 It is an array of `{ bookingStart, tariff, priceClass, timeItems, km, kmGross }`, where
 `bookingStart` and the items' `start` and `end` are `DD.MM.YYYY HH:mm` and amounts are integer
 cents including VAT. `timeItems` is a list of `{ kind, start, end, gross }`:

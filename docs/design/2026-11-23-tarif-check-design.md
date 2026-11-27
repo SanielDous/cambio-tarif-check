@@ -361,3 +361,8 @@ above, this list is authoritative:
   2022-05-14 the night ran from 23:00 to 07:00 and the weekend until Monday 07:00, until
   2023-05-31 one tariff change per calendar year was free (each further one 15.00), and no
   invoice exists to verify how these rules were applied.
+- **A tariff that did not exist yet is compared only where it existed:** a tariff is compared only
+  if it exists in every month of the period and prices every trip of it. A tariff left out only
+  because it was introduced later (START on 2024-05-02) is named on the result page, with a
+  button that starts the period at its first month; actual-tariff corrections to a tariff that did
+  not exist in that month are ignored.
