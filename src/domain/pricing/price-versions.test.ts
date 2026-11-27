@@ -5,7 +5,14 @@ import { optimalPath } from "@/domain/analysis/switching-path";
 import type { Trip } from "@/domain/import/fields";
 import { kmCost } from "./km-cost";
 import { toLocalMinute } from "./local-time";
-import { latestPrices, parseIsoDate, PRICE_DATA, pricesAt, surchargeAt } from "./price-data";
+import {
+  latestPrices,
+  parseIsoDate,
+  PRICE_DATA,
+  pricesAt,
+  surchargeAt,
+  tariffsOfMonth,
+} from "./price-data";
 import { roundHalfUp } from "./rounding";
 import { timeCost } from "./time-cost";
 import type { PriceData, PriceVersion, PriceVersionView, TariffId } from "./types";
@@ -209,6 +216,91 @@ describe("a price version without a tariff", () => {
     expect(march?.breakdown.START?.fee).toBe(current.tariffs.START?.monthlyFee);
     expect(march?.actualBreakdown.fee).toBe(current.tariffs.START?.monthlyFee);
     expect(a?.breakEven.length).toBeGreaterThan(0);
+  });
+});
+
+describe("START, which the price list of 2023-06-01 does not have", () => {
+  /** An S trip of two hours, billed with the real prices valid at its return. */
+  const real = (city: string, tariff: TariffId, y: number, m: number, d: number): Trip => {
+    const start = toLocalMinute(y, m, d, 10);
+    const end = start + 120;
+    const prices = pricesAt(PRICE_DATA, end);
+    return {
+      id: `real${nextId++}`,
+      city,
+      vehicleClass: "S Kleinwagen",
+      priceClass: "S",
+      start,
+      end,
+      km: 10,
+      billedTime: roundHalfUp(timeCost(start, end, tariff, "S", prices, city)),
+      billedKm: kmCost(10, tariff, "S", prices, surchargeAt(PRICE_DATA, end)),
+      tariff,
+    };
+  };
+  const berlin = [real("Berlin", "BASIS", 2023, 10, 11), real("Berlin", "START", 2025, 3, 12)];
+
+  it("has START only in the months from May 2024 on", () => {
+    expect(tariffsOfMonth(PRICE_DATA, "2023-10").START).toBeUndefined();
+    expect(tariffsOfMonth(PRICE_DATA, "2024-04").START).toBeUndefined();
+    // Introduced on 2024-05-02: the month of its introduction already has it.
+    expect(tariffsOfMonth(PRICE_DATA, "2024-05").START?.monthlyFee).toBe(350);
+    expect(tariffsOfMonth(PRICE_DATA, "2025-03").START?.monthlyFee).toBe(350);
+    expect(tariffsOfMonth(PRICE_DATA, "2023-10").AKTIV?.monthlyFee).toBe(1100);
+  });
+
+  it("names START as unavailable when a trip of the period predates it", () => {
+    const a = analyze(berlin, SETTINGS, PRICE_DATA);
+    expect(a?.tariffs).toEqual(["BASIS", "AKTIV", "COMFORT"]);
+    expect(a?.unavailableTariffs).toEqual([
+      { tariff: "START", availableFrom: "2024-05", since: "2024-05-02" },
+    ]);
+  });
+
+  it("compares START once the period starts with its introduction", () => {
+    const a = analyze(
+      berlin,
+      { ...SETTINGS, period: { from: "2024-05", to: "2025-03" } },
+      PRICE_DATA,
+    );
+    expect(a?.tariffs).toEqual(["BASIS", "START", "AKTIV", "COMFORT"]);
+    expect(a?.unavailableTariffs).toEqual([]);
+  });
+
+  it("does not compare START in a period with a month before its introduction", () => {
+    const a = analyze(
+      berlin,
+      { ...SETTINGS, period: { from: "2024-04", to: "2025-03" } },
+      PRICE_DATA,
+    );
+    expect(a?.months[0]?.month).toBe("2024-04");
+    expect(a?.tariffs).not.toContain("START");
+    expect(a?.months[0]?.breakdown.START).toBeUndefined();
+    expect(a?.unavailableTariffs).toEqual([
+      { tariff: "START", availableFrom: "2024-05", since: "2024-05-02" },
+    ]);
+  });
+
+  it("starts the offer a month later when a trip of May 2024 predates START", () => {
+    const may = [real("Berlin", "BASIS", 2024, 5, 1), real("Berlin", "START", 2025, 3, 12)];
+    expect(analyze(may, SETTINGS, PRICE_DATA)?.unavailableTariffs).toEqual([
+      { tariff: "START", availableFrom: "2024-06", since: "2024-05-02" },
+    ]);
+  });
+
+  it("lists nothing for trips outside the START cities", () => {
+    const aachen = [real("Aachen", "BASIS", 2023, 10, 11), real("Aachen", "AKTIV", 2025, 3, 12)];
+    const a = analyze(aachen, SETTINGS, PRICE_DATA);
+    expect(a?.tariffs).toEqual(["BASIS", "AKTIV", "COMFORT"]);
+    expect(a?.unavailableTariffs).toEqual([]);
+  });
+
+  it("ignores an actual-tariff correction to START in a month without it", () => {
+    const overrides = { "2023-10": "START" as const, "2023-11": "START" as const };
+    const a = analyze(berlin, { ...SETTINGS, actualTariffOverrides: overrides }, PRICE_DATA);
+    expect(a?.months[0]).toMatchObject({ actualTariff: "BASIS", actualTariffSource: "trips" });
+    expect(a?.months[1]).toMatchObject({ actualTariff: "BASIS", actualTariffSource: "inherited" });
+    expect(a?.months[0]?.actualBreakdown.fee).toBe(0);
   });
 });
 

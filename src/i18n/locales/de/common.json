@@ -69,6 +69,7 @@
       "credit": "Fahrtguthaben, die cambio mit den Fahrtkosten verrechnet – sie hängen nicht vom Tarif ab",
       "business": "Geschäftskunden-Tarife",
       "before": "Fahrten vor dem {{date}}: Für die Zeit davor sind keine Preise hinterlegt, solche Fahrten werden beim Import aussortiert und nicht ausgewertet",
+      "newTariff": "Tarife, die es zur Zeit einer Fahrt noch nicht gab: Sie werden nur verglichen, wenn der gewählte Zeitraum nach ihrer Einführung beginnt",
       "holidays": "Feiertage folgen einer festen Liste, die vom Kalender von cambio abweichen kann. Die regionale Regel stammt aus dem Preisrechner von cambio und ist nur für Aachen durch eine Rechnung bestätigt.",
       "cap": "Die ungenutzte gebuchte Zeit kostet die Hälfte des Preises genau dieser Stunden, als eigener Zeitraum ab der Rückgabe mit eigenem Tagesdeckel; so steht es auf den Rechnungen. Dass sie auch dann voll mit 50 % zählt, wenn genutzte und ungenutzte Zeit zusammen über dem Tagesdeckel lägen, ist eine Annahme."
     },
@@ -229,6 +230,10 @@
   },
   "result": {
     "summary": {
+      "unavailable": {
+        "text": "{{tariff}} gibt es erst seit {{date}} und wird deshalb in diesem Zeitraum nicht verglichen.",
+        "action": "Zeitraum ab {{month}} wählen"
+      },
       "scope": "{{from}} – {{to}} · {{trips}}",
       "headline": {
         "saving": "Mit dem Tarif {{tariff}} hättest du {{amount}} gespart.",

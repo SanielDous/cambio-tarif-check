@@ -241,6 +241,13 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
     expect(i18n.t("howItWorks.limits.before", { date })).toMatch(/nicht ausgewertet|not evaluated/);
   });
 
+  it("says that a tariff introduced later is compared only from its introduction on", async () => {
+    await setup();
+    const limits = screen.getByRole("region", { name: i18n.t("howItWorks.limits.title") });
+    expect(limits).toHaveTextContent(i18n.t("howItWorks.limits.newTariff"));
+    expect(i18n.t("howItWorks.limits.newTariff")).toMatch(/Zeitraum|period/);
+  });
+
   it("explains caps that hold for every price version: own day and week prices where listed", async () => {
     await setup();
     const caps = screen.getByText(/^(Deckel|Caps)/);

@@ -12,10 +12,13 @@ import en from "@/i18n/locales/en/common.json";
 import type { Analysis } from "@/domain/analysis/analyze";
 import type { Trip } from "@/domain/import/fields";
 import { toLocalMinute } from "@/domain/pricing/local-time";
-import { PRICE_DATA } from "@/domain/pricing/price-data";
+import { kmCost } from "@/domain/pricing/km-cost";
+import { parseIsoDate, PRICE_DATA, pricesAt, surchargeAt } from "@/domain/pricing/price-data";
+import { roundHalfUp } from "@/domain/pricing/rounding";
+import { timeCost } from "@/domain/pricing/time-cost";
 import type { TariffId } from "@/domain/pricing/types";
 import { analysisAtom, importFilesAtom, settingsAtom, tripsAtom } from "@/state/atoms";
-import { formatCurrency, formatHours } from "@/lib/format";
+import { formatCurrency, formatDate, formatHours, formatMonth } from "@/lib/format";
 import { toDateValue } from "./booked-end";
 import { ResultView } from "./result-view";
 import { SummaryCard } from "./summary-card";
@@ -339,6 +342,83 @@ describe("tariff matrix", () => {
     expect(start).toHaveTextContent("wird nicht verglichen");
     expect(start).toHaveAttribute("aria-checked", "true");
     expect(screen.queryByRole("menuitemradio", { name: /Campus/ })).not.toBeInTheDocument();
+  });
+});
+
+describe("a tariff that did not exist yet", () => {
+  /** A Berlin S trip of two hours, billed with the real prices valid at its return. */
+  const berlin = (tariff: TariffId, y: number, m: number, d: number): Trip => {
+    const start = toLocalMinute(y, m, d, 10);
+    const end = start + 120;
+    const prices = pricesAt(PRICE_DATA, end);
+    counter++;
+    return {
+      id: `berlin-${counter}`,
+      city: "Berlin",
+      vehicleClass: "S Kleinwagen",
+      priceClass: "S",
+      start,
+      end,
+      km: 10,
+      billedTime: roundHalfUp(timeCost(start, end, tariff, "S", prices, "Berlin")),
+      billedKm: kmCost(10, tariff, "S", prices, surchargeAt(PRICE_DATA, end)),
+      tariff,
+    };
+  };
+  const trips = () => [berlin("BASIS", 2023, 10, 11), berlin("START", 2025, 3, 12)];
+  const rows = () => screen.getAllByTestId("tariff-row").map((r) => r.dataset.tariff);
+
+  it.each(["de", "en"])(
+    "says why START is not compared and offers the period from its introduction (%s)",
+    async (lang) => {
+      await act(() => i18n.changeLanguage(lang));
+      const { store, user } = await withTrips(trips());
+      expect(rows()).toEqual(["BASIS", "AKTIV", "COMFORT"]);
+      const notice = screen.getByTestId("unavailable-START");
+      expect(spaced(notice.textContent ?? "")).toContain(
+        spaced(
+          i18n.t("result.summary.unavailable.text", {
+            tariff: i18n.t("tariffs.START"),
+            date: formatDate(parseIsoDate("2024-05-02"), lang),
+          }),
+        ),
+      );
+      const button = within(notice).getByRole("button", {
+        name: i18n.t("result.summary.unavailable.action", {
+          month: formatMonth("2024-05", lang, "short"),
+        }),
+      });
+      await user.click(button);
+      expect(store.get(settingsAtom).period).toEqual({ from: "2024-05", to: "2025-03" });
+      expect(rows()).toEqual(["BASIS", "START", "AKTIV", "COMFORT"]);
+      expect(screen.queryByTestId("unavailable-START")).not.toBeInTheDocument();
+    },
+  );
+
+  it("keeps the chosen end of the period", async () => {
+    const { store, user } = await withTrips([...trips(), berlin("START", 2025, 6, 2)]);
+    act(() => {
+      store.set(settingsAtom, {
+        ...store.get(settingsAtom),
+        period: { from: "2023-10", to: "2025-04" },
+      });
+    });
+    await user.click(within(screen.getByTestId("unavailable-START")).getByRole("button"));
+    expect(store.get(settingsAtom).period).toEqual({ from: "2024-05", to: "2025-04" });
+  });
+
+  it("does not offer START as the actual tariff of a month before it existed", async () => {
+    const { store, user } = await withTrips(trips());
+    act(() => {
+      store.set(settingsAtom, {
+        ...store.get(settingsAtom),
+        actualTariffOverrides: { "2023-10": "START" },
+      });
+    });
+    expect(screen.getByTestId("actual-tariff-2023-10")).toHaveAttribute("data-source", "trips");
+    await user.click(screen.getByTestId("actual-tariff-2023-10"));
+    const items = await screen.findAllByRole("menuitemradio");
+    expect(items.map((i) => i.textContent)).toEqual(["Basis", "Aktiv", "Comfort"]);
   });
 });
 

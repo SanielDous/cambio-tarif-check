@@ -1,9 +1,12 @@
-import { CircleCheck, Info } from "lucide-react";
+import { useAtom } from "jotai";
+import { CalendarRange, CircleCheck, Info } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import type { Analysis } from "@/domain/analysis/analyze";
 import { PRICE_DATA, parseIsoDate } from "@/domain/pricing/price-data";
 import { formatCurrency, formatDate, formatMonth } from "@/lib/format";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { settingsAtom } from "@/state/atoms";
 import { Hint } from "./hint";
 import type { ReconstructionKind } from "@/domain/analysis/reconstruct-booking";
 import { EXACT_KINDS } from "./tariffs";
@@ -190,8 +193,55 @@ export function SummaryCard({ analysis }: { analysis: Analysis }) {
         </span>
       </div>
 
+      <Unavailable analysis={analysis} />
       <Warnings analysis={analysis} />
     </section>
+  );
+}
+
+/**
+ * Tariffs left out because they did not exist yet in part of the period, each with a button that
+ * starts the period at the tariff's first month (the end stays).
+ */
+function Unavailable({ analysis }: { analysis: Analysis }) {
+  const { t, i18n } = useTranslation("common");
+  const lang = i18n.language;
+  const [settings, setSettings] = useAtom(settingsAtom);
+  if (analysis.unavailableTariffs.length === 0) return null;
+  const to = settings.period?.to ?? analysis.months[analysis.months.length - 1]?.month ?? "";
+
+  return (
+    <ul className="grid gap-3 border-t pt-4 text-sm" data-testid="unavailable">
+      {analysis.unavailableTariffs.map(({ tariff, availableFrom, since }) => (
+        <li
+          key={tariff}
+          className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between"
+          data-testid={`unavailable-${tariff}`}
+        >
+          <span className="flex gap-2">
+            <Info className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <span>
+              {t("result.summary.unavailable.text", {
+                tariff: t(`tariffs.${tariff}`),
+                date: formatDate(parseIsoDate(since), lang),
+              })}
+            </span>
+          </span>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="shrink-0"
+            onClick={() => setSettings({ ...settings, period: { from: availableFrom, to } })}
+          >
+            <CalendarRange aria-hidden="true" />
+            {t("result.summary.unavailable.action", {
+              month: formatMonth(availableFrom, lang, "short"),
+            })}
+          </Button>
+        </li>
+      ))}
+    </ul>
   );
 }
 

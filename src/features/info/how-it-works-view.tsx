@@ -163,6 +163,7 @@ export function HowItWorksView({ data = PRICE_DATA }: { data?: PriceData }) {
             <li key={key}>{t(`howItWorks.limits.${key}`)}</li>
           ))}
           <li>{t("howItWorks.limits.before", { date: date(data.validFrom) })}</li>
+          <li>{t("howItWorks.limits.newTariff")}</li>
         </List>
         <p className={prose}>{t("howItWorks.limits.holidays")}</p>
         <p className={prose}>{t("howItWorks.limits.cap")}</p>

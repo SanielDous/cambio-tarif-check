@@ -294,19 +294,35 @@ export function pricesOfMonth(data: PriceData, month: string): PriceVersionView 
 }
 
 /**
- * The tariffs whose fees apply to a month: each from the version valid on the month's first day
- * (`pricesOfMonth`), or, for a tariff that version does not have, from the first later version
- * that has it. So the month in which a tariff is introduced (START on 2024-05-02) charges its fee
- * as introduced. A tariff no version has is absent.
+ * The tariffs that exist in a month and whose fees apply to it: each from the version valid on the
+ * month's first day (`pricesOfMonth`), or, for a tariff that version does not have, from a version
+ * that starts within the month and has it. So the month in which a tariff is introduced (START on
+ * 2024-05-02) has it and charges its fee as introduced; an earlier month does not have it.
  */
 export function tariffsOfMonth(data: PriceData, month: string): Partial<Record<TariffId, Tariff>> {
-  const { views } = resolveVersions(data);
+  const { starts, views } = resolveVersions(data);
   const first = pricesOfMonth(data, month);
-  const later = views.slice(views.indexOf(first) + 1);
+  const [y, m] = month.split("-").map(Number) as [number, number];
+  const nextMonth = m === 12 ? toLocalMinute(y + 1, 1, 1) : toLocalMinute(y, m + 1, 1);
+  const within = views.filter(
+    (view, i) => view !== first && (starts[i] as LocalMinute) < nextMonth && view.from > first.from,
+  );
   const tariffs: Partial<Record<TariffId, Tariff>> = {};
   for (const id of TARIFF_IDS) {
-    const tariff = first.tariffs[id] ?? later.find((view) => view.tariffs[id])?.tariffs[id];
+    const tariff = first.tariffs[id] ?? within.find((view) => view.tariffs[id])?.tariffs[id];
     if (tariff) tariffs[id] = tariff;
   }
   return tariffs;
+}
+
+/**
+ * When a tariff first exists: the first day of the first version that has it ("YYYY-MM-DD"), and
+ * the month of that day. Undefined for a tariff no version has.
+ */
+export function tariffIntroduction(
+  data: PriceData,
+  id: TariffId,
+): { since: string; month: string } | undefined {
+  const version = data.versions.find((v) => v.tariffs[id]);
+  return version && { since: version.from, month: version.from.slice(0, 7) };
 }

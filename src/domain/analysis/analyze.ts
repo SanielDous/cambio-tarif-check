@@ -1,6 +1,13 @@
 import type { Trip } from "@/domain/import/fields";
 import { dateParts, monthKey } from "@/domain/pricing/local-time";
-import { parseIsoDate, pricesAt, pricesOfMonth, tariffsOfMonth } from "@/domain/pricing/price-data";
+import {
+  latestPrices,
+  parseIsoDate,
+  pricesAt,
+  pricesOfMonth,
+  tariffIntroduction,
+  tariffsOfMonth,
+} from "@/domain/pricing/price-data";
 import {
   TARIFF_IDS,
   type LocalMinute,
@@ -8,7 +15,7 @@ import {
   type TariffId,
 } from "@/domain/pricing/types";
 import { breakEven, type BreakEven } from "./break-even";
-import { buildMonths, comparedTariffs, monthlyFee } from "./months";
+import { buildMonths, comparedTariffs, monthlyFee, monthRange } from "./months";
 import {
   reconstructBooking,
   type Reconstruction,
@@ -100,6 +107,21 @@ export interface Analysis {
   surchargeDerivedTrips: number;
   /** Trips returned after the day of `pricesAsOf`; they are priced with the latest known prices. */
   tripsAfterPricesAsOf: number;
+  /**
+   * Tariffs that would be compared for these trips and settings but are not, only because they
+   * did not exist yet in part of the period: in a month of it or at the return of one of its
+   * trips. `since` is the first day of the tariff, `availableFrom` its month: a period starting
+   * there compares it. Tariffs left out for any other reason are not listed.
+   */
+  unavailableTariffs: UnavailableTariff[];
+}
+
+export interface UnavailableTariff {
+  tariff: TariffId;
+  /** Month key of the first month in which the tariff exists. */
+  availableFrom: string;
+  /** First day of the tariff ("YYYY-MM-DD"). */
+  since: string;
 }
 
 const KINDS: ReconstructionKind[] = [
@@ -117,6 +139,13 @@ const KINDS: ReconstructionKind[] = [
 const FIRST_DAYS = 3;
 /** Day of the month from which the last trip may end for the month to count as complete. */
 const LAST_DAY = 26;
+
+/** The month after `month`. */
+function nextMonth(month: string): string {
+  const year = Number(month.slice(0, 4));
+  const m = Number(month.slice(5, 7));
+  return m === 12 ? `${year + 1}-01` : `${year}-${String(m + 1).padStart(2, "0")}`;
+}
 
 /** Number of distinct drivers in the trips minus one; the number of additional drivers. */
 export function countAdditionalDrivers(trips: Trip[]): number {
@@ -175,8 +204,29 @@ export function analyze(
 
   // Which tariffs to compare, their order and the break-even fees: the tariffs of the last month.
   const rangePrices = { tariffs: tariffsOfMonth(data, to) };
-  const tariffs = comparedTariffs(inPeriod, settings, rangePrices).filter((t) =>
-    results.every((r) => r.costs[t] !== undefined),
+  // A tariff is compared only if it exists in every month of the range and prices every trip.
+  const monthTariffs = monthRange(from, to).map((month) => tariffsOfMonth(data, month));
+  const exists = (t: TariffId) => monthTariffs.every((tariffs) => tariffs[t] !== undefined);
+  const prices = (t: TariffId) => results.every((r) => r.costs[t] !== undefined);
+  const tariffs = comparedTariffs(inPeriod, settings, rangePrices).filter(
+    (t) => exists(t) && prices(t),
+  );
+  // Tariffs that would be compared but did not exist yet in part of the period, and only that.
+  const unavailableTariffs = comparedTariffs(inPeriod, settings, latestPrices(data)).flatMap(
+    (t): UnavailableTariff[] => {
+      const introduced = tariffIntroduction(data, t);
+      if (tariffs.includes(t) || !introduced) return [];
+      // A trip of the month of introduction returned before it moves the start a month later.
+      const sinceMinute = parseIsoDate(introduced.since);
+      const tooEarlyInMonth = results.some(
+        (r) => monthKey(r.trip.end) === introduced.month && r.trip.end < sinceMinute,
+      );
+      const availableFrom = tooEarlyInMonth ? nextMonth(introduced.month) : introduced.month;
+      if (availableFrom <= from || availableFrom > to) return [];
+      const unpriced = results.filter((r) => r.costs[t] === undefined);
+      const onlyTooEarly = unpriced.every((r) => !pricesAt(data, r.trip.end).tariffs[t]);
+      return onlyTooEarly ? [{ tariff: t, availableFrom, since: introduced.since }] : [];
+    },
   );
   if (tariffs.length === 0) return null;
 
@@ -254,5 +304,6 @@ export function analyze(
     suggestedAdditionalDrivers: countAdditionalDrivers(inPeriod),
     surchargeDerivedTrips: results.filter((r) => r.reconstruction.surchargeDerived).length,
     tripsAfterPricesAsOf: inPeriod.filter((trip) => trip.end >= afterPrices).length,
+    unavailableTariffs,
   };
 }
