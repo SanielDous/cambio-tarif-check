@@ -231,6 +231,33 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
     for (const cents of [225, 265, 3100, 18600]) expect(campusXS).toContain(money(cents));
   });
 
+  it("states from which day trips are evaluated, with the date of the price data", async () => {
+    await setup();
+    const limits = screen.getByRole("region", { name: i18n.t("howItWorks.limits.title") });
+    const date = formatDate(parseIsoDate(PRICE_DATA.validFrom), lang);
+    expect(spaced(limits.textContent)).toContain(
+      spaced(i18n.t("howItWorks.limits.before", { date })),
+    );
+    expect(i18n.t("howItWorks.limits.before", { date })).toMatch(/nicht ausgewertet|not evaluated/);
+  });
+
+  it("explains caps that hold for every price version: own day and week prices where listed", async () => {
+    await setup();
+    const caps = screen.getByText(/^(Deckel|Caps)/);
+    expect(caps.textContent).toMatch(/Tagespreis|day price/);
+    expect(caps.textContent).toMatch(/Wochenpreis|week price/);
+    const notes = screen.getAllByText(
+      i18n.t("howItWorks.prices.classes.note", {
+        dayCapHours: PRICE_DATA.dayCapHours,
+        weekCapDays: PRICE_DATA.weekCapDays,
+      }),
+    );
+    expect(notes.length).toBeGreaterThan(0);
+    expect(notes[0]?.textContent).toMatch(
+      /eigene[nrs]? Tages- oder Wochenpreis|own day or week price/,
+    );
+  });
+
   it("explains late returns and what is left out about them", async () => {
     await setup();
     const early = screen.getByRole("region", { name: i18n.t("howItWorks.earlyReturn.title") });

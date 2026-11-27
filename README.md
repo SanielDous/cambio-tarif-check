@@ -63,9 +63,10 @@ What the app computes, in detail: it recomputes every trip minute by minute (nig
 holiday prices, day and week caps, kilometre tiers, fuel surcharge), reconstructs the booked end
 from the billed amount, and compares the tariffs per month including monthly fees and tariff
 change fees. It does not consider partner discounts and city offers, the sign-up fee, SiPack,
-penalties, business tariffs or trips before 2024-05-02. The app only downloads its own static
-files (and loads further parts of itself on demand); it sets no cookies and writes nothing to
-browser storage (no local storage, session storage or IndexedDB).
+penalties, business tariffs or trips before the oldest stored price list (`validFrom` in the
+price data, currently 2023-06-01). The app only downloads its own static files (and loads further
+parts of itself on demand); it sets no cookies and writes nothing to browser storage (no local
+storage, session storage or IndexedDB).
 
 Requirements: Node.js 22 or newer and pnpm.
 
@@ -97,7 +98,9 @@ All prices live in `src/domain/pricing/price-data.ts` (data only, amounts in cen
 with the "prices as of" date). The source is `docs/research/cambio-pricing.md`. Prices that can
 change (hour, km and night prices, monthly and additional-driver fees, the switching fee) are kept
 in `versions`, each valid from a date; rules that are not prices (night and weekend windows, km
-tier, caps, holiday cities) and the fuel surcharge periods are shared. A trip is priced with the
+tier, caps, holiday cities) and the fuel surcharge periods are shared. A class may carry its own
+day and week cap (`dayCap`, `weekCap`; the lists before 2024-05-02 have flat day and week prices),
+and a version may lack a tariff that did not exist yet (START before 2024-05-02). A trip is priced with the
 version valid at its return, the fees of a month with the version valid on its first day. To add a
 new price list, append a version with its first day and update `pricesAsOf`; to correct the
 current one, change it in place. The explanation page and its price table are rendered from this
