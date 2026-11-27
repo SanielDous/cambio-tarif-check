@@ -23,6 +23,7 @@ const ORIGINALS = {
   csv: [
     "private/exports/Fahrten_2024-12-31_2025-12-31.csv",
     "private/exports/Fahrten_2025-12-31_2026-11-23.csv",
+    "private/exports/Fahrten_2022-01-01_2026-11-28.csv",
   ],
   xlsx: ["private/exports/Fahrten_2024-12-31_2025-12-31.xlsx"],
 };
@@ -103,6 +104,9 @@ const readXlsxStrings = (path: string): string[][] =>
 const xlsxPartTexts = (path: string): string[] =>
   Object.values(unzip(path)).map((data) => unescapeXml(strFromU8(data)));
 
+/** The anonymised CSV fixtures. */
+const CSV_FIXTURES = ["trips-2025.csv", "trips-2026.csv", "trips-all.csv"];
+
 /** All distinct non-empty values of the personal columns of the given tables. */
 function personalValues(tables: string[][][]): string[] {
   const values = new Set<string>();
@@ -119,6 +123,7 @@ describe("trip fixtures", () => {
   it.each([
     ["trips-2025.csv", 84],
     ["trips-2026.csv", 1],
+    ["trips-all.csv", 154],
   ])("%s has %i data rows with 28 fields each, BOM and CRLF", (name, count) => {
     const bytes = readFileSync(fixture(name));
     expect([...bytes.subarray(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
@@ -195,11 +200,11 @@ describe("trip fixtures", () => {
         // Long values are searched as substrings anywhere (every zip part for the XLSX), short
         // ones only as whole fields or cells to avoid false positives from common short words.
         const texts = [
-          ...["trips-2025.csv", "trips-2026.csv"].map((n) => readFileSync(fixture(n), "utf8")),
+          ...CSV_FIXTURES.map((n) => readFileSync(fixture(n), "utf8")),
           ...xlsxPartTexts(fixture("trips-2025.xlsx")),
         ];
         const fields = new Set([
-          ...["trips-2025.csv", "trips-2026.csv"].flatMap((n) => readCsv(fixture(n)).flat()),
+          ...CSV_FIXTURES.flatMap((n) => readCsv(fixture(n)).flat()),
           ...readXlsxStrings(fixture("trips-2025.xlsx")).flat(),
         ]);
         const leaked = values.filter((value) =>
@@ -218,8 +223,8 @@ describe("invoice items", () => {
     unknown
   >[];
 
-  it("has one entry per fixture trip with only booking start, tariff, class, items and km", () => {
-    expect(entries).toHaveLength(85);
+  it("has one entry per invoiced trip with only booking start, tariff, class, items and km", () => {
+    expect(entries).toHaveLength(108);
     for (const entry of entries) {
       expect(Object.keys(entry).sort()).toEqual(
         ["bookingStart", "km", "kmGross", "priceClass", "tariff", "timeItems"].sort(),

@@ -6,9 +6,10 @@ All files here are safe to commit. None of them contains personal data.
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | `trips-2025.csv`           | Anonymised portal CSV export covering 2024-12-31 to 2025-12-31 (84 trips).                                          |
 | `trips-2026.csv`           | Anonymised portal CSV export covering 2025-12-31 to 2026-11-23 (1 trip).                                            |
+| `trips-all.csv`            | Anonymised portal CSV export of all trips, 2022-01-01 to 2026-11-28 (154 trips, 2023-10-03 to 2026-05-12).          |
 | `trips-2025.xlsx`          | Anonymised counterpart of the portal's XLSX export for the same period as `trips-2025.csv`, with cell types intact. |
 | `calculator-fixtures.json` | Recorded responses of the public price calculator (197 requests), used to verify the price calculation.             |
-| `invoice-items.json`       | The invoice line items of the 85 trips of `trips-2025.csv` and `trips-2026.csv`, used to verify the reconstruction. |
+| `invoice-items.json`       | The invoice line items of 108 of the 154 trips of `trips-all.csv`, used to verify the reconstruction.               |
 
 ## Trip exports
 
@@ -39,7 +40,12 @@ The personal originals (`Fahrten_*.csv`, `Fahrten_*.xlsx`) live in `private/expo
 node tools/anonymize-export.mjs private/exports/Fahrten_2024-12-31_2025-12-31.csv tests/fixtures/trips-2025.csv
 node tools/anonymize-export.mjs private/exports/Fahrten_2025-12-31_2026-11-23.csv tests/fixtures/trips-2026.csv
 node tools/anonymize-export.mjs private/exports/Fahrten_2024-12-31_2025-12-31.xlsx tests/fixtures/trips-2025.xlsx
+node tools/anonymize-export.mjs private/exports/Fahrten_2022-01-01_2026-11-28.csv tests/fixtures/trips-all.csv
 ```
+
+`trips-all.csv` contains the trips of `trips-2025.csv` and `trips-2026.csv` again (with pseudonyms
+numbered in its own order). The two smaller files are kept because tests pin figures computed from
+them.
 
 The tool is deterministic: the same input always produces the same bytes. When the originals are
 present, `fixtures.test.ts` also checks that no value of the replaced columns survives in a fixture.
@@ -71,8 +77,9 @@ timestamp so the output is deterministic.
 
 ## Invoice items
 
-`invoice-items.json` holds, for each of the 85 fixture trips, the time and km line items exactly as
-invoiced. It contains no personal data: no names, vehicles, stations or invoice numbers, only the
+`invoice-items.json` holds, for 108 of the 154 trips of `trips-all.csv` (all 85 trips of
+`trips-2025.csv` and `trips-2026.csv`, and 23 trips from 2023-10-03 to 2024-12-30), the time and km
+line items exactly as invoiced. It contains no personal data: no names, vehicles, stations or invoice numbers, only the
 booking start (to match a trip by the export's `Buchungsbeginn`), tariff, class, items and km.
 It is an array of `{ bookingStart, tariff, priceClass, timeItems, km, kmGross }`, where
 `bookingStart` and the items' `start` and `end` are `DD.MM.YYYY HH:mm` and amounts are integer

@@ -14,9 +14,10 @@ import { reconstructBooking, type Reconstruction, unusedTimeCost } from "./recon
 import { tripCostInTariff } from "./trip-cost";
 
 /**
- * The invoice line items of the 85 fixture trips (`tests/fixtures/invoice-items.json`), checked
- * against the reconstruction from the export alone. The invoice shows what the export lacks: the
- * booked end and how the time amount splits into items.
+ * The invoice line items of 108 of the 154 trips of the full export (`tests/fixtures/
+ * invoice-items.json`, `trips-all.csv`), checked against the reconstruction from the export alone.
+ * The invoice shows what the export lacks: the booked end and how the time amount splits into
+ * items.
  */
 
 type ItemKind = "full" | "cancelled" | "overrun" | "late";
@@ -45,7 +46,7 @@ async function readTrips(name: string): Promise<Trip[]> {
   return trips;
 }
 
-const trips = [...(await readTrips("trips-2025.csv")), ...(await readTrips("trips-2026.csv"))];
+const allTrips = await readTrips("trips-all.csv");
 const invoices = JSON.parse(
   readFileSync(resolve(FIXTURES, "invoice-items.json"), "utf8"),
 ) as InvoiceTrip[];
@@ -63,10 +64,12 @@ interface Case {
   item: (kind: ItemKind) => { start: LocalMinute; end: LocalMinute; gross: number } | undefined;
 }
 
-const cases: Case[] = trips.map((trip) => {
-  const matching = invoices.filter((i) => minute(i.bookingStart) === trip.start);
-  if (matching.length !== 1) throw new Error(`${matching.length} invoices for trip ${trip.id}`);
-  const invoice = matching[0]!;
+const cases: Case[] = invoices.map((invoice) => {
+  const matching = allTrips.filter((t) => t.start === minute(invoice.bookingStart));
+  if (matching.length !== 1) {
+    throw new Error(`${matching.length} trips for the invoice of ${invoice.bookingStart}`);
+  }
+  const trip = matching[0]!;
   return {
     trip,
     invoice,
@@ -111,8 +114,8 @@ function modelItems({ trip, r }: Case): Partial<Record<ItemKind, number>> {
 
 describe("invoice line items of the fixture trips", () => {
   it("has one invoice per trip, with the trip's tariff, class, km and time amount", () => {
-    expect(cases).toHaveLength(85);
-    expect(invoices).toHaveLength(85);
+    expect(cases).toHaveLength(108);
+    expect(invoices).toHaveLength(108);
     for (const { trip, invoice } of cases) {
       expect([invoice.tariff, invoice.priceClass, invoice.km]).toEqual([
         trip.tariff,
@@ -154,16 +157,17 @@ describe("invoice line items of the fixture trips", () => {
         `${stats.offElsewhere} off (all of the trip charged past its export end)`,
     );
     expect(stats.off).toEqual([]);
-    expect([stats.exact, stats.oneCent, stats.offElsewhere]).toEqual([119, 8, 2]);
+    expect([stats.exact, stats.oneCent, stats.offElsewhere]).toEqual([146, 15, 2]);
   });
 
   /*
    * The model charges the full price up to the export's return rounded up to the quarter hour.
    * One invoice charges a quarter hour more: the export says 18:45, the invoice charges the full
    * price until 19:00 (presumably a return a few seconds after 18:45; the export drops seconds).
-   * Four other trips with an export end on a quarter hour were charged exactly up to it, and
-   * both readings explain that trip's amount within 1 cent, so the export alone cannot tell
-   * them apart. These tests find such trips by that rule, not by name, and report them.
+   * Seven other driven trips returned on time with an export end on a quarter hour (one of them
+   * in 2023) were charged exactly up to it, and both readings explain that trip's amount within
+   * 1 cent, so the export alone cannot tell them apart. These tests find such trips by that rule,
+   * not by name, and report them.
    */
   it("charges the full price up to the invoiced end of the full item, but for one trip", () => {
     const past = cases.filter((c) => !chargedAsInModel(c));
@@ -177,7 +181,7 @@ describe("invoice line items of the fixture trips", () => {
 
   it("reconstructs the invoiced booked end of every trip returned on time and charged as modelled", () => {
     const onTime = cases.filter((c) => !has(c, "late") && !has(c, "overrun"));
-    expect(onTime).toHaveLength(83);
+    expect(onTime).toHaveLength(106);
     const agree = onTime.filter(
       ({ r, item }) => r.bookedEnd === (item("cancelled") ?? item("full"))!.end,
     );
@@ -185,7 +189,7 @@ describe("invoice line items of the fixture trips", () => {
     expect(onTime.filter((c) => !agree.includes(c))).toEqual(
       onTime.filter((c) => !chargedAsInModel(c)),
     );
-    expect(agree).toHaveLength(82);
+    expect(agree).toHaveLength(105);
   });
 
   it("finds the invoiced booked end from the invoiced charged-until where the two differ", () => {
