@@ -15,8 +15,16 @@ export interface ClassPrice {
   hourWeekend: number;
   kmTier1: number;
   kmTier2: number;
-  /** Day cap, only where the calculator deviates from `dayCapHours × hourWeekday`. */
+  /**
+   * Day cap, only where it is not `dayCapHours × hourWeekday`: a flat day price of the price list,
+   * or where the calculator deviates.
+   */
   dayCap?: number;
+  /**
+   * Week cap, only where it is not `weekCapDays × dayCapHours × hourWeekday` (a flat week price of
+   * the price list). Never derived from `dayCap`.
+   */
+  weekCap?: number;
 }
 
 export interface Tariff {
@@ -37,7 +45,8 @@ export interface Tariff {
 export interface PriceVersion {
   /** First day this version is valid ("YYYY-MM-DD"). */
   from: string;
-  tariffs: Record<TariffId, Tariff>;
+  /** The tariffs of this list; a tariff it does not have (START before 2024-05-02) is absent. */
+  tariffs: Partial<Record<TariffId, Tariff>>;
   /** Hour price in the night window, in cents, in every tariff and class. */
   nightHourPrice: number;
   /** Fee per change of tariff, in cents. */

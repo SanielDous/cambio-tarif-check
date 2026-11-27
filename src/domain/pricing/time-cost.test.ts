@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { toLocalMinute } from "./local-time";
-import { latestPrices, PRICE_DATA } from "./price-data";
+import { latestPrices, PRICE_DATA, pricesAt } from "./price-data";
 import { roundHalfUp } from "./rounding";
 import { chargesHolidays, hourPriceAt, overrunCost, timeCost } from "./time-cost";
 
@@ -52,6 +52,44 @@ describe("timeCost (literal values from the research document)", () => {
     expect(basisL(tue(10), tue(10) + 8 * DAY)).toBe(60030);
   });
 
+  it("uses a class's own day and week price where the price list sets one", () => {
+    // A flat day price of 23.00 and week price of 138.00 at 1.90 per hour (not 12 × 1.90).
+    const s = PRICES.tariffs.AKTIV!.prices.S!;
+    const flatS = { ...s, hourWeekday: 190, hourWeekend: 190, dayCap: 2300, weekCap: 13800 };
+    const data = {
+      ...PRICES,
+      tariffs: { ...PRICES.tariffs, AKTIV: { ...PRICES.tariffs.AKTIV!, prices: { S: flatS } } },
+    };
+    const cost = (start: number, end: number) =>
+      timeCost(start, end, "AKTIV", "S", data, undefined);
+    expect(cost(tue(6), tue(18))).toBe(2280);
+    expect(cost(tue(6), tue(19))).toBe(2300);
+    expect(cost(tue(6), tue(6) + 26 * HOUR)).toBe(2300 + 2 * 190);
+    expect(cost(tue(6), tue(6) + 6 * DAY)).toBe(13800);
+    expect(cost(tue(6), tue(6) + 7 * DAY)).toBe(13800);
+    expect(cost(tue(6), tue(6) + 8 * DAY)).toBe(13800 + 2300);
+  });
+
+  it("derives the week cap from the hour price, not from a set day cap", () => {
+    const s = PRICES.tariffs.AKTIV!.prices.S!;
+    const data = {
+      ...PRICES,
+      tariffs: {
+        ...PRICES.tariffs,
+        AKTIV: { ...PRICES.tariffs.AKTIV!, prices: { S: { ...s, dayCap: 2400 } } },
+      },
+    };
+    // Day cap 24.00 each, but the week stays at 6 × 12 × 2.10 = 151.20.
+    expect(timeCost(tue(6), tue(6) + 7 * DAY, "AKTIV", "S", data, undefined)).toBe(15120);
+  });
+
+  it("throws for a tariff the version does not have", () => {
+    const tariffs = { ...PRICES.tariffs };
+    delete tariffs.START;
+    const data = { ...PRICES, tariffs };
+    expect(() => timeCost(tue(10), tue(11), "START", "S", data, undefined)).toThrow(/START/);
+  });
+
   it("is pro rata per minute and returns fractional cents", () => {
     expect(aktivS(tue(10), tue(10, 15))).toBeCloseTo(52.5, 9);
     expect(aktivS(tue(10), tue(10, 7))).toBeCloseTo(24.5, 9);
@@ -62,7 +100,7 @@ describe("timeCost (literal values from the research document)", () => {
   it("throws for a class the tariff does not have", () => {
     const data = {
       ...PRICES,
-      tariffs: { ...PRICES.tariffs, AKTIV: { ...PRICES.tariffs.AKTIV, prices: {} } },
+      tariffs: { ...PRICES.tariffs, AKTIV: { ...PRICES.tariffs.AKTIV!, prices: {} } },
     };
     expect(() => timeCost(tue(10), tue(11), "AKTIV", "S", data, undefined)).toThrow(/AKTIV.*S/);
   });
@@ -227,6 +265,37 @@ describe("overrunCost", () => {
       9,
     );
     expect(overrunCost(tue(20), tue(20), "BASIS", "S", PRICES, undefined)).toBe(0);
+  });
+});
+
+describe("timeCost with the price list of 2023-06-01", () => {
+  const V2023 = pricesAt(PRICE_DATA, toLocalMinute(2023, 10, 3, 12));
+  // 2023-10-10 is a Tuesday.
+  const tue23 = (hh: number, mm = 0) => toLocalMinute(2023, 10, 10, hh, mm);
+  const cost = (tariff: "AKTIV" | "BASIS", cls: "S" | "L", start: number, end: number) =>
+    timeCost(start, end, tariff, cls, V2023, "Aachen");
+
+  it("caps a day at the flat day price: AKTIV S 23.00, not 12 × 1.90", () => {
+    expect(cost("AKTIV", "S", tue23(6), tue23(18))).toBe(2280);
+    expect(cost("AKTIV", "S", tue23(6), tue23(19))).toBe(2300);
+    expect(cost("AKTIV", "S", tue23(6), tue23(6) + DAY)).toBe(2300);
+  });
+
+  it("caps a day below 12 × the hour price: AKTIV L 50.00 after 9 h 48 min", () => {
+    expect(cost("AKTIV", "L", tue23(7), tue23(16))).toBe(9 * 510);
+    expect(cost("AKTIV", "L", tue23(7), tue23(17))).toBe(5000);
+  });
+
+  it("caps a week at the flat week price: AKTIV S 138.00", () => {
+    expect(cost("AKTIV", "S", tue23(6), tue23(6) + 6 * DAY)).toBe(13800);
+    expect(cost("AKTIV", "S", tue23(6), tue23(6) + 7 * DAY)).toBe(13800);
+    expect(cost("AKTIV", "S", tue23(6), tue23(6) + 8 * DAY)).toBe(13800 + 2300);
+  });
+
+  it("charges the BASIS weekend price on 3 October 2023 in Aachen", () => {
+    const holiday = toLocalMinute(2023, 10, 3, 17, 15);
+    expect(cost("BASIS", "S", holiday, holiday + 60)).toBe(395);
+    expect(timeCost(holiday, holiday + 60, "BASIS", "S", V2023, "Hamburg")).toBe(335);
   });
 });
 

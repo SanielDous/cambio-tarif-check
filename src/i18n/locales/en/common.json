@@ -37,7 +37,7 @@
       "time": "Time: each minute costs one sixtieth of the hourly price of the vehicle class in that tariff.",
       "night": "Night: from {{nightFrom}} to {{nightTo}} the hour costs {{nightPrice}} in every tariff.",
       "weekend": "Weekend: from {{weekendFromDay}} {{weekendFromTime}} until {{weekendToDay}} {{weekendToTime}} the weekend price applies. It exists only in {{weekendTariffs}}; in the other tariffs the hourly price is always the same. Public holidays count like weekends only in some regions, namely in {{holidayCities}}. In all other cities public holidays cost the normal price. The hours from {{nightFrom}} to {{nightTo}} cost the night price on weekends and public holidays too.",
-      "caps": "Caps: each 24-hour block counted from the start of the booking costs at most the price of {{dayCapHours}} hours, each 7-day block at most the price of {{weekCapDays}} full days. A remainder of less than one hour after full days is not charged.",
+      "caps": "Caps: each 24-hour block counted from the start of the booking costs at most the day price, each 7-day block at most the week price. Today the day price is usually the price of {{dayCapHours}} hours and the week price that of {{weekCapDays}} full days; older price lists set fixed day and week prices. A remainder of less than one hour after full days is not charged.",
       "km": "Kilometres: the first {{kmBoundary}} km cost the higher price, every further kilometre the cheaper one. A fuel surcharge per kilometre is added, and it changes over time."
     },
     "earlyReturn": {
@@ -68,7 +68,8 @@
       "lateFees": "flat late fees (“Verspätungsgebühr”) that cambio charges when a late return affects a following booking",
       "credit": "trip credits (“Fahrtguthaben”) that cambio offsets against trip costs – they do not depend on the tariff",
       "business": "business tariffs",
-      "before": "trips before {{date}}",
+      "before": "trips before {{date}}: no prices are stored for the time before, so the import sets such trips aside and they are not evaluated",
+      "newTariff": "tariffs that did not exist yet at the time of a trip: they are only compared when the chosen period starts after their introduction",
       "holidays": "Public holidays follow a fixed list that may differ from cambio’s calendar. The regional rule comes from cambio’s price calculator and is confirmed by an invoice only for Aachen.",
       "cap": "The unused booked time is charged at half the price of exactly those hours, as a span of its own from the return with its own day cap; this is how the invoices show it. That it counts in full at 50 % even when used and unused time together would exceed the day cap is an assumption."
     },
@@ -98,7 +99,7 @@
         "kmTier1": "km up to {{boundary}}",
         "kmTier2": "km from {{next}}",
         "same": "as hour",
-        "note": "The day cap is {{dayCapHours}} × the hourly price unless another value is stored; the week cap is {{weekCapDays}} × {{dayCapHours}} × the hourly price. “as hour” means there is no separate weekend price."
+        "note": "The day cap is {{dayCapHours}} × the hourly price and the week cap {{weekCapDays}} × {{dayCapHours}} × the hourly price, except where the price list has its own day or week price; the table always shows the caps used in the calculation. “as hour” means there is no separate weekend price."
       },
       "surcharge": {
         "title": "Fuel surcharge per km",
@@ -229,6 +230,10 @@
   },
   "result": {
     "summary": {
+      "unavailable": {
+        "text": "{{tariff}} only exists since {{date}} and is therefore not compared in this period.",
+        "action": "Choose the period from {{month}}"
+      },
       "scope": "{{from}} – {{to}} · {{trips}}",
       "headline": {
         "saving": "With the {{tariff}} tariff you would have saved {{amount}}.",

@@ -133,8 +133,15 @@ function toTrip(row: unknown[], mapping: ColumnMapping, data: PriceData): Trip {
   const tariffText = text(cell("tariff")).toUpperCase();
   const tariff = TARIFF_IDS.find((t) => t === tariffText);
   if (tariff === undefined) throw new RowError("unknown-tariff", tariffText);
-  // The price list valid at the return prices the trip.
-  if (!pricesAt(data, end).tariffs[tariff].prices[priceClass]) {
+  // The price list valid at the return prices the trip. A tariff or class that list does not have
+  // (START and XL before 2024-05-02) is unknown for the trip.
+  const prices = pricesAt(data, end);
+  const offered = prices.tariffs[tariff];
+  if (!offered) throw new RowError("unknown-tariff", tariff);
+  if (!Object.values(prices.tariffs).some((t) => t.prices[priceClass])) {
+    throw new RowError("unknown-class", vehicleClass);
+  }
+  if (!offered.prices[priceClass]) {
     throw new RowError("unknown-class", `${tariff} offers no class ${priceClass}`);
   }
 

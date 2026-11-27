@@ -8,11 +8,21 @@ const WEEK = 7 * DAY;
 /** A final partial 24-hour block shorter than this is free; see `timeCost`. */
 const FREE_REMAINDER = HOUR;
 
-/** Prices of a class in a tariff; throws if the tariff does not offer the class. */
+/**
+ * Prices of a class in a tariff; throws if the version does not have the tariff or the tariff
+ * does not offer the class.
+ */
 export function classPrice(tariff: TariffId, cls: PriceClass, data: PriceVersionView): ClassPrice {
-  const price = data.tariffs[tariff].prices[cls];
+  const offered = data.tariffs[tariff];
+  if (!offered) throw new Error(`Tariff ${tariff} does not exist from ${data.from}`);
+  const price = offered.prices[cls];
   if (!price) throw new Error(`Tariff ${tariff} has no price class ${cls}`);
   return price;
+}
+
+/** Whether the version has a price for the class in the tariff (and the tariff at all). */
+export function hasClassPrice(tariff: TariffId, cls: PriceClass, data: PriceVersionView): boolean {
+  return data.tariffs[tariff]?.prices[cls] !== undefined;
 }
 
 /** Normalised holiday cities, per list (shared by every version of a price data). */
@@ -146,10 +156,11 @@ export function timeCost(
   const charged = end - start >= DAY && remainder < FREE_REMAINDER ? end - remainder : end;
   const price = classPrice(tariff, cls, data);
   const holidays = chargesHolidays(city, data);
-  // Work in cents × 60 (integers) and divide once at the end to avoid float drift.
+  // Work in cents × 60 (integers) and divide once at the end to avoid float drift. A flat day or
+  // week price of the list wins; the week cap is never derived from a flat day price.
   const fullDay = data.dayCapHours * price.hourWeekday * HOUR;
   const dayCap = price.dayCap === undefined ? fullDay : price.dayCap * HOUR;
-  const weekCap = data.weekCapDays * fullDay;
+  const weekCap = price.weekCap === undefined ? data.weekCapDays * fullDay : price.weekCap * HOUR;
   let total = 0;
   for (let weekStart = start; weekStart < charged; weekStart += WEEK) {
     const weekEnd = Math.min(weekStart + WEEK, charged);

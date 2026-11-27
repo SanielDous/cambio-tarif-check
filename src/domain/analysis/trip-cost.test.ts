@@ -85,11 +85,20 @@ describe("tripCostInTariff", () => {
       ...PRICES,
       tariffs: {
         ...PRICES.tariffs,
-        START: { ...PRICES.tariffs.START, prices: {} },
+        START: { ...PRICES.tariffs.START!, prices: {} },
       },
     };
     const r = reconstructBooking(earlyReturn, data);
     expect(tripCostInTariff(earlyReturn, r, "START", data)).toBeNull();
+  });
+
+  it("returns null for a tariff the price list does not have", () => {
+    const tariffs = { ...PRICES.tariffs };
+    delete tariffs.START;
+    const data: PriceVersionView = { ...PRICES, tariffs };
+    const r = reconstructBooking(earlyReturn, data);
+    expect(tripCostInTariff(earlyReturn, r, "START", data)).toBeNull();
+    expect(tripCostInTariff(earlyReturn, r, "BASIS", data)).toEqual({ time: 1967, km: 546 });
   });
 
   it("prices a holiday trip by the trip's city", () => {

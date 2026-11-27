@@ -1,9 +1,10 @@
 # cambio pricing research
 
-Research date: 2026-11-23. Source: public pages and price list PDFs of
-<https://www.cambio-carsharing.de/>, archived versions of those pages (Wayback Machine), about
-70 live calls to the price calculator on the tariff page, and one real trip export (84 trips,
-Aachen, 2024-12-31 to 2025-12-31).
+Research date: 2026-11-23, price lists before 2024-05-02 added on 2026-11-27. Source: public pages
+and price list PDFs of <https://www.cambio-carsharing.de/>, archived versions of those pages
+(Wayback Machine), about 70 live calls to the price calculator on the tariff page, one real trip
+export (84 trips, Aachen, 2024-12-31 to 2025-12-31) and a later export of all trips of the same
+account (154 trips, 2023-10-03 to 2026-05-12).
 
 Every statement is marked by how it is known:
 
@@ -19,6 +20,10 @@ All prices are EUR including VAT.
 - Prices are **identical in all cities** per tariff and price class. Cities differ only in which
   price classes and tariffs they offer.
 - Time prices and base km prices have been **unchanged since 2024-05-02**.
+- Before, the **price list of 2023-06-01** applied, with **flat day and week prices** per class
+  instead of 12 × the hour price, no START and no XL. The app uses it for trips from 2023-06-01
+  on; it reproduces all 27 billed trips of that period. Older lists (back to 2020-05-01) are
+  recorded but not used: they follow other rules. See "Price lists before 2024-05-02".
 - The km price carries a **fuel surcharge that changes over time**; it is the same in all tariffs.
 - The trip export does **not contain the originally booked end**. It can be reconstructed from the
   billed time amount.
@@ -97,7 +102,9 @@ snapshots)
 
 | From       | Surcharge per km | Evidence                                                        |
 | ---------- | ---------------- | --------------------------------------------------------------- |
-| 2023-12-15 | +0.01            | On the previous price list (2023-06-01); not used by the app    |
+| 2023-06-01 | +0.01            | Carried over from 2023-01-15 onto the price list of 2023-06-01  |
+| 2023-08-15 | +0.02            | Archived snapshots; 9 billed trips of 2023                      |
+| 2023-12-15 | +0.01            | Archived snapshots; 18 billed trips up to 2024-04-30            |
 | 2024-05-02 | +0.02            | One German snapshot (2024-05-29), confirmed by the price table  |
 | 2024-07-01 | +0.01            | Many snapshots until 2025-12-11; 84 of 84 billed km amounts     |
 | 2026-01-15 | +0.01            | New price list, note re-dated                                   |
@@ -381,8 +388,8 @@ Open questions:
 
 The account owner provided 37 invoices (2023-09 to 2026-05) covering 108 trips; they stay local
 and are not part of the repository. All 85 trips of the two exports appear on them with exactly
-the same total. An invoice lists every trip with separate line items, each with
-net amount, VAT and gross amount. (invoice)
+the same total; of the full export of 154 trips, 108 appear on them. An invoice lists every trip
+with separate line items, each with net amount, VAT and gross amount. (invoice)
 
 ### Line items of a trip
 
@@ -455,11 +462,11 @@ or a tolerance of a few minutes).
 
 ### Older invoices (before 2024-05-02)
 
-Not used by the app, recorded for completeness:
+Priced by the app with the list of 2023-06-01 (see "Price lists before 2024-05-02"):
 
-- Prices of the previous price list as far as they occur: AKTIV S 1.90 per hour, AKTIV L 5.10,
-  BASIS S 3.35 on weekdays and 3.95 at the weekend rate; km incl. surcharge: AKTIV S 0.26,
-  AKTIV L 0.38, BASIS S 0.30.
+- Prices of that price list as far as they occur: AKTIV S 1.90 per hour, AKTIV L 5.10,
+  BASIS S 3.35 on weekdays and 3.95 at the weekend rate; km incl. surcharge: AKTIV S 0.27 and,
+  from 2023-12-15, 0.26, AKTIV L 0.38, BASIS S 0.30.
 - **3 October 2023 (a Tuesday) was charged at the weekend rate in BASIS.** This is direct evidence
   that nationwide holidays count, and supports the reading that the calculator answers for 2028
   holidays only reflect a calendar that is not maintained that far ahead.
@@ -476,6 +483,144 @@ Not used by the app, recorded for completeness:
   charged as well.
 - Trip costs can be offset by a credit balance ("Fahrtguthaben - Gutschrift"); this is independent
   of the tariff and not modelled.
+
+## Price lists before 2024-05-02
+
+Research date: 2026-11-27. All private-customer price lists back to 2020-05-01 were recovered as
+original PDFs from the Wayback Machine, and every price in them was confirmed a second time
+against archived tariff web pages of the same period. PDF km prices are base prices without fuel
+surcharge. All prices are EUR including VAT. Week price = 6 × day price in all four lists; the
+2020-05-01 PDF prints no week price, so the value for that list comes from the archived web page.
+
+The app uses the list of 2023-06-01. Its hour and km prices are confirmed by invoices and by the
+27 billed trips before 2024-05-02; its flat day and week prices and the +0.01 surcharge from
+2023-06-01 to 2023-08-14 are not exercised by any trip (see "Verification against all exported
+trips"). The three older lists are recorded here but **not used by the app**: they come with
+different rules (night window, weekend end, one free tariff change per year) and no invoice exists
+to check how those rules are applied.
+
+Before 2024-05-02 the **day price was a flat amount per class**, not 12 × the hour price.
+
+### List valid from 2023-06-01 (until 2024-05-01)
+
+Sources: `Tarife_Privat_23_06.pdf` (archived 2023-10-04), archived tariff page of 2023-06-08
+(list + 1 ct) and 2023-09-23 (list + 2 ct).
+
+| Tariff  | Row                  | XS            | S             | M             | L             |
+| ------- | -------------------- | ------------- | ------------- | ------------- | ------------- |
+| CAMPUS  | Hour weekday/weekend | 2.25 / 2.65   | 2.75 / 3.15   | 3.85 / 4.15   | 7.25 / 7.55   |
+| CAMPUS  | Day / week           | 31 / 186      | 31 / 186      | 40 / 240      | 69 / 414      |
+| CAMPUS  | Km 1–100 / from 101  | 0.26 / 0.20   | 0.26 / 0.20   | 0.27 / 0.20   | 0.37 / 0.20   |
+| BASIS   | Hour weekday/weekend | 2.35 / 2.95   | 3.35 / 3.95   | 4.35 / 4.95   | 7.25 / 7.85   |
+| BASIS   | Day / week           | 32 / 192      | 32 / 192      | 41 / 246      | 70 / 420      |
+| BASIS   | Km 1–100 / from 101  | 0.28 / 0.21   | 0.28 / 0.21   | 0.29 / 0.21   | 0.39 / 0.24   |
+| AKTIV   | Hour                 | 1.35          | 1.90          | 2.40          | 5.10          |
+| AKTIV   | Day / week           | 22 / 132      | 23 / 138      | 30 / 180      | 50 / 300      |
+| AKTIV   | Km 1–100 / from 101  | 0.24 / 0.18   | 0.25 / 0.18   | 0.26 / 0.18   | 0.36 / 0.23   |
+| COMFORT | Hour                 | 1.25          | 1.70          | 2.15          | 4.15          |
+| COMFORT | Day / week           | 20 / 120      | 21 / 126      | 28 / 168      | 41 / 246      |
+| COMFORT | Km 1–100 / from 101  | 0.21 / 0.15   | 0.22 / 0.15   | 0.23 / 0.15   | 0.31 / 0.21   |
+
+- Night 0.50 per hour, 00:00–06:00. Weekend Friday 12:00 to Monday 06:00 (CAMPUS, BASIS).
+- Monthly fee 0 / 0 / 11.00 / 27.00; additional driver 0.00 (BASIS), 3.00 (AKTIV, COMFORT), not
+  possible in CAMPUS. Tariff change 5.00. Sign-up 30.00. No class XL, no tariff START in this list.
+- Invoices confirm AKTIV S 1.90, AKTIV L 5.10, BASIS S 3.35 / 3.95, and km prices of 0.27 / 0.30 /
+  0.38 (AKTIV S / BASIS S / AKTIV L) in autumn 2023, i.e. base + 2 ct.
+
+### List valid from 2022-05-15 (until 2023-05-31) – not used
+
+Identical to the 2023-06-01 list for CAMPUS, AKTIV and COMFORT trip prices. Differences: BASIS
+weekend hour 2.65 / 3.65 / 4.65 / 7.55 and BASIS km 0.26 / 0.20, 0.26 / 0.20, 0.27 / 0.20,
+0.37 / 0.20; monthly fee 10.00 (AKTIV) and 25.00 (COMFORT); additional driver 2.00; **one tariff
+change per calendar year free, each further one 15.00**. Night 00:00–06:00 (first list with this
+window).
+
+### List valid from 2021-11-01 (until 2022-05-14) – not used
+
+| Tariff  | Hour weekday/weekend XS, S, M, L                      | Day XS, S, M, L | Km 1–100 / from 101                                    |
+| ------- | ----------------------------------------------------- | --------------- | ------------------------------------------------------ |
+| CAMPUS  | 2.00 / 2.40, 2.50 / 2.90, 3.60 / 3.90, 7.00 / 7.30    | 30, 30, 39, 69  | 0.26 / 0.20, 0.26 / 0.20, 0.27 / 0.20, 0.37 / 0.20     |
+| BASIS   | 2.10 / 2.40, 3.10 / 3.40, 4.10 / 4.40, 7.00 / 7.30    | 31, 31, 40, 70  | as CAMPUS                                              |
+| AKTIV   | 1.20, 1.75, 2.25, 4.95                                | 21, 22, 29, 49  | 0.24 / 0.18, 0.25 / 0.18, 0.26 / 0.18, 0.36 / 0.23     |
+| COMFORT | 1.10, 1.55, 2.00, 4.00                                | 19, 20, 27, 40  | 0.21 / 0.15, 0.22 / 0.15, 0.23 / 0.15, 0.31 / 0.21     |
+
+**Night 23:00–07:00, weekend Friday 12:00 to Monday 07:00.** Monthly fee 10.00 / 25.00, additional
+driver 2.00, one tariff change per year free, then 15.00.
+
+### List valid from 2020-05-01 (until 2021-10-31) – not used
+
+| Tariff  | Hour weekday/weekend XS, S, M, L                      | Day XS, S, M, L | Km 1–100 / from 101                                    |
+| ------- | ----------------------------------------------------- | --------------- | ------------------------------------------------------ |
+| CAMPUS  | 1.90 / 2.30, 2.40 / 2.80, 3.50 / 3.80, 7.00 / 7.30    | 29, 29, 39, 69  | 0.24 / 0.18 in all classes                             |
+| BASIS   | 2.00 / 2.30, 3.00 / 3.30, 4.00 / 4.30, 7.00 / 7.30    | 30, 30, 40, 70  | 0.24 / 0.18 in all classes                             |
+| AKTIV   | 1.10, 1.70, 2.20, 4.90                                | 21, 21, 29, 49  | 0.22 / 0.16, 0.23 / 0.16, 0.25 / 0.16, 0.36 / 0.21     |
+| COMFORT | 1.00, 1.50, 2.00, 4.00                                | 19, 19, 27, 40  | 0.19 / 0.13, 0.20 / 0.13, 0.21 / 0.13, 0.29 / 0.19     |
+
+Night 23:00–07:00, weekend until Monday 07:00, fees as in the 2021 list. The week price is not
+printed in this PDF and comes from the archived web page only.
+
+Before 2020-05-01 the sources are not reliable enough (the 2019 list is partly unreadable, earlier
+tariffs were city-specific).
+
+### Fuel surcharge before 2024-05-02
+
+From the dated notes on archived tariff pages ("Ab dem … liegen die Kilometerpreise n Cent über
+der aktuell gültigen Preisliste vom …"). The surcharge applies to both km tiers and all tariffs.
+
+| From       | Surcharge per km | On price list of | Observed in captures       |
+| ---------- | ---------------- | ---------------- | -------------------------- |
+| 2021-02-15 | +0.01            | 2020-05-01       | 2021-02-27 to 06-24        |
+| 2021-07-01 | +0.02            | 2020-05-01       | 2021-07-23 to 10-28        |
+| 2021-11-01 | 0                | 2021-11-01       | one capture, 2021-11-29    |
+| 2021-12-01 | +0.01            | 2021-11-01       | 2021-12-01 to 2022-01-28   |
+| 2022-03-15 | +0.03            | 2021-11-01       | 2022-05-16 to 05-28        |
+| 2022-06-03 | +0.02            | 2022-05-15       | 2022-06-25 to 08-18        |
+| 2022-09-15 | +0.03            | 2022-05-15       | 2022-09-27 to 10-06        |
+| 2022-10-15 | +0.02            | 2022-05-15       | 2022-11-26 to 12-05        |
+| 2023-01-15 | +0.01            | 2022-05-15       | 2023-01-26 to 07-17        |
+| 2023-08-15 | +0.02            | 2023-06-01       | 2023-09-23 to 11-28        |
+| 2023-12-15 | +0.01            | 2023-06-01       | 2024-02-22 to 04-23        |
+| 2024-05-02 | +0.02            | 2024-05-02       | 2024-05-29                 |
+
+- Unobserved windows: 2022-01-29 to 2022-03-14 (value unknown: +1, +2 or +3), 2023-07-18 to
+  08-14, and a few shorter ones in 2022.
+- The +0.02 in May/June 2024 and the +0.02 / +0.01 around 2023-12-15 are confirmed by billed km
+  amounts of real trips.
+- Before 2021-02-15 no surcharge was observed (checked from 2021-01-15 only).
+
+### Vehicle classes
+
+XS, S, M and L existed unchanged from 2013 to 2024. Class XL appears first in the list dated
+2025-03-01.
+
+### Verification against all exported trips
+
+A later export of all trips of the account (154 trips, Aachen, 2023-10-03 to 2026-05-12) is the
+test fixture `trips-all.csv`; the invoices cover 108 of them. Each trip is priced with the price
+list valid at its return. (export, invoice)
+
+| Trips                                  | Count | verified | within 1 cent | cancelled | unused | overrun |
+| -------------------------------------- | ----- | -------- | ------------- | --------- | ------ | ------- |
+| Returned before 2024-05-02 (list 2023) | 27    | 16       | 10            | 1         | 0      | 0       |
+| Returned 2024-05-02 to 2024-12-30      | 42    | 36       | 6             | 0         | 0      | 0       |
+| All                                    | 154   | 125      | 25            | 2         | 1      | 1       |
+
+- No trip is estimated or not reproducible. All 154 km amounts are reproduced exactly with the
+  surcharge of the table above, none needs a derived surcharge. This confirms +0.02 from
+  2023-08-15 (9 trips from 2023-10-03 to 2023-12-13) and +0.01 from 2023-12-15 (18 trips from
+  2024-01-10 to 2024-04-30). No trip falls into the +0.01 period from 2023-06-01 to 2023-08-14.
+- The trip on 3 October 2023 (BASIS S, Aachen) is reproduced with the weekend price 3.95, so the
+  regional holiday rule holds for the 2023 list as well.
+- Invoice line items of the 108 invoiced trips (23 of them before 2024-12-31, 10 before
+  2024-05-02): 146 time items exact, 15 within 1 cent, 2 off only on the one known trip charged a
+  quarter hour past its export end (2025-06-16); the booked end is reconstructed as invoiced for
+  105 of the 106 trips returned on time; every km amount is exact.
+- **Not tested:** no trip before 2024-05-02 reaches a day cap (the longest booking is 12 hours of
+  AKTIV S, 22.80 uncapped, below the flat day price of 23.00), so the flat day and week prices of
+  the 2023 list are taken from the price list without a confirmation by an invoice.
+- The early-return, cancellation and rounding rules behave as from 2024-05-02 on: the 10 invoiced
+  trips before 2024-05-02 show the same "Normalfahrt Zeit" and "kurzfristig stornierte Zeit"
+  items, and the model reproduces each of them within 1 cent.
 
 ## Price calculator
 
@@ -531,5 +676,7 @@ Base URL: `https://www.cambio-carsharing.de/fileadmin/Downloads/`
 | `Preislisten_und_Tarife/Tarife_Privat_24_05.pdf`                    | from 2024-05-02, as of 2024-05-02      | Wayback Machine only; has no XL          |
 | `Preislisten_Tarife_SonstigeDokumente/Tarife_Unternehmen_26.pdf`    | not read                               | Business customers                       |
 
-Older lists (`Tarife_Privat_23_06.pdf`, `Tarife_Privat_markiert_24_02_2.pdf`) exist in the Wayback
-Machine. Prices before 2024-05-02 were not researched.
+Older lists exist in the Wayback Machine only: `Tarife_Privat_23_06.pdf` (from 2023-06-01, used
+by the app for trips up to 2024-05-01), `Tarife_Privat_markiert_24_02_2.pdf`, and the lists of
+2022-05-15, 2021-11-01 and 2020-05-01 (recorded, not used). Their prices are in "Price lists before
+2024-05-02".

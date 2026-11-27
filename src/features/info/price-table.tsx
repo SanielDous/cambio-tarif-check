@@ -51,7 +51,7 @@ function VersionTables({
   const { t, i18n } = useTranslation("common");
   const lang = i18n.language;
   const money = (cents: number) => formatCurrency(cents, lang);
-  const tariffs = TARIFF_IDS.filter((id) => prices.tariffs[id]);
+  const tariffs = TARIFF_IDS.flatMap((id) => prices.tariffs[id] ?? []);
   const name = (id: TariffId) => t(`tariffs.${id}`);
   const tariffsId = `${idPrefix}-tariffs`;
   const classesId = `${idPrefix}-classes`;
@@ -82,8 +82,8 @@ function VersionTables({
               </tr>
             </thead>
             <tbody>
-              {tariffs.map((id) => {
-                const tariff = prices.tariffs[id];
+              {tariffs.map((tariff) => {
+                const id = tariff.id;
                 return (
                   <tr key={id} className="border-b last:border-b-0" data-tariff={id}>
                     <th scope="row" className={th}>
@@ -146,12 +146,12 @@ function VersionTables({
                 </th>
               </tr>
             </thead>
-            {tariffs.map((id) => {
-              const classes = PRICE_CLASSES.filter((c) => prices.tariffs[id].prices[c]);
+            {tariffs.map(({ id, prices: classPrices }) => {
+              const classes = PRICE_CLASSES.filter((c) => classPrices[c]);
               return (
                 <tbody key={id} className="border-b last:border-b-0" data-tariff={id}>
                   {classes.map((c, index) => {
-                    const price = prices.tariffs[id].prices[c];
+                    const price = classPrices[c];
                     if (!price) return null;
                     const fullDay = prices.dayCapHours * price.hourWeekday;
                     return (
@@ -180,7 +180,9 @@ function VersionTables({
                             : money(price.hourWeekend)}
                         </td>
                         <td className={tdNum}>{money(price.dayCap ?? fullDay)}</td>
-                        <td className={tdNum}>{money(prices.weekCapDays * fullDay)}</td>
+                        <td className={tdNum}>
+                          {money(price.weekCap ?? prices.weekCapDays * fullDay)}
+                        </td>
                         <td className={tdNum}>{money(price.kmTier1)}</td>
                         <td className={tdNum}>{money(price.kmTier2)}</td>
                       </tr>

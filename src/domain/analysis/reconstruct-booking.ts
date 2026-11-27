@@ -2,7 +2,7 @@ import type { Trip } from "@/domain/import/fields";
 import { kmCost } from "@/domain/pricing/km-cost";
 import { surchargeAt } from "@/domain/pricing/price-data";
 import { roundHalfUp } from "@/domain/pricing/rounding";
-import { overrunCost, timeCost } from "@/domain/pricing/time-cost";
+import { hasClassPrice, overrunCost, timeCost } from "@/domain/pricing/time-cost";
 import type { LocalMinute, PriceClass, PriceVersionView, TariffId } from "@/domain/pricing/types";
 
 export type ReconstructionKind =
@@ -194,7 +194,7 @@ function sameInAllTariffs(
   const [first, ...rest] = ends;
   if (first === undefined) return true;
   return (Object.keys(data.tariffs) as TariffId[]).every((tariff) => {
-    if (!data.tariffs[tariff].prices[trip.priceClass]) return true;
+    if (!hasClassPrice(tariff, trip.priceClass, data)) return true;
     const cost = (end: LocalMinute) =>
       bookingTimeCost(trip.start, chargedUntil, end, 1, tariff, trip.priceClass, data, trip.city);
     const reference = cost(first);
