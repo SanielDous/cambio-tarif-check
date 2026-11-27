@@ -19,6 +19,7 @@ afterEach(async () => {
 const spaced = (text: string | null) => (text ?? "").replace(/\s+/g, " ");
 
 const PRICES = latestPrices(PRICE_DATA);
+const PRICES_LATEST_VERSION = PRICE_DATA.versions.at(-1) as PriceVersion;
 const TARIFFS = Object.keys(PRICES.tariffs) as TariffId[];
 
 describe.each(["de", "en"])("how it works page in %s", (lang) => {
@@ -53,7 +54,7 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
         for (const cents of [
           price?.hourWeekday,
           price?.dayCap ?? fullDay,
-          PRICE_DATA.weekCapDays * fullDay,
+          price?.weekCap ?? PRICE_DATA.weekCapDays * fullDay,
           price?.kmTier1,
           price?.kmTier2,
         ]) {
@@ -143,12 +144,12 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
 
   it("lists every price version by its first day, the latest open and the others collapsed", async () => {
     await act(() => i18n.changeLanguage(lang));
-    const [v1] = PRICE_DATA.versions as [PriceVersion];
+    const v1 = PRICES_LATEST_VERSION;
     const v2: PriceVersion = structuredClone({ ...v1, from: "2026-03-15" });
     v2.tariffs.AKTIV!.monthlyFee = 1234;
     v2.switchingFee = 900;
     v2.nightHourPrice = 70;
-    const data: PriceData = { ...PRICE_DATA, versions: [v1, v2] };
+    const data: PriceData = { ...PRICE_DATA, validFrom: v1.from, versions: [v1, v2] };
     render(<HowItWorksView data={data} />);
     const tables = screen.getByTestId("price-tables");
     const user = userEvent.setup();
@@ -156,7 +157,7 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
     const validFrom = (iso: string) =>
       i18n.t("howItWorks.prices.validFrom", { date: formatDate(parseIsoDate(iso), lang) });
     const latest = within(tables).getByRole("button", { name: validFrom("2026-03-15") });
-    const first = within(tables).getByRole("button", { name: validFrom(PRICE_DATA.validFrom) });
+    const first = within(tables).getByRole("button", { name: validFrom(v1.from) });
     expect(latest).toHaveAttribute("aria-expanded", "true");
     expect(first).toHaveAttribute("aria-expanded", "false");
     // The open version's tables and the surcharge table.
@@ -179,8 +180,55 @@ describe.each(["de", "en"])("how it works page in %s", (lang) => {
   });
 
   it("shows a single price version without a collapsible section", async () => {
-    const tables = await setup();
+    await act(() => i18n.changeLanguage(lang));
+    const data: PriceData = {
+      ...PRICE_DATA,
+      validFrom: PRICES_LATEST_VERSION.from,
+      versions: [PRICES_LATEST_VERSION],
+    };
+    render(<HowItWorksView data={data} />);
+    const tables = screen.getByTestId("price-tables");
     expect(within(tables).queryByRole("button")).not.toBeInTheDocument();
+  });
+
+  it("lists the price list of 2023-06-01 with its flat day and week prices, without START and XL", async () => {
+    const tables = await setup();
+    const user = userEvent.setup();
+    const validFrom = (iso: string) =>
+      i18n.t("howItWorks.prices.validFrom", { date: formatDate(parseIsoDate(iso), lang) });
+    expect(PRICE_DATA.validFrom).toBe("2023-06-01");
+    const latest = within(tables).getByRole("button", { name: validFrom("2024-05-02") });
+    const first = within(tables).getByRole("button", { name: validFrom("2023-06-01") });
+    expect(latest).toHaveAttribute("aria-expanded", "true");
+    expect(first).toHaveAttribute("aria-expanded", "false");
+    await user.click(first);
+
+    const section = tables.querySelector<HTMLElement>('[data-version="2023-06-01"]');
+    expect(section).not.toBeNull();
+    const old = section as HTMLElement;
+    expect(old.querySelectorAll("tr[data-tariff]")).toHaveLength(4);
+    expect(old.querySelector('[data-tariff="START"]')).toBeNull();
+    expect(within(old).queryByRole("rowheader", { name: "XL" })).not.toBeInTheDocument();
+    const classRow = (tariff: TariffId, cls: PriceClass) => {
+      const group = old.querySelector<HTMLElement>(`tbody[data-tariff="${tariff}"]`);
+      const rows = within(group as HTMLElement).getAllByRole("row");
+      expect(rows).toHaveLength(4);
+      return spaced(
+        rows.find((r) => within(r).queryByRole("rowheader", { name: cls }))?.textContent ?? "",
+      );
+    };
+    // AKTIV S: 1.90 per hour, flat 23.00 per day and 138.00 per week (not 22.80 / 136.80).
+    const aktivS = classRow("AKTIV", "S");
+    for (const cents of [190, 2300, 13800, 25, 18]) expect(aktivS).toContain(money(cents));
+    expect(aktivS).not.toContain(money(2280));
+    expect(aktivS).not.toContain(money(13680));
+    expect(aktivS).toContain(i18n.t("howItWorks.prices.classes.same"));
+    // BASIS L: 7.25 / 7.85, 70.00 / 420.00.
+    const basisL = classRow("BASIS", "L");
+    for (const cents of [725, 785, 7000, 42000, 39, 24]) expect(basisL).toContain(money(cents));
+    expect(basisL).not.toContain(i18n.t("howItWorks.prices.classes.same"));
+    const campusXS = classRow("CAMPUS", "XS");
+    for (const cents of [225, 265, 3100, 18600]) expect(campusXS).toContain(money(cents));
   });
 
   it("explains late returns and what is left out about them", async () => {

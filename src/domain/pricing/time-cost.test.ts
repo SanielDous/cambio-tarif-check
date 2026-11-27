@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { toLocalMinute } from "./local-time";
-import { latestPrices, PRICE_DATA } from "./price-data";
+import { latestPrices, PRICE_DATA, pricesAt } from "./price-data";
 import { roundHalfUp } from "./rounding";
 import { chargesHolidays, hourPriceAt, overrunCost, timeCost } from "./time-cost";
 
@@ -265,6 +265,37 @@ describe("overrunCost", () => {
       9,
     );
     expect(overrunCost(tue(20), tue(20), "BASIS", "S", PRICES, undefined)).toBe(0);
+  });
+});
+
+describe("timeCost with the price list of 2023-06-01", () => {
+  const V2023 = pricesAt(PRICE_DATA, toLocalMinute(2023, 10, 3, 12));
+  // 2023-10-10 is a Tuesday.
+  const tue23 = (hh: number, mm = 0) => toLocalMinute(2023, 10, 10, hh, mm);
+  const cost = (tariff: "AKTIV" | "BASIS", cls: "S" | "L", start: number, end: number) =>
+    timeCost(start, end, tariff, cls, V2023, "Aachen");
+
+  it("caps a day at the flat day price: AKTIV S 23.00, not 12 × 1.90", () => {
+    expect(cost("AKTIV", "S", tue23(6), tue23(18))).toBe(2280);
+    expect(cost("AKTIV", "S", tue23(6), tue23(19))).toBe(2300);
+    expect(cost("AKTIV", "S", tue23(6), tue23(6) + DAY)).toBe(2300);
+  });
+
+  it("caps a day below 12 × the hour price: AKTIV L 50.00 after 9 h 48 min", () => {
+    expect(cost("AKTIV", "L", tue23(7), tue23(16))).toBe(9 * 510);
+    expect(cost("AKTIV", "L", tue23(7), tue23(17))).toBe(5000);
+  });
+
+  it("caps a week at the flat week price: AKTIV S 138.00", () => {
+    expect(cost("AKTIV", "S", tue23(6), tue23(6) + 6 * DAY)).toBe(13800);
+    expect(cost("AKTIV", "S", tue23(6), tue23(6) + 7 * DAY)).toBe(13800);
+    expect(cost("AKTIV", "S", tue23(6), tue23(6) + 8 * DAY)).toBe(13800 + 2300);
+  });
+
+  it("charges the BASIS weekend price on 3 October 2023 in Aachen", () => {
+    const holiday = toLocalMinute(2023, 10, 3, 17, 15);
+    expect(cost("BASIS", "S", holiday, holiday + 60)).toBe(395);
+    expect(timeCost(holiday, holiday + 60, "BASIS", "S", V2023, "Hamburg")).toBe(335);
   });
 });
 

@@ -196,6 +196,14 @@ describe("normalizeRows", () => {
   const row = (changes: Record<number, unknown>): unknown[] =>
     good.map((v, i) => (i in changes ? changes[i] : v));
 
+  it("accepts a trip from the first day of the price data on", () => {
+    const { trips, problems } = run(row({ 2: "31.05.2023 23:00:00", 3: "01.06.2023 01:00:00" }));
+    expect(problems).toEqual([]);
+    expect(trips).toHaveLength(1);
+    const before = run(row({ 2: "31.05.2023 21:00:00", 3: "31.05.2023 23:59:00" })).problems;
+    expect(before).toMatchObject([{ reason: "before-price-data", detail: "2023-06-01" }]);
+  });
+
   it("accepts the good row", () => {
     const { trips, problems } = run(good);
     expect(problems).toEqual([]);
@@ -210,8 +218,18 @@ describe("normalizeRows", () => {
     ["end-before-start", row({ 3: "15.12.2025 17:00:00" }), "end-before-start"],
     [
       "before-price-data",
-      row({ 2: "01.01.2024 10:00:00", 3: "01.01.2024 12:00:00" }),
+      row({ 2: "31.05.2023 10:00:00", 3: "31.05.2023 12:00:00" }),
       "before-price-data",
+    ],
+    [
+      "unknown-tariff (START before 2024-05-02)",
+      row({ 2: "01.01.2024 10:00:00", 3: "01.01.2024 12:00:00", 7: "START" }),
+      "unknown-tariff",
+    ],
+    [
+      "unknown-class (XL before 2024-05-02)",
+      row({ 1: "XL Transporter XL", 2: "01.01.2024 10:00:00", 3: "01.01.2024 12:00:00" }),
+      "unknown-class",
     ],
     ["unknown-tariff", row({ 7: "PREMIUM" }), "unknown-tariff"],
     ["unknown-tariff (empty)", row({ 7: "" }), "unknown-tariff"],

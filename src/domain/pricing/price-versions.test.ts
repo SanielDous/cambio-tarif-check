@@ -12,9 +12,9 @@ import type { PriceData, PriceVersion, PriceVersionView, TariffId } from "./type
 
 const V2_FROM = "2026-03-15";
 
-/** The real price list plus a synthetic second one from `V2_FROM`. */
+/** The current real price list plus a synthetic later one from `V2_FROM`. */
 function twoVersions(): PriceData {
-  const [v1] = PRICE_DATA.versions as [PriceVersion];
+  const v1 = PRICE_DATA.versions.at(-1) as PriceVersion;
   const v2: PriceVersion = structuredClone({ ...v1, from: V2_FROM });
   const s = v2.tariffs.AKTIV!.prices.S!;
   v2.tariffs.AKTIV!.prices.S = {
@@ -26,7 +26,7 @@ function twoVersions(): PriceData {
   v2.tariffs.AKTIV!.monthlyFee += 300;
   v2.tariffs.COMFORT!.monthlyFee += 400;
   v2.switchingFee = 900;
-  return { ...PRICE_DATA, versions: [v1, v2] };
+  return { ...PRICE_DATA, validFrom: v1.from, versions: [v1, v2] };
 }
 
 const DATA = twoVersions();
@@ -66,20 +66,20 @@ function trip(
 
 describe("pricesAt", () => {
   it("resolves the version valid at the given minute", () => {
-    expect(V1.from).toBe(PRICE_DATA.validFrom);
+    expect(V1.from).toBe(DATA.validFrom);
     expect(V2.from).toBe(V2_FROM);
-    expect(pricesAt(DATA, toLocalMinute(2026, 3, 14, 23, 59)).from).toBe(PRICE_DATA.validFrom);
+    expect(pricesAt(DATA, toLocalMinute(2026, 3, 14, 23, 59)).from).toBe(DATA.validFrom);
     expect(pricesAt(DATA, toLocalMinute(2026, 3, 15)).from).toBe(V2_FROM);
     expect(pricesAt(DATA, toLocalMinute(2030, 1, 1)).from).toBe(V2_FROM);
   });
 
   it("resolves a time before the first version to the first version", () => {
-    expect(pricesAt(DATA, toLocalMinute(2020, 1, 1)).from).toBe(PRICE_DATA.validFrom);
+    expect(pricesAt(DATA, toLocalMinute(2020, 1, 1)).from).toBe(DATA.validFrom);
   });
 
   it("carries the rules and the prices of the version", () => {
     expect(V2.switchingFee).toBe(900);
-    expect(V1.switchingFee).toBe(PRICE_DATA.versions[0]?.switchingFee);
+    expect(V1.switchingFee).toBe(DATA.versions[0]?.switchingFee);
     expect(V2.dayCapHours).toBe(PRICE_DATA.dayCapHours);
     expect(V2.holidayCities).toBe(PRICE_DATA.holidayCities);
   });

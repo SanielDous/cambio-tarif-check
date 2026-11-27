@@ -544,7 +544,7 @@ describe("analyze: hand-derived figures", () => {
 
   it("drops a compared tariff that has no price for a trip's class", () => {
     const data: PriceData = structuredClone(PRICE_DATA);
-    delete data.versions[0]?.tariffs.COMFORT!.prices.S;
+    delete data.versions.at(-1)?.tariffs.COMFORT!.prices.S;
     const a = analyze([wednesday(1)], SETTINGS, data);
     expect(a?.tariffs).toEqual(["BASIS", "AKTIV"]);
     expect(a?.months[0]?.costs).not.toHaveProperty("COMFORT");
@@ -553,7 +553,7 @@ describe("analyze: hand-derived figures", () => {
   it("prefers the lower fee when two tariffs cost the same in total", () => {
     // Trips: BASIS 6.20, AKTIV 4.70. An AKTIV fee of 1.50 makes both 6.20.
     const tie: PriceData = structuredClone(PRICE_DATA);
-    const aktiv = tie.versions[0]?.tariffs.AKTIV;
+    const aktiv = tie.versions.at(-1)?.tariffs.AKTIV;
     if (!aktiv) throw new Error("no version");
     aktiv.monthlyFee = 150;
     const a = analyze([wednesday(1)], SETTINGS, tie);

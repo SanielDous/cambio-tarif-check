@@ -180,7 +180,9 @@ function VersionTables({
                             : money(price.hourWeekend)}
                         </td>
                         <td className={tdNum}>{money(price.dayCap ?? fullDay)}</td>
-                        <td className={tdNum}>{money(prices.weekCapDays * fullDay)}</td>
+                        <td className={tdNum}>
+                          {money(price.weekCap ?? prices.weekCapDays * fullDay)}
+                        </td>
                         <td className={tdNum}>{money(price.kmTier1)}</td>
                         <td className={tdNum}>{money(price.kmTier2)}</td>
                       </tr>

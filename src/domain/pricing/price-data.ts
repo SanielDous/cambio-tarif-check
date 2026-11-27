@@ -28,11 +28,79 @@ const withWeekend = (
   kmTier2: number,
 ): ClassPrice => ({ hourWeekday, hourWeekend, kmTier1, kmTier2 });
 
+/** Class price with the flat day and week price of the price list (lists before 2024-05-02). */
+const listed = (
+  hourWeekday: number,
+  hourWeekend: number,
+  dayCap: number,
+  weekCap: number,
+  kmTier1: number,
+  kmTier2: number,
+): ClassPrice => ({ hourWeekday, hourWeekend, dayCap, weekCap, kmTier1, kmTier2 });
+
 export const PRICE_DATA: PriceData = {
-  validFrom: "2024-05-02",
+  validFrom: "2023-06-01",
   pricesAsOf: "2026-11-23",
   // A later price list is added as a further version, from the day it applies.
   versions: [
+    // Price list of 2023-06-01 (research document, "Price lists before 2024-05-02"): the day and
+    // week prices are flat amounts per class (week = 6 × day), not 12 × the hour price. No tariff
+    // START and no class XL yet. Older lists follow other rules and are not used.
+    {
+      from: "2023-06-01",
+      tariffs: {
+        CAMPUS: {
+          id: "CAMPUS",
+          monthlyFee: 0,
+          additionalDriverFee: null,
+          cities: null,
+          prices: {
+            XS: listed(225, 265, 3100, 18600, 26, 20),
+            S: listed(275, 315, 3100, 18600, 26, 20),
+            M: listed(385, 415, 4000, 24000, 27, 20),
+            L: listed(725, 755, 6900, 41400, 37, 20),
+          },
+        },
+        BASIS: {
+          id: "BASIS",
+          monthlyFee: 0,
+          additionalDriverFee: 0,
+          cities: null,
+          prices: {
+            XS: listed(235, 295, 3200, 19200, 28, 21),
+            S: listed(335, 395, 3200, 19200, 28, 21),
+            M: listed(435, 495, 4100, 24600, 29, 21),
+            L: listed(725, 785, 7000, 42000, 39, 24),
+          },
+        },
+        AKTIV: {
+          id: "AKTIV",
+          monthlyFee: 1100,
+          additionalDriverFee: 300,
+          cities: null,
+          prices: {
+            XS: listed(135, 135, 2200, 13200, 24, 18),
+            S: listed(190, 190, 2300, 13800, 25, 18),
+            M: listed(240, 240, 3000, 18000, 26, 18),
+            L: listed(510, 510, 5000, 30000, 36, 23),
+          },
+        },
+        COMFORT: {
+          id: "COMFORT",
+          monthlyFee: 2700,
+          additionalDriverFee: 300,
+          cities: null,
+          prices: {
+            XS: listed(125, 125, 2000, 12000, 21, 15),
+            S: listed(170, 170, 2100, 12600, 22, 15),
+            M: listed(215, 215, 2800, 16800, 23, 15),
+            L: listed(415, 415, 4100, 24600, 31, 21),
+          },
+        },
+      },
+      nightHourPrice: 50,
+      switchingFee: 500,
+    },
     {
       from: "2024-05-02",
       tariffs: {
@@ -144,6 +212,10 @@ export const PRICE_DATA: PriceData = {
     "Bergheim",
   ],
   fuelSurcharges: [
+    // +1 ct since 2023-01-15, carried onto the price list of 2023-06-01.
+    { from: "2023-06-01", cents: 1 },
+    { from: "2023-08-15", cents: 2 },
+    { from: "2023-12-15", cents: 1 },
     { from: "2024-05-02", cents: 2 },
     { from: "2024-07-01", cents: 1 },
     { from: "2026-01-15", cents: 1 },
@@ -164,7 +236,7 @@ export function parseIsoDate(date: string): LocalMinute {
 
 /**
  * Fuel surcharge in cents per km valid at t. Before the first period the first value applies
- * (prices before 2024-05-02 are not modelled).
+ * (prices before `validFrom` are not modelled).
  */
 export function surchargeAt(data: Pick<PriceRules, "fuelSurcharges">, at: LocalMinute): number {
   let cents = data.fuelSurcharges[0]?.cents ?? 0;
